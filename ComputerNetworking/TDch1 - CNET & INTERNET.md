@@ -1,0 +1,130 @@
+> 本系列笔记以《计算机网络-自顶向下方法》为纲，结合课程辅助资源、北邮教学PPT、《图解HTTP》、优秀博客等形成笔记体系。
+
+# COMPUTER NETWORKS AND THE INTERNET
+
+## Internet
+
+### 概念
+
+什么是计算机网络？ Billions of connected computing *devices*.
+
+running *network apps* at Internet’s “edge”
+
+**End systems**（端系统） are connected together by a network of *communication links*（通信链路） and *packet switches*（分组交换机）.
+
+A packet switch takes a packet arriving on one of its incoming communication links and **forwards** that packet on one of its outgoing communication links. The two most prominent types in today’s Internet are *routers* and *link-layer switches*（交换机）.
+
+End systems access the Internet through *Internet Service Providers* (ISP，因特网服务提供商) .
+
+**End systems, packet switches, and other pieces of the Internet run *protocols*（协议） that** **control the sending and receiving of information within the Internet.** The *Transmission*
+*Control Protocol (TCP)* and *the Internet Protocol (IP)* are two of the most important protocols in the Internet.
+
+*Internet:*  “network of networks”
+
+### Service
+
+End systems attached to the Internet provide a *socket interface*（套接字接口） that specifies how a program running on one end system asks the Internet infrastructure to **deliver data to a specific destination program running on another end system**.
+
+> QoS - Quality of Service：latency, bandwidth, bit-error-rate.
+
+### 协议
+
+A protocol defines **the format** and **the order** of messages exchanged between two
+or more communicating entities, as well as **the actions** taken on the transmission
+and/or receipt of a message or other event.
+
+![](http://img.070077.xyz/202203081038759.png)
+
+## The Network Edge
+
+End systems are also referred to as hosts because they *host*（主机） (that is, run) application programs. 
+
+> **host = end system**. Hosts are sometimes further divided into two categories: clients and servers. 
+
+### Access Networks
+
+- Home Access： DSL, Cable, FTTH, and 5G Fixed Wireless
+
+The two most prevalent types of broadband residential access are digital subscriber line (DSL,数字用户线) and cable（电缆）。![](http://img.070077.xyz/202203011110762.png)
+
+5G fixed wireless not only promises high-speed residential access, but will do so without installing costly and failure-prone cabling from the telco’s CO to the home.
+
+- Access in the Enterprise (and the Home): Ethernet and WiFi
+
+![以太网因特网接入](http://img.070077.xyz/202203011112641.png)
+
+802.11 today provides a shared transmission rate of up to more than 100 Mbps.
+
+- Wide-Area Wireless Access: 3G and LTE 4G and 5G
+
+### Physical Media
+
+For each transmitter-receiver pair,the bit is sent by propagating electromagnetic waves or optical pulses across a *physical medium*（物理媒介）. Physical media fall into two categories: *guided media*（导引型媒介） and unguided media.  
+
+##The Network Core
+
+###  Packet Switching
+
+packet-switching: hosts break application-layer messages into *packets*( break long messages **into smaller chunks**). Between source and destination, each packet travels through communication links and packet switches (two predominant types: routers and link-layer switches).
+
+- **Store-and-Forward Transmission**(存储转发传输)
+
+Most packet switches use *store-and-forward transmission* at the inputs to the links.***Entire* packet** must arrive at router before it can be transmitted on next link.
+
+**Forwarding** is the local action of moving arriving packets from router’s input link to appropriate router output link, while **routing** is the global action of determining the source-destination paths taken by packets.
+
+###  Circuit Switching
+
+In packet-switched networks, resources are not reserved; a session’s messages use the resources on demand and, as a consequence, may have to wait (that is, queue) for access to a communication link. Congestion loss and variable end-end delays are possible with this technique.
+
+ Which of the characteristics below are associated with the technique of *circuit switching*?
+
+- Reserves resources needed for a call from source to destination.
+- Frequency Division Multiplexing (FDM) and Time Division Multiplexing (TDM) are two approaches for implementing this technique.
+
+## Performance
+
+### Delay
+
+![](http://img.070077.xyz/202203081013704.png)
+
+*d*nodal = *d*proc + *d*queue + *d*trans + *d*prop
+
+### Packet Loss
+
+![With no place to store such a packet, a router will drop that packet](http://img.070077.xyz/202203081015619.png)
+
+### Throughput
+
+*throughput:* rate (bits/time unit) at which bits are being sent from sender to receiver.
+
+## Protocol Layers and Service Models
+
+### Protocal Layers 
+
+| layer       | function     | e.g. |
+| ----------- | ---- | ---- |
+| Application | exchanges *messages*(报文) to implement some application service | HTTP, IMAP, SMTP, DNS |
+| Transport   | protocol creates *segment* and transfers M from one *process* to another | TCP, UDP |
+| network     | transfers creates *datagram* and  transport-layer segment [Ht \ M] from one host to another |routing protocols,IP|
+| link        | creates *frame* and transfers datagram [Hn\[Ht\M] from host to neighboring host, using network-layer services | Ethernet, 802.11 (WiFi), PPP |
+| physical    | bits “on the wire” |      |
+
+![高层使用低层服务，低层封装高层数据](http://img.070077.xyz/202203081030866.png)
+
+###  Models
+
+![](http://img.070077.xyz/202203081042846.png)
+
+In OSI Model:
+
+- *presentation:* allow applications to interpret meaning of data, e.g., encryption, compression, machine-specific conventions
+- *session:* synchronization, checkpointing, recovery of data exchange
+
+[[TDch2-6 Layers]]
+
+# BUPT Useful PPTs
+
+![](http://img.070077.xyz/202203081122653.png)
+
+![](http://img.070077.xyz/202203081123744.png)

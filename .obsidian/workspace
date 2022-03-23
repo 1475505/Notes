@@ -1,0 +1,132 @@
+{
+  "main": {
+    "id": "400d1e6838db7e29",
+    "type": "split",
+    "children": [
+      {
+        "id": "ebcca1237cef65a8",
+        "type": "leaf",
+        "dimension": 74.74747474747475,
+        "pinned": true,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "从C进步到C++——特性.md",
+            "mode": "preview",
+            "source": false
+          },
+          "pinned": true
+        },
+        "group": "3accd576c1ed7e37"
+      },
+      {
+        "id": "99400cda4af78b53",
+        "type": "leaf",
+        "dimension": 25.252525252525253,
+        "pinned": true,
+        "state": {
+          "type": "outline",
+          "state": {
+            "file": "从C进步到C++——特性.md"
+          },
+          "pinned": true
+        },
+        "group": "3accd576c1ed7e37"
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "7c5aa12fd7a003da",
+    "type": "split",
+    "children": [
+      {
+        "id": "fd3fc12457b55ed6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ce0aca2d99fcafa2",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "7ca28aead295082c",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "d58f5dd1678b40e1",
+            "type": "leaf",
+            "state": {
+              "type": "recent-files",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 221
+  },
+  "right": {
+    "id": "030ce13fae70844a",
+    "type": "split",
+    "children": [
+      {
+        "id": "91f95ce645a1fc3d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bdfea5df19205829",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "从C进步到C++——特性.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "d832ccaf272f5ad0",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "从C进步到C++——特性.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "ebcca1237cef65a8",
+  "lastOpenFiles": [
+    "从C进步到C++——特性.md",
+    "C++STL的使用.md",
+    "leetcode/LC-Hot100.md"
+  ]
+}
