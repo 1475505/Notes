@@ -4,34 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "ebcca1237cef65a8",
+        "id": "78399b0b2e3c596a",
         "type": "leaf",
-        "dimension": 74.74747474747475,
-        "pinned": true,
         "state": {
           "type": "markdown",
           "state": {
             "file": "从C进步到C++——特性.md",
             "mode": "preview",
             "source": false
-          },
-          "pinned": true
-        },
-        "group": "3accd576c1ed7e37"
-      },
-      {
-        "id": "99400cda4af78b53",
-        "type": "leaf",
-        "dimension": 25.252525252525253,
-        "pinned": true,
-        "state": {
-          "type": "outline",
-          "state": {
-            "file": "从C进步到C++——特性.md"
-          },
-          "pinned": true
-        },
-        "group": "3accd576c1ed7e37"
+          }
+        }
       }
     ],
     "direction": "vertical"
@@ -115,15 +97,23 @@
                 "file": "从C进步到C++——特性.md"
               }
             }
+          },
+          {
+            "id": "bfeb8fe475b6ee59",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {}
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
-  "active": "ebcca1237cef65a8",
+  "active": "78399b0b2e3c596a",
   "lastOpenFiles": [
     "从C进步到C++——特性.md",
     "C++STL的使用.md",
