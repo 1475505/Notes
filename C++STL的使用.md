@@ -32,6 +32,8 @@
 
 ### vector
 
+创建容器：如`vector<int> dp(4, 1)`可初始化`dp`为[1, 1, 1, 1].
+
 **元素访问**
 
 1. `at()`
@@ -72,8 +74,8 @@
 
 - `push_back(x)` 在末尾插入一个元素x，均摊复杂度：常数，最坏为线性复杂度。
 
-	> `push_back()` 向容器尾部添加元素时，首先会创建这个元素，再将这个元素拷贝或者移动到容器中（拷贝的话会自行销毁先前创建的这个元素
-	> `emplace_back()` *（C++11）* 功能与上一相同。实现时，直接在容器尾部创建这个元素，省去了拷贝或移动元素的过程。
+	> `push_back` 会先创建元素x，再将这个元素拷贝或者移动到容器尾部（拷贝后会自行析构先前创建的这个元素）
+	> `emplace_back()` *（C++11）* 功能与上一相同。实现时，直接在容器尾部创建元素x，省去了拷贝或移动元素的过程。
 
 - `pop_back()` 删除末尾元素，常数复杂度。
 
@@ -157,11 +159,17 @@
 
 四种基于哈希实现的无序关联式容器：`unordered_set`，`unordered_multiset`，`unordered_map`，`unordered_multimap`。
 
-其操作与关联式容器类似。
+其操作与关联式容器类似。其`count`平均时间复杂度是O(1)，)优势在我
 
 ### unordered_map
 
 常用于作为哈希表的模板。
+
+### unordered_set
+
+基于哈希表实现。
+
+> set底层是红黑树，count时间复杂度就是O(logN)。
 
 ## 容器适配器
 
@@ -234,7 +242,7 @@
 
 - `find_end`：逆序查找。`find_end(v.begin(), v.end(), value)`。
 - `nth_element`：按指定范围进行分类，即找出序列中第 *n* 大的元素，使其左边均为小于它的数，右边均为大于它的数。`nth_element(v.begin(), v.begin() + mid, v.end(), cmp)` 或 `nth_element(a + begin, a + begin + mid, a + end, cmp)`
-- `next_permutation`：将当前排列更改为 **全排列中的下一个排列**。如果当前排列已经是 **全排列中的最后一个排列**（元素完全从大到小排列），函数返回 `false` 并将排列更改为 **全排列中的第一个排列**（元素完全从小到大排列）；否则，函数返回 `true`。`next_permutation(v.begin(), v.end())` 或 `next_permutation(v + begin, v + end)`。
+- `next_permutation`：将当前排列更改为 **全排列中的下一个排列**。如果当前排列已经是 **全排列中的最后一个排列**（元素完全从大到小排列），函数返回 `false` 并将排列更改为 **全排列中的第一个排列**（元素完全从小到大排列）；否则，函数返回 `true`。`next_permutation(v.begin(), v.end())` 或 `next_permutation(v + begin, v + end)`。算法实现：[Leetcode-offer2](Leetcode-offer2.md)
 - `reverse(vec.begin(), vec.end())`可以获得序列式容器的反转。
 
 ### bitset

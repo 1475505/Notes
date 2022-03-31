@@ -105,6 +105,23 @@ CPU通过时间片分配算法来执行指令。有关Java并发编程，以下�
   }
   ```
 
+### 等待-超时模式
+
+在等待-通知范式下略作修改，得到“超时则返回默认值”的模式。
+
+```java
+//对当前对象加锁
+public synchronized object get (long mills) throws InterruptedException {
+	long future=System.currentTimeMillis()+mills;
+	long remaining=mills;//当超时大于0并且result返回值不满足要求
+	while((result==null)&&remaining>0){
+		wait(remaining);
+		remaining=future-System.currentTimeMillis();
+	}
+	return result;
+}
+```
+
 ### join方法
 
 如果一个线程 A 执行了 thread.join(） 语句 ， 其含义是 ：当前线程 A 等待 thread 线程终止后才从thread .join(）返回。
