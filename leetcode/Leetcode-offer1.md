@@ -199,7 +199,7 @@ int BFS(Node start, Node target) {
 
 根据求余运算性质：$(xy) \% a = (x\%a \times y\%a)\%a$
 
-结合二分快速幂$x^a = x^{a/2} \times x^{a/2} \times x^{a -a/2\times2} $
+结合二分快速幂  $x^a = x^{a/2} \times x^{a/2} \times x^{a -a/2\times2}$
 
 即可达到快速幂求余的目的。
 
@@ -335,7 +335,7 @@ root.left = leftRoot;   root.right = rightRoot;
 
 非方阵中，比较麻烦的是四角，在此提供两个特别用例：
 
-$ 1\\2$  和 $ 1 \space\space 2 $ .需要准确判断四角应该判作哪个角，以达到正确的目标。
+$1\\2$  和 $1 \space\space 2$ .需要准确判断四角应该判作哪个角，以达到正确的目标。
 
 ## JZ30/31：魔改栈
 

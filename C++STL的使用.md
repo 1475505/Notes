@@ -131,7 +131,7 @@
 
 - `erase(first,last)` 删除迭代器在 [first,last)范围内的所有元素。
 
-- `count(x)`: 返回容器内键为 x 的元素数量。
+- `count(x)`: 返回容器内键为 x 的元素**数量**。
 
 - `lower_bound(x)`: 返回指向首个**不小于** 给定**键**的元素的迭代器。
 
@@ -159,15 +159,15 @@
 
 四种基于哈希实现的无序关联式容器：`unordered_set`，`unordered_multiset`，`unordered_map`，`unordered_multimap`。
 
-其操作与关联式容器类似。其`count`平均时间复杂度是O(1)，)优势在我
+其操作与关联式容器类似。其`count`平均时间复杂度是O(1)，优势在我
 
 ### unordered_map
 
-常用于作为哈希表的模板。
+常用于作为哈希表的模板，其对`[]`的重载赋予了它数组般的特性存在。
 
 ### unordered_set
 
-基于哈希表实现。
+基于哈希表实现的【桶】。
 
 > set底层是红黑树，count时间复杂度就是O(logN)。
 
