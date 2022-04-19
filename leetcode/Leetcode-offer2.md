@@ -80,7 +80,7 @@ template <typename T> T majEleCandidate(Vector<T>A){
 template <typename T> void quickSelect ( Vector<T> &A, Rank k ){
 	for(Rank lo=0, hi=A.size()-1; lo < hi; ){
 		Rank i = lo, j = hi; T pivot = A[lo];
-		while(i<j){
+		while(i<j){//注意顺序
 			while ( (i < j)&&(pivot<=A[j]) ) j--;     A[i] = A[j];
 			while ( (i < j)&&(A[i]<=pivot) ) i++;     A[j] = A[i];
 		}//assert:i==j.得到pivot所应该在是下标

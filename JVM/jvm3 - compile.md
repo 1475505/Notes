@@ -101,3 +101,20 @@
 
 虚拟机注册异常处理器`Segment Fault`，使用`try catch`机制代替`if else`机制。当然，由于越界需要进入中断异常处理，速度比判空慢。
 
+# Java编译期优化分析
+
+## String系列
+
+```java
+String s1 = "a";
+String s2 = "b";
+String s3 = "ab";
+String s4 = s1 + s2;
+/* 字符串拼接原理：临时StringBuilder(线程安全) -> toString */
+String s5 = "a" + "b";//定值，编译期拼接。此时s3 == s5.
+String s6 = new String("a") + new String("b");
+String s5 = s5 + "c";//不会改变s4，值变化不影响原串
+/* 【动态拼接的结果，不会放到常量池中】*/
+sout(s3 == s4);//false
+sout(s3 == s6);//false
+```
