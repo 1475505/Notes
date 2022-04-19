@@ -1,305 +1,122 @@
-# Hot100
+## 数组/字符串系列
 
-## 1. 两数之和@HashMap
+双指针是在时空复杂度限制下，比较理想的思考方案，滑动窗口、快速选取都可以归到这一领域。
 
-使用`Unordered_map`实现哈希表。
+### 滑动窗口
 
+[76. 最小覆盖子串 ](https://leetcode-cn.com/problems/minimum-window-substring/)
+
+思路：使用哈希表计数索引，用哈希表动态维护窗口中所有字符及个数。先不断`j++`扩大窗口，使得窗口内包含T的所有元素，再`i++`缩小窗口，记录下这一流程下的必要最小值后，放弃这个位置，重复上述过程。
+
+### 选取系列
+
+荷兰国旗问题、topK问题在《剑指Offer》笔记中已提及，此处略。
+
+[524. 通过删除字母匹配到字典里最长单词](https://leetcode-cn.com/problems/longest-word-in-dictionary-through-deleting/)
+思路：归并两个有序数组。通过双指针匹配“相邻”时，需要特别注意。
+
+
+## 链表专题
+
+### 反转链表
+
+[206. 反转链表](https://leetcode-cn.com/problems/reverse-linked-list/)
+
+- 非递归写法
+```cpp
+ListNode *prev = nullptr, *next;
+while (head) {
+	next = head->next;
+	head->next = prev;
+	prev = head;
+	head = next;
+}
+return prev;
+```
+- 递归写法
 ```c++
-    vector<int> twoSum(vector<int>& nums, int target) {
-        unordered_map<int, int> hashMap;
-        int len = nums.size();
-        for (int i = 0; i < len; ++i){
-            auto it = hashMap.find(target - nums[i]);//find的是键
-            if (it != hashMap.end())
-                return vector<int>{i,it->second};
-            hashMap.insert(pair<int, int>{nums[i], i});//插入pair类型
-        }
-        return vector<int>{-1, -1};
-    }
+ListNode* reverseList(ListNode* head, ListNode* prev=nullptr) {
+	if (!head) return prev;
+	ListNode* next = head->next;
+	head->next = prev;
+	return reverseList(next, head);
+}
 ```
 
-使用`map`也可以实现哈希表。
+> 链表特别需要注意**考虑每个节点的指针**，拓展题：[25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+> 关键是分割和连接。
 
-## 2. 两数相加
 
-```c++
-ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        ListNode* head = new ListNode();//建议这样创建结构体
-        ListNode* tmp = head;
-/* 省去新空间需要：ListNode* res = l1; ListNode* pre = l2（异常初始化问题）;*/
-        bool bias = 0;
-        while ( l1 || l2 || bias ){/*不建新链表：while ( l2 || bias ) */
-            int val1 = 0, val2 = 0;
-            if (l1) { val1 = l1->val; l1 = l1->next;}
-    /* if (!l1->next) { pre = l1;   l1->next = new ListNode(0);} */
-            if (l2) { val2 = l2->val; l2 = l2->next;}
-            tmp->next = new ListNode( (val1 + val2 + bias) % 10 );
-            if (val1 + val2 + bias > 9)    bias = 1; //注意处理顺序
-            else bias = 0;
-            tmp = tmp->next;
-        }
-    //if (l1->val == 0)   pre->next = nullptr;
-        return head->next;
-    }
-```
+### 环形链表
 
-## 3.无重复字符的最长子串
+[环形链表](https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/)
+
+1. 快慢指针。`fast`每次走两步，`slow`每次走一步，二者会在环里的某个位置相遇，此时`fast`比`slow`超前若干个环长。即：
+   $$f=2s=s+nl$$
+2. 得知 $s = nl$ 。记链表头距离环的入口$a$， 则再走$a$步，即可到达环的入口，**因为$a+nl$ 与 $a$ 同位置。**
+3. 利用环形的特性，可以写出如下的代码：
 
 ```cpp
-class Solution {
-public:
-    int lengthOfLongestSubstring(string s) {
-        int len = s.size();
-        if (len == 0)   return 0;
-        int i = 0, j = 0, ans = 0;
-        unordered_map<char, int> hshmp;
-        while( j < len){
-            if ( hshmp.find(s[j]) == hshmp.end() ){
-                hshmp.insert(pair<char, int>{s[j], j});
-            } else {
-                ans = max(ans, j - i);
-                i = max(i, hshmp[s[j]] + 1);
-                hshmp[s[j]] = j;
-            }
-            cout << i << j << endl;
-            ++j;
+		if (head == NULL || head->next == NULL) return NULL;
+        ListNode* slow = head;
+        ListNode* fast = head;
+        do{
+            slow = slow->next;
+            if (fast && fast->next)
+                fast = fast->next->next;
+            else
+                return NULL;
+        } while(slow != fast);
+        assert(slow == fast);
+        slow = head;
+        while (slow != fast){
+            slow = slow->next;
+            fast = fast->next;
         }
-        return max(ans, j - i);
-    }
-};
+        return slow;
 ```
 
-## 归并向量的中位数
+> 拓展：本题思想可以解决[287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)。
+> 关键是把看作数组的值看作映射。
 
-```c++
-class Solution {
-public:
-    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
-        return medium(nums1, nums2, 0, 0, nums1.size() - 1, nums2.size() - 1);
-    }
+### 链表归并排序
+[归并排序链表](https://leetcode-cn.com/problems/sort-list/solution/sort-list-gui-bing-pai-xu-lian-biao-by-jyd/)
 
-    double medium(vector<int>& nums1, vector<int>& nums2, int l1, int l2, int r1, int r2){
-        // cout << l1 << r1 << l2 << r2 << endl;
-        int len1 = r1 - l1 + 1, len2 = r2 - l2 + 1;
-        if (len1 > len2) return medium(nums2, nums1, l2, l1, r2, r1);
-        if (len1 == 0 || len2 < 5){
-            return trivalmedium(nums1, nums2, l1, l2, r1, r2);
-        }
-        if (2 * len1 < len2)
-            return medium(nums1, nums2, l1, l2 + (len2 - len1 - 1)/2, r1, r2 - (len2 - len1 - 1)/2);
-        int mid1 = l1 + len1/2, mid2a = l2 + (len1 - 1)/2, mid2b = r2 - len1/2;
-        if (nums1[mid1] > nums2[mid2b])
-            return medium(nums1, nums2, l1, mid2a, mid1, r2);
-        else if (nums1[mid1] < nums2[mid2a])
-            return medium(nums1, nums2, mid1, l2, r1, mid2b);
-        else
-            return medium(nums1, nums2, l1, l2 + len1/2, r1, r2 - len1/2);
-    }
+关键有两步：
+- `cut`：使用快慢指针，找到链表的中点，断开。
+- `merge`：交替比较头部，添加完成链表。
 
-    double trivalmedium(vector<int>& nums1, vector<int>& nums2, int l1, int l2, int r1, int r2){
-        vector<int> tmp;
-        while (l1 <= r1 && l2 <= r2){
-            while (l1 <= r1 && nums1[l1] <= nums2[l2] ) {tmp.push_back(nums1[l1]); l1++;}
-            if (l1 > r1) break;
-            while (l2 <= r2 && nums1[l1] >= nums2[l2] ) {tmp.push_back(nums2[l2]); l2++;}
-        }
-        while (l1 <= r1) {tmp.push_back(nums1[l1]); l1++;}
-        while (l2 <= r2) {tmp.push_back(nums2[l2]); l2++;}
-        int len = tmp.size();
-        // for(int i : tmp) cout << i;
-        if (len % 2 == 0){
-            return (tmp[len/2] + tmp[len/2 - 1] ) / 2.0;
-        } else 
-            return tmp[len/2];
-        return -1;
-    }
-};
+从评论区中得到了比较直观的伪代码如下：
+```cpp
+current = dummy.next;
+tail = dummy;
+for (step = 1; step < length; step *= 2) {
+	while (current) {
+		// left->@->@->@->@->@->@->null
+		left = current;
+
+		// left->@->@->null   right->@->@->@->@->null
+		right = cut(current, step); // 将 current 切掉前 step 个头切下来。
+
+		// left->@->@->null   right->@->@->null   current->@->@->null
+		current = cut(right, step); // 将 right 切掉前 step 个头切下来。
+		
+		// dummy.next -> @->@->@->@->null，最后一个节点是 tail，始终记录
+		//                        ^
+		//                        tail
+		tail.next = merge(left, right);
+		while (tail->next) tail = tail->next; // 保持 tail 为尾部
+	}
+}
 ```
 
-## 5.最长回文子串@dp
+## 动态规划专题
 
-```c++
-string longestPalindrome(string s) {
-        string p = s;
-        reverse(p.begin(), p.end());
-        return LCS(s,p);
-    }
+### 字符串篇
 
-    string LCS(string a, string b){
-        int len = a.size();
-        int maxi = 0, maxlen = 0;
-        int dp[len][len];
-        for (int i = 0; i < len; ++i){
-            for(int j = 0; j < len; ++j){
-                if (a[i] == b[j]){
-                    if (i == 0 || j == 0)   dp[i][j] = 1;
-                    else dp[i][j] = dp[i - 1][j - 1] + 1;
-                } else  dp[i][j] = 0;
-                if (dp[i][j] > maxlen && i + j + 2 == dp[i][j] + len){
-                    maxlen = dp[i][j];
-                    maxi = i;
-                }
-            }
-        }
-        return a.substr(maxi - maxlen + 1,maxlen);
-    } 
-```
+[72. 编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
-## 10.正则表达式匹配@dp
+思路：你很难想到LCS，但是你可以理解为：删除即替换为空串，视增加为删除另一个串的字符，二者可以从不同视角看，进行转化。于是，当二者对应的字符不同时，修改的消耗是 `dp[i-1][j-1]+1`，插入 i 位置/删除 j 位置的消耗是 `dp[i][j-1] + 1`，插入 j 位置/删除 i 位置的消耗是 `dp[i-1][j] + 1`。
 
-```c++
-    bool isMatch(string s, string p) {
-        s = " " + s; p = " " + p;
-        int slen = s.size(), plen = p.size();
-        bool dp[slen][plen];
-        memset(dp, 0, sizeof dp);
-        dp[0][0] = true;
-        for (int i = 0; i < slen; ++i) {
-            for (int j = 1; j < plen; ++j){
-                if (j < plen - 1 && p[j + 1] == '*') continue;
-                if (p[j] == '*'){
-                     dp[i][j] = (j >= 2 && dp[i][j - 2] )|| \
-                                (i >= 1 && dp[i - 1][j] && (s[i] == p[j - 1] || p[j - 1] == '.'));
-                } else if (i >= 1){
-                    dp[i][j] = dp[i - 1][j - 1] && (s[i] == p[j] || p[j] == '.');
-                }
-            }
-        }
-        return dp[slen - 1][plen - 1];
-    }
-```
-
-## 15.三数之和
-
-```c++
-class Solution {
-public:
-    vector<vector<int>> threeSum(vector<int>& nums) {
-        sort(nums.begin(), nums.end());
-        int len = nums.size();
-        vector<vector<int>> ans;
-        for (int i = 0; i < len - 2; i++){
-            if (i > 0 && nums[i] == nums[i - 1])    continue;
-            int j = i + 1, k = len - 1;
-            while (j < k){
-                int sum = nums[i] + nums[j] + nums[k];
-                if (sum < 0) 
-                    ++j;
-                else if (sum > 0)
-                    --k;
-                else if (sum == 0) {
-                    ans.push_back(vector<int>{nums[i],nums[j],nums[k]});
-                    while(j < k && nums[j + 1] == nums[j])  ++j;
-                    while(j < k && nums[k - 1] == nums[k])  --k;
-                    ++j; --k;
-                }
-            }
-        }
-        return ans;
-    }
-};
-```
-
-## 17.电话号码的字母组合
-
-```c++
-class Solution {
-public:
-    string tmp;
-    vector<string> res;
-    vector<string> alphaT={"","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
-    void DFS(int pos, string digits){
-        if (pos == digits.size()){
-            res.push_back(tmp);
-            return;
-        }
-        int num= digits[pos] - '0';
-        for (int i = 0; i < alphaT[num].size(); i++){
-            tmp.push_back(alphaT[num][i]);
-            DFS(pos + 1, digits);
-            tmp.pop_back();
-        }
-    }
-    vector<string> letterCombinations(string digits) {
-        if (digits.size()==0 ) return res;
-        DFS(0, digits);
-        return res;
-    }
-};
-```
-
-## 19.删除链表倒数第K个节点
-
-```c++
-class Solution {
-public:
-    ListNode* removeNthFromEnd(ListNode* head, int n) {
-        ListNode* fptr = head, *sptr = head;
-        for(int i = 0; i < n; ++i){
-            fptr = fptr->next;
-        }
-        if(!fptr)   return head->next;//也可以设置空头结点，以解决删除头结点
-        while (fptr && fptr->next != nullptr){        
-            fptr = fptr->next;
-            sptr = sptr->next;
-        }
-        sptr->next = sptr->next->next;
-        return head;
-    }
-};
-```
-
-## 21.合并两个有序链表
-
-```C++
-class Solution {
-public:
-    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
-        if (!list1)  return list2;
-        if (!list2)  return list1;
-        ListNode *tmp1 = list1, *tmp2 = list2, *head = list1;
-        if (tmp1->val > tmp2->val){
-            tmp2 = list1; tmp1 = list2;
-            head = list2;
-        }
-        while (tmp2){
-            int tmp = tmp2->val;
-            while (tmp1->next && tmp1->next->val <= tmp)
-                tmp1 = tmp1-> next;
-            if (!tmp1->next){
-                tmp1->next = tmp2;
-                return head;
-            } else {
-                list2 = tmp2->next;
-                tmp2->next = tmp1->next;
-                tmp1->next = tmp2;
-            }
-            tmp2 = list2;
-        }
-        return head;
-    }
-};
-```
-
-## 22.括号生成
-
-```c++
-class Solution {
-public:
-    vector<string> ans;
-    int n;
-    vector<string> generateParenthesis(int n) {
-        this->n = n;
-        string tmp = "";
-        dfs(tmp, 0, 0);
-        return ans;
-    }
-    void dfs(string tmp, int l, int r){
-        if ( l > n || r > n || l < r)   return;
-        if ( l == r && l == n) ans.push_back(tmp);
-        dfs(tmp + "(", l + 1, r);
-        dfs(tmp + ")", l, r + 1);
-    }
-};
-```
+> 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)
 

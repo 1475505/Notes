@@ -375,7 +375,7 @@ The connection’s *round-trip time* (RTT)  is the time from when a segment is s
 
 TCP通过EWMA（指数加权移动平均. exponential weighted moving average ）维护一个RTT均值。建议取值$\alpha = 0.125$
 
-$ EstimatedRTT = (1 – \alpha)\times EstimatedRTT + \alpha\times SampleRTT $
+$EstimatedRTT = (1 – \alpha)\times EstimatedRTT + \alpha\times SampleRTT$
 
 同时维护DevRTT（RTT偏差），即当前SampleRTT与EstimatedRTT的差值。一般取$\beta = 0.25$
 
@@ -383,7 +383,7 @@ $$ DevRTT = (1 – β)  DevRTT + β  | SampleRTT – EstimatedRTT | $$
 
 于是得到超时间隔：
 
-$ TimeoutInterval = EstimatedRTT + 4 \times DevRTT $
+$TimeoutInterval = EstimatedRTT + 4 \times DevRTT$
 
 ### Reliable Data Transfer
 
@@ -708,9 +708,3 @@ we’ve also encountered other network equipment (“boxes”) within the networ
 
 - SDN: (logically) centralized control and configuration management often in  private/public cloud
 - network functions virtualization (NFV): programmable services over white box networking, computation, storage
-
-
-
-# BUPT Useful PPTs
-
-![](http://img.070077.xyz/202203100803907.png)

@@ -121,7 +121,7 @@ In OSI Model:
 - *presentation:* allow applications to interpret meaning of data, e.g., encryption, compression, machine-specific conventions
 - *session:* synchronization, checkpointing, recovery of data exchange
 
-[[TDch2-6 Layers]]
+[[TDch2-4 Application2NetworkDataPlane]]
 
 # BUPT Useful PPTs
 
