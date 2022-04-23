@@ -2,7 +2,7 @@
 
 ## Principles of Network Applications
 
-进行通信实际上是*进程* 而不是程序。
+进行通信的双方都是*进程* 。
 
 Socket（套接字）是应用程序和网络之间的应用程序编程接口（API).
 
@@ -67,18 +67,18 @@ HTTP GET/response interaction is *stateless*：
 
 - HTTP server does not remember anything about what happened during earlier steps in interacting with this HTTP client.
 
-![Use Conditional GET - If-modified-since: <date>](http://img.070077.xyz/202203101702288.png)
+![Use Conditional GET - If-modified-since:`<date>`](http://img.070077.xyz/202203101702288.png)
 
 Web Cache is also called *proxy server*.
 
 ### HTTP/2
 
-*HTTP/2:*increased flexibility at *server* in sending objects to client:
+HTTP/2: increased flexibility at *server* in sending objects to client:
 
 - transmission order of requested objects based on client-specified object priority.
 - divide objects into frames, schedule frames to mitigate *HOL*(Head Of Line) blocking
 
-> head-of-line (HOL) blocking: small object may have to wait for transmission behind large object(s)
+> head-of-line (HOL) blocking: small object may have to wait for transmission behind large object(s):因为 TCP 是字节流协议，TCP 层必须保证收到的字节数据是完整且有序的，如果序列号较低的 TCP 段在网络传输中丢失了，即使序列号较高的 TCP 段已经被接收了，应用层也无法从内核中读取到这部分数据，从 HTTP 视角看，就是请求被阻塞了。
 >
 > *HTTP1.1:* introduced multiple, pipelined GETs over single TCP connection
 >
@@ -373,7 +373,7 @@ TCP only acknowledges bytes up to the **first** missing byte in the stream, TCP 
 
 The connection’s *round-trip time* (RTT)  is the time from when a segment is sent until it is acknowledged.
 
-TCP通过EWMA（指数加权移动平均. exponential weighted moving average ）维护一个RTT均值。建议取值$\alpha = 0.125$
+TCP通过EWMA（指数加权移动平均. exponential weighted moving average ）维护一个RTT均值。建议取值 $\alpha = 0.125$
 
 $EstimatedRTT = (1 – \alpha)\times EstimatedRTT + \alpha\times SampleRTT$
 
@@ -387,7 +387,7 @@ $TimeoutInterval = EstimatedRTT + 4 \times DevRTT$
 
 ### Reliable Data Transfer
 
-面向事件的处理方案。以下：
+面向事件的处理方案。以下： 
 
 ![](http://img.070077.xyz/202203160757738.png)
 
@@ -421,6 +421,7 @@ TCP provides flow control by having the *sender* maintain a variable called the 
 1. The client-side TCP first sends a special TCP segment - **SYN segment** to the server-side TCP.
 2. the server extracts the TCP SYN segment from the datagram, allocates the TCP buffers and variables to the connection, and sends a connection-granted segment - **SYNACK segment** to the client TCP.
 3.  Upon receiving the SYNACK segment, the client also allocates buffers and variables to the connection. 
+> `seq`是一个含时间戳的随机算法，随机生成，以大概率降低历史报文的接收。同时也防止黑客伪造的相同序列号的 TCP 报文被对方接收，安全。
 
 ![](http://img.070077.xyz/202203160810032.png)
 
@@ -537,11 +538,11 @@ Yes.
 
 ## QUIC
 
-Quick UDP Internet Connections Protocol`s major features:
+Quick UDP Internet Connections Protocol's major features:
 
 - Connection-Oriented and Secure.
 
-  ![](http://img.070077.xyz/202203180125838.png)
+  ![QUIC in application layer](http://img.070077.xyz/202203180125838.png)
 
 - Streams. QUIC allows several different application-level “streams” to be multiplexed through a single QUIC connection and establish fast（1 handshake）.
 
@@ -637,6 +638,8 @@ Datagrams can be lost due to congestion, lack of buffers（Buffering when arriva
   ![](http://img.070077.xyz/202203192132836.png)
 
 ## The Internet Protocol (IP)
+
+> IP是要设备接入网络后，根据上线的子网分配。在设备还没有IP地址时还需要用MAC地址来区分不同的设备。 总之，MAC地址就像自己的ID号,而IP地址就像带着邮政编码的住址，MAC可以在不依赖网络接入下区分设备。
 
 ### IPv4
 
