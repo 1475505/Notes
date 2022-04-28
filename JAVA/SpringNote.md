@@ -1,4 +1,4 @@
-# Spring介绍
+# SpringBoot 介绍
 
 ## Bean
 
@@ -20,7 +20,20 @@ public class BeanFactory {
 
 我们一般使用 `@Autowired` 注解让 Spring 容器帮我们自动装配 bean。
 
->`@Autowired`与Spring强耦合，类似的`@Resource`是JDk提供的，
+>`@Autowired`与Spring强耦合，优先按类型；`@Resource`是JDK提供的，优先按名称
+
+Bean 具有以下几种作用域：
+
+**singleton**：单例模式，在整个Spring IoC容器中，使用singleton定义的Bean将只有一个实例。（尽量）
+
+**prototype**：原型模式，每次通过容器的getBean方法获取prototype定义的Bean时，都将产生一个新的Bean实例
+
+**request**：对于每次HTTP请求，使用request定义的Bean都将产生一个新实例，即每次HTTP请求将会产生不同的Bean实例。
+
+**session**：对于每次HTTP Session，使用session定义的Bean产生一个新实例。
+
+**globalsession**：每个全局的HTTP Session，使用session定义的Bean都将产生一个新实例。
+
 
 > AOP: 拦截器以Bean切面获取方法调用的信息，进行功能拓展。
 
@@ -75,7 +88,6 @@ Map<String,ObjectFactory<?> singletonFactories
 @SpringBootApplication == @EnableAutoConfiguration + @ComponentScan
 ```
 - Validation校验注解：`@NotNull(message = “该实体不能为空”)`
-- 
 
 ## 接口设计
 
@@ -132,6 +144,14 @@ public class JacksonConfig {
 ## JWT
 
 token是有意义的、加密的、包含业务信息的。
+
+## 30天趋势图的SQL语句？
+
+```sql
+select * from `statistic` 
+where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(create_time)
+//这个是查询30天前的数据
+```
 
 ---
 
@@ -191,4 +211,3 @@ MyBatis 是一款优秀的持久层框架，它支持自定义 SQL、存储过�
 
 -  `${}`是 properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如${driver}会被静态替换为`com.mysql.jdbc.Driver`。
 -   `#{}`是 sql 的参数占位符，MyBatis 会将 sql 中的`#{}`替换为? 号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的? 号占位符设置参数值，比如 ps.setInt(0, parameterValue)，`#{item.name}` 的取值方式为使用反射从参数对象中获取 item 对象的 name 属性值，相当于 `param.getItem().getName()`
-
