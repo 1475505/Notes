@@ -1,6 +1,3 @@
-[TOC]
-
-
 
 # 基本语法
 
@@ -565,3 +562,7 @@ Java中的IO流机制较多，基础地基于`byte`的`InputStream`和`OutputStr
 ## Date-Time API
 
 略
+
+---
+参考：
+《Java核心技术》

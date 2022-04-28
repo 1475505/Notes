@@ -123,8 +123,6 @@ In OSI Model:
 
 [[TDch2-4 Application2NetworkDataPlane]]
 
-# BUPT Useful PPTs
-
-![](http://img.070077.xyz/202203081122653.png)
-
-![](http://img.070077.xyz/202203081123744.png)
+---
+参考：
+[《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)

@@ -221,3 +221,8 @@ Javac编译器输出的字节码指令流，基本上是一种基于栈的ISA，
 为解决web应用的可见性问题，其重写了类加载器：
 
 ![](http://img.070077.xyz/typora_img/image-20220228020259770.png)
+
+---
+参考：
+Github TangBean的思维导图
+《深入理解JAVA虚拟机》

@@ -711,3 +711,7 @@ we’ve also encountered other network equipment (“boxes”) within the networ
 
 - SDN: (logically) centralized control and configuration management often in  private/public cloud
 - network functions virtualization (NFV): programmable services over white box networking, computation, storage
+
+--- 
+参考：
+[《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)

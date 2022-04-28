@@ -1,13 +1,5 @@
 
 
----
-
-本系列笔记使用了github TangBean的思维导图、《深入理解JAVA虚拟机》插图
-
-推荐阅读：https://www.baeldung.com/jvm-parameters
-
----
-
 # 内存区域
 
 ![](http://img.070077.xyz/typora_img/image-20220224033900689.png)
@@ -310,5 +302,9 @@ Java 8 彻底将永久代 (PermGen) 移除出了 HotSpot JVM，将其原有的�
 - JConsole
 - Visual VM
 
+---
+参考：
 
-
+Github TangBean的思维导图
+《深入理解JAVA虚拟机》
+https://www.baeldung.com/jvm-parameters

@@ -118,3 +118,6 @@ String s5 = s5 + "c";//不会改变s4，值变化不影响原串
 sout(s3 == s4);//false
 sout(s3 == s6);//false
 ```
+--- 
+参考：
+《深入理解JAVA虚拟机》

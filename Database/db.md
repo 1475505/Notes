@@ -259,5 +259,10 @@ InnoDB这种行锁实现特点意味着：如果**不通过索引条件检索数
 
 ## 备份
 
+---
+参考：
+[小林coding (xiaolincoding.com)](https://www.xiaolincoding.com/)
+《MySQL技术内幕 InnoDB存储引擎》
+《深入浅出MySQL数据库开发、优化与管理维护》
 
 
