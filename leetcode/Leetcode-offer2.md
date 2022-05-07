@@ -80,7 +80,7 @@ template <typename T> T majEleCandidate(Vector<T>A){
 template <typename T> void quickSelect ( Vector<T> &A, Rank k ){
 	for(Rank lo=0, hi=A.size()-1; lo < hi; ){
 		Rank i = lo, j = hi; T pivot = A[lo];
-		while(i<j){//注意顺序
+		while(i<j){//注意顺序,先j--
 			while ( (i < j)&&(pivot<=A[j]) ) j--;     A[i] = A[j];
 			while ( (i < j)&&(A[i]<=pivot) ) i++;     A[j] = A[i];
 		}//assert:i==j.得到pivot所应该在是下标
@@ -93,7 +93,7 @@ template <typename T> void quickSelect ( Vector<T> &A, Rank k ){
 
 ## JZ40：数组中最小的k个数
 
-参考上面的快速`partition`选取，取A[0..k)即可。
+参考上面的快速`partition`选取，取`A[0..k)`即可。
 
 ## TopK专题
 

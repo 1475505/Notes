@@ -24,7 +24,7 @@ public class BeanFactory {
 
 Bean 具有以下几种作用域：
 
-**singleton**：单例模式，在整个Spring IoC容器中，使用singleton定义的Bean将只有一个实例。（尽量）
+**singleton**：单例模式，在每个Spring IoC容器中，对应Bean将只有一个实例。（尽量）
 
 **prototype**：原型模式，每次通过容器的getBean方法获取prototype定义的Bean时，都将产生一个新的Bean实例
 
@@ -42,7 +42,7 @@ Bean 具有以下几种作用域：
 
 当 Spring Boot 启动时，ComponentScan 的启用意味着会根据指定的路径范围，扫描所有定义的 Bean。
 
--   Spring 内部有三级缓存，部分解决了循环依赖
+-   Spring 内部有三级**缓存**，部分解决了循环依赖
 
 ```java
 Map<String,Object> singletonObjects 
@@ -88,6 +88,8 @@ Map<String,ObjectFactory<?> singletonFactories
 @SpringBootApplication == @EnableAutoConfiguration + @ComponentScan
 ```
 - Validation校验注解：`@NotNull(message = “该实体不能为空”)`
+
+> 通过引入了`devtools`，实现热加载。
 
 ## 接口设计
 
@@ -143,13 +145,20 @@ public class JacksonConfig {
 
 ## JWT
 
-token是有意义的、加密的、包含业务信息的。
+传统的`Session` 认证需要服务器内存维护所有用户的登录信息，开销大。
+
+Json web token是有意义的、加密的、包含业务信息的。特性：无状态。由：`Header` `Payload` `Signature` 三个部分组成，分别描述：元数据（数据算法）、Json字段（如：用户名、登录时间）、数据签名（哈希校验）。
+
+> Spring登录机制的实现
+
+- 引入`jjwt`依赖。
+- 拦截器。
 
 ## 30天趋势图的SQL语句？
 
 ```sql
 select * from `statistic` 
-where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(create_time)
+where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(create_time);
 //这个是查询30天前的数据
 ```
 
@@ -205,7 +214,13 @@ RocketMQ：每个主题包含多个队列，通过多个队列来实现多实例
 
 # MyBatis
 
-MyBatis 是一款优秀的持久层框架，它支持自定义 SQL、存储过程以及高级映射，免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis Generator是官方的代码生成器，可以为所有版本的MyBatis生成持久层代码。首先它会扫描一张数据库表（或者更多）然后生成一套访问表的框架。
+MyBatis 是一款优秀的持久层框架，支持自定义 SQL、存储过程以及高级映射，免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis Generator是官方的代码生成器，可以为所有版本的MyBatis生成持久层代码。首先它会扫描一张数据库表（或者更多）然后生成一套访问表的框架。
+
+## Springboot 集成
+
+- 添加依赖
+- 在`MyBatis`接口中，添加`@Mapper` 注解。
+- 在`application.yml`中配置数据源。
 
  > #{}和${}的区别是什么？
 

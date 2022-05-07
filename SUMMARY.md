@@ -10,7 +10,7 @@
   * [SpringNote](JAVA/SpringNote.md)
   * [Spring揭秘](JAVA/Spring揭秘.md)
 * [数据库](Database/db.md)
-  - [NoSQL](noSQL.md)
+  - [NoSQL](Database/noSQL.md)
 * [刷题笔记](leetcode/调试圣经.md)
   * [C++STL的使用](C++STL的使用.md)
   * [从C进步到C++——特性](从C进步到C++——特性.md)
