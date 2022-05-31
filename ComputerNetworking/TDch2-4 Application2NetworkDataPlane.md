@@ -607,7 +607,7 @@ the router uses the longest prefix matching rule in lookup table to decide the d
 
 ![](http://img.070077.xyz/202203192110615.png)
 
--  Switching via a bus: must wait since only one packet can cross the bus at a time.
+- Switching via a bus: must wait since only one packet can cross the bus at a time.
 - Switching via an interconnection network: parallel(fragment datagram), A crossbar switch is **non-blocking**
 
 More sophisticated interconnection networks use multiple stages of switching elements to allow packets from different input ports to proceed *towards* the same output port at the same time through the multi-stage switching fabric.

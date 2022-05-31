@@ -1,4 +1,4 @@
-# 数组/字符串系列
+# 数组/字符串专题
 
 双指针是在时空复杂度限制下，比较理想的思考方案，滑动窗口、快速选取都可以归到这一领域。
 
@@ -33,18 +33,40 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
 
 通过单调栈解决。
-思路：为了方便计算天数差，我们这里存放下标而非温度本身，因为存放温度本身不便反算下标。
+思路：为了方便计算天数差，我们这里存放下标而非温度本身，因为存放温度本身不便反算下标。类似的题：[901. 股票价格跨度](https://leetcode.cn/problems/online-stock-span/)
 
 [456. 132 模式 ](https://leetcode-cn.com/problems/132-pattern/)
 
+以“3”为基准，记录【左边最小值】和【右边最大值】，后者可通过单调递减栈求出。
 
+```c++
+		for j in range(N - 1, -1, -1):
+            numsk = float("-inf")
+            while stack and stack[-1] < nums[j]:
+                numsk = stack.pop()
+            if leftMin[j] < numsk:
+                return True
+            stack.append(nums[j])
+```
 
 > 拓展问题：满足132模式的子序列有多少个。
 > 甚至有一些有趣的研究。[Stack-sortable permutation - Wikipedia](https://en.wikipedia.org/wiki/Stack-sortable_permutation)
 
+[42. 接雨水 ](https://leetcode.cn/problems/trapping-rain-water/)： 单调递减栈，碰到元素大于栈顶的时出栈算水量。
 
+> [407. 接雨水 II - 力扣（LeetCode）](https://leetcode.cn/problems/trapping-rain-water-ii/)：学霸题，数长方体，遍历找坑法，按行按列数.....
+
+[300. 最长递增子序列 ](https://leetcode.cn/problems/longest-increasing-subsequence/)
 
 ## 区间系列
+
+首先，这类题目常出现的操作是，给定一个二维数组（多个起止时间段），而你需要在一维数组（一个时间轴）上进行处理，一个常用操作是[56. 合并区间](https://leetcode.cn/problems/merge-intervals/)。
+
+1.技巧：可以对二维`vector`进行排序，会先以【第一列】进行排序，再排后续列。逆过程相当于：[57. 插入区间](https://leetcode.cn/problems/insert-interval/)。
+
+2.排序后有动态规划、滑动窗口等优化复杂度的思考方向。
+
+3.区间系列题中，还有可能出现数据流输入的情况。
 
 [919 · 会议室 II - LintCode](https://www.lintcode.com/problem/919/description)
 
@@ -54,6 +76,12 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 
 ![](http://img.070077.xyz/202205070804953.png)
 
+## 综合
+
+[238. 除自身以外数组的乘积 ](https://leetcode.cn/problems/product-of-array-except-self/)：可以考虑一些区间处理的数据结构
+[84. 柱状图中最大的矩形](https://leetcode.cn/problems/largest-rectangle-in-histogram/)：接雨水的兄弟版本
+[139. 单词拆分](https://leetcode.cn/problems/word-break/)：选取系列
+[48. 旋转图像](https://leetcode.cn/problems/rotate-image/)：阴间细节题
 
 # 链表专题
 
@@ -66,7 +94,7 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 ListNode *prev = nullptr, *next;
 while (head) {
 	next = head->next;
-	head->next = prev;
+	head->next = prev; 
 	prev = head;
 	head = next;
 }
@@ -82,7 +110,9 @@ ListNode* reverseList(ListNode* head, ListNode* prev=nullptr) {
 }
 ```
 
-> 链表特别需要注意**考虑每个节点的指针**，拓展题：[25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+> 链表特别需要注意**考虑每个节点的指针**，拓展题：
+> [92. 反转链表 II ](https://leetcode.cn/problems/reverse-linked-list-ii/)
+> [25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
 > 关键是分割和连接。
 
 
@@ -154,26 +184,70 @@ for (step = 1; step < length; step *= 2) {
 }
 ```
 
+归并排序是理解递归的经典材料，吃透了方可在树专题中得心应手。
+
 [23. 合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
 
 可以类似于归并排序进行两两合并，也可以把**所有的链表存储在一个优先队列**中，每次提取所有链表头部节点值最小的那个节点，直到所有链表都被提取完为止。
 
-
 # 动态规划专题
+
+本专题内所有题目均可拓展：输出路径。
 
 ## 字符串篇
 
-> 万物皆可~~dp~~ LCS...
+> 万物皆是~~dp~~ LCS...
 
 [516. 最长回文子序列](https://leetcode-cn.com/problems/longest-palindromic-subsequence/)
 
 你应该记得......那是某个秋天，王晓茹的课上，循序渐进引出的例题......反转字符串+LCS.
 
+类似地，[5. 最长回文子串 ](https://leetcode.cn/problems/longest-palindromic-substring/)不就是最长公共子串嘛...还需要判断倒置前后的下标是不是匹配（排除原串本身有间隔的回文串）。
+
+[139. 单词拆分](https://leetcode.cn/problems/word-break/)：这个就不是LCS了...
+
 [72. 编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
 思路：你很难想到LCS，但是你可以理解为：删除即替换为空串，视增加为删除另一个串的字符，二者可以从不同视角看，进行转化。于是，当二者对应的字符不同时，修改的消耗是 `dp[i-1][j-1]+1`，插入 i 位置/删除 j 位置的消耗是 `dp[i][j-1] + 1`，插入 j 位置/删除 i 位置的消耗是 `dp[i-1][j] + 1`。
 
-> 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)
+> 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)便是乘法型的题。518也是。
+
+
+##  背包/数组篇
+
+[518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-2/)
+
+
+
+# 树专题
+
+[226. 翻转二叉树 - 力扣（LeetCode）](https://leetcode.cn/problems/invert-binary-tree/):只能说这是梦开始的地方。这道题可以用前序、中序、后序和层次遍历解决，每种遍历都可以用递归和非递归实现。练手完毕后，欢迎进入树专题。
+
+## 递归
+
+[437. 路径总和 III - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-iii/)
+
+思路：通过主函数、辅函数的协同，是解决树类问题的重要方法。
+
+> 拓展：如何打印出所有路径？
+
+[1110. 删点成林 - 力扣（LeetCode）](https://leetcode.cn/problems/delete-nodes-and-return-forest/)
+
+类似前面正确地在递归方式下对链表断指针，此题对树进行处理。此外，可以通过哈希表查找是否是待删除节点，比多次在数组中`find`高效。如果需要练习树的指针处理，请通过就地方式解决[897.递增顺序查找树](https://leetcode.cn/problems/increasing-order-search-tree/solution/di-zeng-shun-xu-cha-zhao-shu-by-leetcode-dfrr/)
+
+练习：[669. 修剪二叉搜索树 - 力扣（LeetCode）](https://leetcode.cn/problems/trim-a-binary-search-tree/)
+BST的基本查找、 结点增加与删除，以及AVL树的查找、结点增加与删除，也是递归便于解决的基本操作，可以参考[二叉搜索树简介 - OI Wiki ](https://oi-wiki.org/ds/bst/)学习。
+
+## 综合
+
+[99.恢复BST](https://leetcode-cn.com/problems/recover-binary-search-tree/)
+
+提示：逆序对。拓展参考[剑指 Offer 51. 数组中的逆序对 ](https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/submissions/)
+
+[109. 有序链表转换二叉搜索树 - 力扣（LeetCode）](https://leetcode.cn/problems/convert-sorted-list-to-binary-search-tree/)
+
+# 搜索专题
+
 
 
 # 妖魔鬼怪专题
@@ -197,3 +271,24 @@ for (step = 1; step < length; step *= 2) {
 [149. 直线上最多的点数](https://leetcode-cn.com/problems/max-points-on-a-line/)
 
 枚举所有直线的过程不可避免，但统计点数的过程可以优化。对于每个点，我们对其它点建立哈希表，统计同一斜率的点一共有多少个。
+
+
+## 设计数据结构系列
+
+[LRU Cache - LeetCode](https://leetcode.com/problems/lru-cache/)
+
+采用一个双向链表 list<pair<int, int>> 来储存信息的 key 和 value，维护链表的顺序是最新的信息在头节点。同时我们需要一个嵌套着链表的迭代器的 unordered_map<int, list<pair<int, int>>::iterator> 进行快速匹配（提示：存迭代器的原因是方便调用 `splice` 方法直接更新查找成功者到头部，当然也可以自己实现双向链表结构）。
+
+**不建议使用`deque` 和 `vector` 的迭代器，会造成迭代器失效的问题**
+
+练习（提示：哈希）：
+[380. O(1) 时间插入、删除和获取随机元素 ](https://leetcode-cn.com/problems/insert-delete-getrandom-o1/)：充分利用数据结构的特性，比如说本题并不要求下标按序，那元素的排列特性能能否用于简化算法呢？
+[460. LFU 缓存](https://leetcode.cn/problems/lfu-cache/)：著名LRU的pro版本。
+[432. 全 O(1) 的数据结构](https://leetcode-cn.com/problems/all-oone-data-structure/)：LFU能否给你一点启发呢？
+[859 · 最大栈 - LintCode](https://www.lintcode.com/problem/859/)：可以用类似 LRU 的方法降低时间复杂度
+
+以上题的核心是哈希，下面是一些别的题目：
+
+[208. 实现 Trie (前缀树) - 力扣（LeetCode）](https://leetcode.cn/problems/implement-trie-prefix-tree/)
+
+有关更多数据结构方向的练习，欢迎参考Redis的笔记。【TBD】

@@ -73,6 +73,9 @@ InnoDB作为MySQL5.5之后的默认存储引擎（MySQL8.0将所有系统表也�
   - 字段值基本不会被修改；
   - 使用尽可能短的字段。
 
+![](http://img.070077.xyz/202205221800160.png)
+
+
 ### 其他存储引擎
 
 - MEMORY
@@ -288,5 +291,6 @@ InnoDB这种行锁实现特点意味着：如果**不通过索引条件检索数
 [小林coding (xiaolincoding.com)](https://www.xiaolincoding.com/)
 《MySQL技术内幕 InnoDB存储引擎》
 《深入浅出MySQL数据库开发、优化与管理维护》
+[关系型数据库工作原理-事务管理(一)(21)_Elon.Yang的博客-CSDN博客](https://blog.csdn.net/ylforever/article/details/51048945)
 
 
