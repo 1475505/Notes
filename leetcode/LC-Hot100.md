@@ -30,10 +30,11 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 
 ## 单调栈系列
 
+存在“单调“、”最小“等要求的连续元素的选取问题，可考虑使用单调栈的单调特性。
+
 [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
 
-通过单调栈解决。
-思路：为了方便计算天数差，我们这里存放下标而非温度本身，因为存放温度本身不便反算下标。类似的题：[901. 股票价格跨度](https://leetcode.cn/problems/online-stock-span/)
+思路：通过单调栈解决。为了方便计算天数差，我们这里存放下标而非温度本身，因为存放温度本身不便反算下标。类似的题：[901. 股票价格跨度](https://leetcode.cn/problems/online-stock-span/)
 
 [456. 132 模式 ](https://leetcode-cn.com/problems/132-pattern/)
 
@@ -41,8 +42,8 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 
 ```c++
 		for j in range(N - 1, -1, -1):
-            numsk = float("-inf")
-            while stack and stack[-1] < nums[j]:
+            numsk = -INF
+            while stack and stack.top < nums[j]:
                 numsk = stack.pop()
             if leftMin[j] < numsk:
                 return True
@@ -52,11 +53,18 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 > 拓展问题：满足132模式的子序列有多少个。
 > 甚至有一些有趣的研究。[Stack-sortable permutation - Wikipedia](https://en.wikipedia.org/wiki/Stack-sortable_permutation)
 
-[42. 接雨水 ](https://leetcode.cn/problems/trapping-rain-water/)： 单调递减栈，碰到元素大于栈顶的时出栈算水量。
+[42. 接雨水 ](https://leetcode.cn/problems/trapping-rain-water/)： 单调递减栈，碰到元素大于栈顶时出栈算水量。
 
 > [407. 接雨水 II - 力扣（LeetCode）](https://leetcode.cn/problems/trapping-rain-water-ii/)：学霸题，数长方体，遍历找坑法，按行按列数.....
 
-[300. 最长递增子序列 ](https://leetcode.cn/problems/longest-increasing-subsequence/)
+*另有结合`deque`，方便打印方案的技巧*
+
+[402. 移掉 K 位数字](https://leetcode.cn/problems/remove-k-digits/)与[31. 下一个排列](https://leetcode.cn/problems/next-permutation/)类似，均通过字符串的形式来比较数字。本题运用单调栈思想、正难则反思想处理之。
+
+[316. 不同字符的最小子序列 ](https://leetcode.cn/problems/smallest-subsequence-of-distinct-characters/)与本题类似。
+
+对于不止一个数组的情况[321. 拼接最大数（Hard） ](https://leetcode.cn/problems/create-maximum-number/)枚举可能的`k1 + k2 == k`，转换成两个402题 + **归并**。
+
 
 ## 区间系列
 
@@ -72,9 +80,7 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 
 这道题可以用【前缀和】【扫描线】两种思路思考。（上面练过）
 
-而且这个时候就不得不提一道经典题目了：
-
-![](http://img.070077.xyz/202205070804953.png)
+而且这个时候就不得不提一道经典题目了：[DDL - 北京邮电大学2020级新生赛D题](http://img.070077.xyz/202205070804953.png)
 
 ## 综合
 
@@ -113,7 +119,7 @@ ListNode* reverseList(ListNode* head, ListNode* prev=nullptr) {
 > 链表特别需要注意**考虑每个节点的指针**，拓展题：
 > [92. 反转链表 II ](https://leetcode.cn/problems/reverse-linked-list-ii/)
 > [25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
-> 关键是分割和连接。
+> 关键是分割`cut`和连接`merge`。
 
 
 ## 环形链表/数组
@@ -210,10 +216,28 @@ for (step = 1; step < length; step *= 2) {
 
 思路：你很难想到LCS，但是你可以理解为：删除即替换为空串，视增加为删除另一个串的字符，二者可以从不同视角看，进行转化。于是，当二者对应的字符不同时，修改的消耗是 `dp[i-1][j-1]+1`，插入 i 位置/删除 j 位置的消耗是 `dp[i][j-1] + 1`，插入 j 位置/删除 i 位置的消耗是 `dp[i-1][j] + 1`。
 
-> 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)便是乘法型的题。518也是。
+> 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)便是乘法型的题。下面的518题也是。
 
 
 ##  背包/数组篇
+
+[300. 最长递增子序列 ](https://leetcode.cn/problems/longest-increasing-subsequence/)本题在记忆化搜索的基础上引入单调栈思想，使得对DP数组的查询满足二分查找的有序性条件。
+
+```c++
+int lengthOfLIS(vector<int>& nums) {
+        vector<int> dp;
+        dp.push_back(nums[0]);
+        for (int i = 1; i < len; i++){
+            if (nums[i] > dp.back()){
+                dp.push_back(nums[i]);
+            } else {
+                auto idx = lower_bound(dp.begin(), dp.end(), nums[i]);
+                *idx = nums[i];
+            }
+        }
+        return dp.size();
+    }
+```
 
 [518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-2/)
 
