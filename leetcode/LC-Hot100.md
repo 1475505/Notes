@@ -10,7 +10,7 @@
 
 [480. 滑动窗口中位数](https://leetcode-cn.com/problems/sliding-window-median/)
 
-JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)便可通过大小根堆联动处理，我们可以采取类似的思路。关键是怎么处理删除数据的情况。介绍一个技巧，**懒惰标记技术**。由于堆无法直接删除掉某个指定元素，先欠下这个账，等它出现在堆顶的时候，再删除。对应地，记录`bias`维护small堆元素数目与big堆元素个数差。
+JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)便可通过大小根堆联动处理，我们可以采取类似的思路。关键是怎么处理删除数据的情况。介绍一个技巧，**懒惰标记技术**。由于堆无法直接删除掉某个指定元素，先欠下这个账，*等它出现在堆顶的时候*，再删除。对应地，记录`bias`维护small堆元素数目与big堆元素个数差。
 
 > 更令OIer 欣喜的是，[平衡树 - pb_ds](https://oi-wiki.org/lang/pb-ds/tree/)能更方便地解决这一问题。在此略去。
 
@@ -57,13 +57,13 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 
 > [407. 接雨水 II - 力扣（LeetCode）](https://leetcode.cn/problems/trapping-rain-water-ii/)：学霸题，数长方体，遍历找坑法，按行按列数.....
 
-*另有结合`deque`，方便打印方案的技巧*
+*另有结合`deque`，方便打印方案的技巧*：
 
 [402. 移掉 K 位数字](https://leetcode.cn/problems/remove-k-digits/)与[31. 下一个排列](https://leetcode.cn/problems/next-permutation/)类似，均通过字符串的形式来比较数字。本题运用单调栈思想、正难则反思想处理之。
 
 [316. 不同字符的最小子序列 ](https://leetcode.cn/problems/smallest-subsequence-of-distinct-characters/)与本题类似。
 
-对于不止一个数组的情况[321. 拼接最大数（Hard） ](https://leetcode.cn/problems/create-maximum-number/)枚举可能的`k1 + k2 == k`，转换成两个402题 + **归并**。
+对于不止一个数组的情况[321. 拼接最大数（Hard） ](https://leetcode.cn/problems/create-maximum-number/)枚举可能的`k1 + k2 == k`，转换成两个402题 + **归并**和比较。
 
 
 ## 区间系列
@@ -85,8 +85,8 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 ## 综合
 
 [238. 除自身以外数组的乘积 ](https://leetcode.cn/problems/product-of-array-except-self/)：可以考虑一些区间处理的数据结构
+[410. 分割数组的最大值 ](https://leetcode.cn/problems/split-array-largest-sum/)：二分查找经常以下标为依据，处理有序数组的划分；但是还有一种技巧，就是这种「使……最大值尽可能小」的问题，可以**二分答案的上下限**进行验证。
 [84. 柱状图中最大的矩形](https://leetcode.cn/problems/largest-rectangle-in-histogram/)：接雨水的兄弟版本
-[139. 单词拆分](https://leetcode.cn/problems/word-break/)：选取系列
 [48. 旋转图像](https://leetcode.cn/problems/rotate-image/)：阴间细节题
 
 # 链表专题
@@ -121,7 +121,6 @@ ListNode* reverseList(ListNode* head, ListNode* prev=nullptr) {
 > [25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
 > 关键是分割`cut`和连接`merge`。
 
-
 ## 环形链表/数组
 
 [环形链表](https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/)
@@ -154,17 +153,26 @@ ListNode* reverseList(ListNode* head, ListNode* prev=nullptr) {
 > 拓展：本题思想可以解决[287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)。
 > 关键是把看作数组的值看作映射。
 
+
+-> 有很多数组类型题可以扩展成环形的情况。
+
 [503. 下一个更大元素](https://leetcode-cn.com/problems/next-greater-element-ii/)
 
 这是一道典型的单调栈题目，栈中存储的是还没找到下一个更大元素的元素下标。其中的环形思想，可以通过【求模】实现。
+
+[213. 打家劫舍 II ](https://leetcode.cn/problems/house-robber-ii/)：本题为DP。常见的处理策略是
+- 分类讨论，拆分成两个线性子问题（本题）
+- 取两圈形成单列，合并成一个线性子问题再筛选范围最优解
+
+[918. 环形子数组的最大和](https://leetcode.cn/problems/maximum-sum-circular-subarray/)：DP。本题可以邻接数组，变成带元素个数限制的线性数组问题（前缀和配合单调队列/滑动窗口/双指针）。但是，还有【正难则反】思想哦~
 
 ## 链表归并
 
 [归并排序链表](https://leetcode-cn.com/problems/sort-list/solution/sort-list-gui-bing-pai-xu-lian-biao-by-jyd/)
 
 关键有两步：
-- `cut`：使用快慢指针，找到链表的中点，断开。
-- `merge`：交替比较头部，添加完成链表。
+- `cut`：使用快慢指针，找到链表的中点，断开。返回断开后相连链表的头结点。
+- `merge`：交替比较头部，添加完成链表。返回头结点。
 
 从评论区中得到了比较直观的伪代码如下：
 ```cpp
@@ -196,6 +204,9 @@ for (step = 1; step < length; step *= 2) {
 
 可以类似于归并排序进行两两合并，也可以把**所有的链表存储在一个优先队列**中，每次提取所有链表头部节点值最小的那个节点，直到所有链表都被提取完为止。
 
+推荐练习：
+[143. 重排链表 ](https://leetcode.cn/problems/reorder-list/)
+
 # 动态规划专题
 
 本专题内所有题目均可拓展：输出路径。
@@ -208,13 +219,13 @@ for (step = 1; step < length; step *= 2) {
 
 你应该记得......那是某个秋天，王晓茹的课上，循序渐进引出的例题......反转字符串+LCS.
 
-类似地，[5. 最长回文子串 ](https://leetcode.cn/problems/longest-palindromic-substring/)不就是最长公共子串嘛...还需要判断倒置前后的下标是不是匹配（排除原串本身有间隔的回文串）。
-
-[139. 单词拆分](https://leetcode.cn/problems/word-break/)：这个就不是LCS了...
+类似地，[5. 最长回文子串 ](https://leetcode.cn/problems/longest-palindromic-substring/)不就是[最长公共子串](https://leetcode.cn/problems/maximum-length-of-repeated-subarray/)嘛...还需要判断倒置前后的下标是不是匹配（排除原串本身有间隔的回文串）。
 
 [72. 编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
 思路：你很难想到LCS，但是你可以理解为：删除即替换为空串，视增加为删除另一个串的字符，二者可以从不同视角看，进行转化。于是，当二者对应的字符不同时，修改的消耗是 `dp[i-1][j-1]+1`，插入 i 位置/删除 j 位置的消耗是 `dp[i][j-1] + 1`，插入 j 位置/删除 i 位置的消耗是 `dp[i-1][j] + 1`。
+
+[139. 单词拆分](https://leetcode.cn/problems/word-break/)：当然，这个就不是LCS了...
 
 > 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)便是乘法型的题。下面的518题也是。
 
@@ -239,9 +250,9 @@ int lengthOfLIS(vector<int>& nums) {
     }
 ```
 
-[518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-2/)
+[二维的](https://codetop.cc/discuss/245)怎么办？
 
-
+[518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-2/)：背包问题模型。
 
 # 树专题
 
@@ -268,10 +279,7 @@ BST的基本查找、 结点增加与删除，以及AVL树的查找、结点增�
 
 提示：逆序对。拓展参考[剑指 Offer 51. 数组中的逆序对 ](https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/submissions/)
 
-[109. 有序链表转换二叉搜索树 - 力扣（LeetCode）](https://leetcode.cn/problems/convert-sorted-list-to-binary-search-tree/)
-
-# 搜索专题
-
+[109. 有序链表转换二叉搜索树](https://leetcode.cn/problems/convert-sorted-list-to-binary-search-tree/)
 
 
 # 妖魔鬼怪专题
@@ -315,4 +323,6 @@ BST的基本查找、 结点增加与删除，以及AVL树的查找、结点增�
 
 [208. 实现 Trie (前缀树) - 力扣（LeetCode）](https://leetcode.cn/problems/implement-trie-prefix-tree/)
 
-有关更多数据结构方向的练习，欢迎参考Redis的笔记。【TBD】
+[139. 单词拆分](https://leetcode.cn/problems/word-break/)：选取系列，可以考虑字典树。
+
+有关更多设计数据结构方向的练习，欢迎参考Redis的笔记。【TBD】

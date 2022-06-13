@@ -8,24 +8,6 @@ Socket（套接字）是应用程序和网络之间的应用程序编程接口�
 
 ![](http://img.070077.xyz/202203101458159.png)
 
-- TCP service
-
-***reliable** transport*: between sending and receiving process
-
-*flow control:* sender won’t overwhelm receiver 
-
-*congestion control:* throttle sender when network overloaded
-
-***connection**-**oriented**:* setup required between client and server processes
-
-does not provide: timing, minimum throughput guarantee, security
-
-- UDP service:
-
-***unreliable** data transfer* between sending and receiving process
-
-does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
-
 ## Web Http
 
 ### Non-persistent HTTP
@@ -45,10 +27,13 @@ Persistent（HTTP1.1）:  introduced multiple, pipelined GETs over single TCP co
 | Method | Usage                                                        |
 | ------ | ------------------------------------------------------------ |
 | GET    | user input sent from client to server in entity body of POST request message |
-| POST   | include user data in URL field of HTTP GET request message (following a ‘?’) |
+| POST   | include user data in URL field of HTTP GET request message (following a ‘?’)，语义是请求服务器处理指定资源 |
 | HEAD   | requests headers (only) that would be returned *if specified* URL were requested with an HTTP GET method. |
 | PUT    | uploads new file (object) to server；completely replaces file that exists at specified URL with content in entity body of POST HTTP request message |
 | DELETE | allows a user, or an application, to delete an object on a Web server. |
+
+### 状态码
+![](http://img.070077.xyz/202206101439618.png)
 
 ### Cookies
 
@@ -57,7 +42,6 @@ Persistent（HTTP1.1）:  introduced multiple, pipelined GETs over single TCP co
 Cookies can be used to: 
 
 - track user behavior on a given website (first party cookies)
-
 - track user behavior across multiple websites (third party cookies,第三方cookies) without user ever choosing to visit tracker site.
 - eg. Referer to ad host.
 
@@ -86,29 +70,25 @@ HTTP/2: increased flexibility at *server* in sending objects to client:
 
 ## E-mail
 
+一个电子邮件系统由三部分组成：用户代理、邮件服务器以及邮件协议。
+![](http://img.070077.xyz/202203110043765.png)
 - mail servers
-
   - *mailbox* contains incoming messages for user
-
   - *message queue* of outgoing (to be sent) mail message
 
-![](http://img.070077.xyz/202203110043765.png)
+邮件协议包含发送协议和读取协议，发送协议常用 SMTP，读取协议常用 POP3 和 IMAP。
 
 SMTP comparison with HTTP:
 
 - HTTP: client pull  |  SMTP: client **push**
-
 - both have ASCII command/response interaction, status codes
-
 - HTTP: each object encapsulated in its own response message
-
 - SMTP: multiple objects sent in multipart message
-
 - SMTP uses **persistent** connections
-
 - SMTP requires message (header & body) to be in 7-bit ASCII
+- SMTP server uses CRLF to determine end of message
 
-- SMTP server uses CRLF.CRLF to determine end of message
+SMTP 只能发送 ASCII 码，而互联网邮件扩充 MIME 可以发送二进制文件。POP3 的特点是只要用户从服务器上读取了邮件，就把该邮件删除。但最新版本的 POP3 可以不删除邮件。IMAP 协议中客户端和服务器上的邮件保持同步，如果不手动删除邮件，那么服务器上的邮件也不会被删除。
 
 ## DNS
 
@@ -151,9 +131,8 @@ Sending chunks: tit-for-tat, randomly select another peer, starts sending chunks
 
 Streaming video = encoding + DASH + playout buffering
 
-DASH：Dynamic, Adaptive Streaming over HTTP
-
-CDN：内容分发网。store/serve multiple copies of videos at multiple geographically distributed sites.
+- DASH：Dynamic, Adaptive Streaming over HTTP
+- CDN：内容分发网。store/serve multiple copies of videos at multiple geographically distributed sites.
 
 ![](http://img.070077.xyz/202203110406851.png)
 
@@ -163,9 +142,9 @@ CDN：内容分发网。store/serve multiple copies of videos at multiple geogra
 
 ![](http://img.070077.xyz/202203180204837.png)
 
-TCP/IP是可能被窃听的网络。HTTP 协议中没有加密机制，加密处理防止被窃听。加密的对象有：
+TCP/IP是可能被窃听的网络。HTTP 协议中没有加密机制（明文），加密处理可防止被窃听。加密的对象有：
 
-- 将通信加密。可以通过和 SSL（Secure Socket Layer，安全套接层）或 TLS（Transport Layer Security，安全层传输协议）的组合使用，加密 HTTP 的通信内容。
+- 通信加密。可以通过和 SSL（Secure Socket Layer，安全套接层）或 TLS（Transport Layer Security，安全层传输协议）的组合使用，加密 HTTP 的通信内容。
 
 - 将通信内容本身加密。把 HTTP 报文里所含的内容进行加密处理。
 
@@ -209,15 +188,6 @@ HTTP/1.1 使用的认证方式如下：
 
   一般会使用 Cookie 来管理Session（会话）。
 
-## Socket Programming
-
-![](http://img.070077.xyz/202203110419219.png)
-
-![](http://img.070077.xyz/202203110424271.png)
-
-![](http://img.070077.xyz/202203110958344.png)
-
-
 
 # Transport Layer
 
@@ -227,16 +197,21 @@ A transport-layer protocol provides for logical communication between **applicat
 
 Two principal Internet transport protocols:
 
-- **TCP:** Transmission Control Protocol
-  - reliable, in-order delivery
-  - congestion control 
-  - flow control
-  - connection setup
+- **TCP:** Transmission Control Protocol 
+  - **reliable, in-order** delivery
+  - *congestion control:* throttle sender when network overloaded
+  - *flow control:* sender won't overwhelm receiver 
+  - ***connection**-**oriented**:* setup required between client and server processes
+  - does not provide: timing, minimum throughput guarantee, security
 
-- **UDP:** User Datagram Protocol
+- **UDP:** User Datagram Protocol (*unreliable* between sending and receiving process)
   - unreliable, unordered delivery
   - no-frills extension of “best-effort” IP
+  - does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
 
+> TCP 是面向字节流的协议，UDP 是面向报文的协议.
+> 前者：**消息根据发送窗口、拥塞窗口以及当前发送缓冲区的大小等，可能会被分成多个的 TCP 报文**，需要定义边界进行划分。
+> 后者：**每个 UDP 报文就是一个用户消息的边界**。不会对消息进行拆分。
 - services not available: 
   - delay guarantees
   - bandwidth guarantees
@@ -255,9 +230,7 @@ IP/UDP datagrams with *same* dest port #, but different source IP addresses and/
 
 ### For Connection-Oriented
 
-a TCP socket is identified by a four-tuple: (source IP address, source port number, destination IP address, destination port number).
-
-each socket associated with a different connecting client
+a TCP socket is identified by a four-tuple: (source IP address, source port number, destination IP address, destination port number). *each socket associated with a different connecting client*
 
 ![Welcome socket first](http://img.070077.xyz/202203130108889.png)
 
@@ -282,9 +255,9 @@ UDP use: streaming multimedia apps (loss tolerant, rate sensitive)，DNS，SNMP�
 
 At the receiver, all four 16-bit words are added, including the checksum. If no errors are introduced into the packet, then clearly the sum at the receiver will be *1111111111111111*. If one of the bits is a 0, then we know that errors have been introduced into the packet.
 
-## RDT
+## RDT(可靠数据传输)
 
-![Sender can`t see Receiver directly](http://img.070077.xyz/202203152141739.png)
+![Sender cannot see Receiver directly](http://img.070077.xyz/202203152141739.png)
 
 ### RDT2: channel with Bit Errors
 
@@ -348,13 +321,8 @@ Why checked the left ACK?the sender may not have received an ACK for that packet
 
 ### Why TCP?
 
-- reliable, in-order byte **stream**: no “message boundaries"
-
-- A TCP connection provides a full-duplex（全双工，即双向数据传输） service.
-- pipelining: TCP congestion and flow control set window size
-- connection-oriented: handshaking (exchange of control messages) initializes sender, receiver **state** before data exchange
-- flow controlled: sender will not overwhelm receiver
-
+-  TCP是面向连接的，提供可靠交付，有流量控制，拥塞控制，提供全双工通信，面向字节流（把应用层传下来的报文看成字节流，把字节流组织成大小不等的数据块），每一条 TCP 连接只能是点对点的（一对一）。
+    
 ![TCP segments are passed down to the network layer](http://img.070077.xyz/202203160725337.png)
 
 ### Segment
@@ -415,10 +383,10 @@ TCP provides flow control by having the *sender* maintain a variable called the 
 
 > why not 2？无法防止历史连接的建立。
 >
-> | ![can’t “see” other side](http://img.070077.xyz/202203160809783.png) | ![delay->reordering?](http://img.070077.xyz/202203160808652.png) |
+> |![can’t “see” other side](http://img.070077.xyz/202203160809783.png) | ![delay->reordering?](http://img.070077.xyz/202203160808652.png) |
 > | ------------------------------------------------------------ | ------------------------------------------------------------ |
 
-1. The client-side TCP first sends a special TCP segment - **SYN segment** to the server-side TCP.
+1. The client-side TCP first sends a special TCP segment - **SYN segment** to the server-side TCP.(SYNbit = 1)
 2. the server extracts the TCP SYN segment from the datagram, allocates the TCP buffers and variables to the connection, and sends a connection-granted segment - **SYNACK segment** to the client TCP.
 3.  Upon receiving the SYNACK segment, the client also allocates buffers and variables to the connection. 
 > `seq`是一个含时间戳的随机算法，随机生成，以大概率降低历史报文的接收。同时也防止黑客伪造的相同序列号的 TCP 报文被对方接收，安全。
@@ -435,7 +403,8 @@ TCP provides flow control by having the *sender* maintain a variable called the 
 
 #### 四次挥手
 
-![TCP State: closed](http://img.070077.xyz/202203160813271.png)
+![](http://img.070077.xyz/202206101539268.png)
+
 
 > Why 4? Fin表示客户端不再发送数据，服务器返回ACK后可能依旧有待发送数据，处理后发送Fin
 >
@@ -471,7 +440,7 @@ AIMD：Additive Increase and Multiplicative Decrease
   ACK arrives for a previously unacknowledged segment. 
 - Bandwidth probing. 
 
-​	![](http://img.070077.xyz/202203172251814.png)
+![](http://img.070077.xyz/202203172251814.png)
 
 > How AIMD?
 >
@@ -551,166 +520,6 @@ Quick UDP Internet Connections Protocol's major features:
   ![](http://img.070077.xyz/202203180127668.png)
   
   a lost UDP segment only impacts those streams whose data was carried in that segment
-  
-# The Network Layer: Data Plane
-
-## Overflow
-
-- Forwarding：the router-local action of transferring a packet from an input link **interface** to the appropriate output link interface.
-- Routing: the network-wide process that determines the end-to-end **paths** that packets take from source to destination
-
-routers:
-
-- examines header fields in all IP datagrams passing through it
-
-- moves datagrams from input ports to output ports to transfer datagrams along end-end path
-
-![control plane: Remote controller](http://img.070077.xyz/202203180831095.png)
-
-### Network Service Model
-
-The network service model defines the **characteristics** of end-to-end delivery of packets. 
-
-**best-effort service** to：
-
-- Guaranteed delivery (with guaranteed delivery). 
-- In-order packet delivery. 
-- Guaranteed minimal bandwidth. 
-- Security. 
-
-> No guarantees on：
->
-> i.successful datagram delivery to destination
->
-> ii.timing or order of delivery
->
-> iii.bandwidth available to end-end flow
->
-> 其实服务模型有很多种，其机制和复杂度的权衡，难以辨明优劣。尽力而为即可。
-
-## What’s Inside a Router?
-
-![](http://img.070077.xyz/202203180838150.png)
-
-- Destination-based forwarding
-- Generalized forwarding  
-
-### IO Port Processing
-
-![(Look up here)](http://img.070077.xyz/202203192108872.png)
-
-the router uses the longest prefix matching rule in lookup table to decide the dest.
-
-![](http://img.070077.xyz/202203192115611.png)
-
-### Switching
-
-![](http://img.070077.xyz/202203192110615.png)
-
-- Switching via a bus: must wait since only one packet can cross the bus at a time.
-- Switching via an interconnection network: parallel(fragment datagram), A crossbar switch is **non-blocking**
-
-More sophisticated interconnection networks use multiple stages of switching elements to allow packets from different input ports to proceed *towards* the same output port at the same time through the multi-stage switching fabric.
-
-### Queuing
-
-![](http://img.070077.xyz/202203192124595.png)
-
-- Head-of-the-Line (HOL) blocking: queued datagram at front of queue prevents others in queue from moving forward
-
-![buffer here](http://img.070077.xyz/202203192126370.png)
-
-Datagrams can be lost due to congestion, lack of buffers（Buffering when arrival rate via switch *exceeds* output line speed ）
-
-> The buffering size: （recommendation） $ \frac{RTT \times C}{\sqrt{n}} $
->
-> too much buffering can increase delays
-
-###  Packet Scheduling
-
-- FIFO
-
-- Priority Queuing
-
-  ![](http://img.070077.xyz/202203192131091.png)
-
-- Round Robin and Weighted Fair Queuing (WFQ)
-  ![](http://img.070077.xyz/202203192132836.png)
-
-## The Internet Protocol (IP)
-
-> IP是要设备接入网络后，根据上线的子网分配。在设备还没有IP地址时还需要用MAC地址来区分不同的设备。 总之，MAC地址就像自己的ID号,而IP地址就像带着邮政编码的住址，MAC可以在不依赖网络接入下区分设备。
-
-### IPv4
-
-![Datagram](http://img.070077.xyz/202203200142750.png)
-
-The boundary between the host and the physical link is called an *interface*.
-
-To determine the subnets, detach each interface from its host or router, creating islands of isolated networks. Each of these isolated networks is called a *subnet*.
-
-The Internet’s address assignment strategy is known as Classless Interdomain Routing (CIDR)
-
-![](http://img.070077.xyz/202203200452296.png)
-
-### Obtaining Address
-
-IP uses dotted-decimal notation and LPM.
-
-![23：CIDR 掩码位数](http://img.070077.xyz/202203200458354.png)
-
-- How does *host* get IP address?
-
-  **DHCP**（ Dynamic Host Configuration Protocol） dynamically get address from as server， with plug-and-play or zeroconf.
-
-![find DHCP by broadcast](http://img.070077.xyz/202203200504196.png)
-
-![](http://img.070077.xyz/202203200504874.png)
-
-DHCP server can also formulates a **encapsulated** DHCP ACK containing client’s IP address, IP address of first-hop router for client, name & IP address of DNS server。
-
-- How a SOHO manage IP addresses? 
-
-  **NAT**(Network Address Translation)
-
-  - private addresses refers to a network whose addresses **only** have meaning devices within that network
-  - just one IP address needed from provider ISP for *all* devices
-
-![](http://img.070077.xyz/202203200550241.png)
-
-### IPv6
-
-![](http://img.070077.xyz/202203200553776.png)
-
-> No fragmentation/reassembly: these operations can be performed only by the source
-> and destination
->
-> Header checksum: Transport Layer and link-layer have checked.
-
-- How will the public Internet based on IPv4 be transitioned to IPv6? 
-
-  **tunneling**。![physical view](http://img.070077.xyz/202203200557905.png)
-
-## Generalized Forwarding
-
-通过“匹配+动作”（match bits in arriving packet header(s) in any layers, take action），实现通用转发。下面是OpenFlow转发表的机制：
-
-![Match](http://img.070077.xyz/202203201035397.png)
-
-![Action](http://img.070077.xyz/202203201037720.png)
-
-举例：
-
-![](http://img.070077.xyz/202203201039149.png)
-
-## MiddleBox
-
-we’ve also encountered other network equipment (“boxes”) within the network that sit on the data path and perform functions other than forwarding.
-
-![image-20220320110010301](http://img.070077.xyz/202203201100463.png)
-
-- SDN: (logically) centralized control and configuration management often in  private/public cloud
-- network functions virtualization (NFV): programmable services over white box networking, computation, storage
 
 --- 
 参考：

@@ -12,10 +12,12 @@
 
 ```c++
 void build(int s, int t, int p) { // 对 [s,t] 区间建立线段树,当前根的编号为 p
-	if (s == t) { d[p] = a[s]; return; } 
-	int m = s + ((t - s) >> 1); // 如果写成 (s + t) >> 1 可能会超出 int 范围
-	build(s, m, p * 2), build(m + 1, t, p * 2 + 1); 
-	// 递归对左右区间建树 d[p] = d[p * 2] + d[(p * 2) + 1]; }
+	if (s == t) { d[p] = nums[s]; return; }//根节点管辖的区间长度为1,直接赋值
+	int mid = s + ((t - s) >> 1);
+	build(s, mid, p * 2), build(mid + 1, t, p * 2 + 1); 
+	// 自底向上递归，左右区间建树 
+	d[p] = d[p * 2] + d[(p * 2) + 1]; 
+}
 ```
 ![](https://oi-wiki.org/ds/images/segt1.svg)
 如此，对于区间的查询和数据更新，能够通过迭代，达到比较优秀的性能。
@@ -76,13 +78,17 @@ void update(int l, int r, int c, int s, int t, int p) { // [l, r] 为修改区�
 
 学习完前缀和后，可以练习[560. 和为 K 的子数组 ](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
+## 区间最值系列
+
+【TBD】
+
 # 单调栈/单调队列
 
 [单调栈 - OI Wiki](https://oi-wiki.org/ds/monotonous-stack/)
 
 将一个元素插入单调栈时，为了维护栈的单调性，需要在保证将该元素插入到栈顶后整个栈满足单调性的前提下弹出元素。**这个弹出的元素，是最新的破坏单调性质的元素**。或者说，栈是个暂存区。
 
-其实只需要填空实现：我们发现了，只要是遇到了相邻两点单调递 *（）* 破坏了单调性质，根据当前栈顶和当前遍历的元素值更新答案。
+其实只需要填空实现：我们发现了，只要是遇到了相邻两点单调递 *（）* 破坏了单调性质，根据*当前栈顶和当前遍历的元素值* 更新答案。
 
 # 跳表
 
@@ -96,13 +102,41 @@ void update(int l, int r, int c, int s, int t, int p) { // [l, r] 为修改区�
 ![](http://img.070077.xyz/202205010358221.png)
 
 
-# 字典树
 
-如题。
+# 动态规划专题
+
+Welcome😀[Dynamic Programming Patterns](https://leetcode.com/discuss/general-discussion/458695/Dynamic-Programming-Patterns)
+
+## 背包问题
+
+[2. 01背包问题 - AcWing题库](https://www.acwing.com/problem/content/2/)
+[3. 完全背包问题 - AcWing题库](https://www.acwing.com/problem/content/3/)
+
+>==总结==
+>0 - 1背包对物品的迭代放在外层，里层的体积或价值逆向遍历；
+>完全背包对物品的迭代放在里层，外层的体积或价值正向遍历。
+
+对于背包问题，`dp[i][j]` 表示只能放前 `i` 个物品的情况下，容量为`j`的背包可达到的价值总和最大值。
+
+>  状态压缩时要注意什么？
+>  注意**被**压缩的那个维度！注意遍历顺序，获取正确的转移前状态。
+
+求方案数：[278. 数字组合 - AcWing题库](https://www.acwing.com/problem/content/280/)
+
+## 树状DP
+
+树形 DP，即在树上进行的 DP。由于树固有的递归性质，树形 DP 一般都是递归进行的。(其实本质是*后序遍历* )可以通过 DFS，在返回上一层时更新当前结点的最优解。
+
+[P2014 [CTSC1997] 选课 - 洛谷](https://www.luogu.com.cn/problem/P2014)
+[337. 打家劫舍 III - 力扣（LeetCode）](https://leetcode.cn/problems/house-robber-iii/)：可以考虑哈希映射、函数返回状态进行记忆化
+
+## 状压DP
+
+对于从数组中选取子集`[pick, unpick, pick...]`可以使用整数的二进制位进行表示（一般此类题的数组长度上限很小）。此时，可用相应的整数表示子集，子集可以作为状态转移方程的维度，整数的加减表示状态之间的转移。
 
 # 哈希
 
-哈希表的查询时间复杂度为什么是O(1)？
+哈希表的查询时间复杂度是O(1)
 
 ### HashCode
 
@@ -110,9 +144,78 @@ void update(int l, int r, int c, int s, int t, int p) { // [l, r] 为修改区�
 
 **这个算法应该如何设计的？**
 
-取余(%)操作中如果除数是 2 的幂次则等价于与其除数减一的与(&)操作，采用二进制位操作 &，相对于%能够提高运算效率。
+取余(%)操作中*如果除数是 2 的幂次*则等价于与其除数减一的与(&)操作，采用二进制位操作 &，相对于%能够提高运算效率。
 
 ## 哈希示例
 
 值得提醒的是有哈希并不显式地展示哈希表。如[442. [1, n]数组中重复的数据 ](https://leetcode-cn.com/problems/find-all-duplicates-in-an-array/)，即**就地哈希**思想。[Leetcode-offer1#JZ35：复制盲盒链表@就地哈希](Leetcode-offer1.md#JZ35：复制盲盒链表@就地哈希) 中也是使用了*链表原地复制* 的就地方式。
 
+# 字符串专题
+
+## 字典树
+
+参考：《算法4》· 单词查找树
+
+| 示例 | 实现 |
+|------|-------|
+| ![](http://img.070077.xyz/202206131300937.png) | ![](http://img.070077.xyz/202206131302338.png)
+|
+该数据结构具有以下特性：
+- 这里结点对应的编号是字符串键对应的结束状态。
+- 每个结点都含有字符集长度个指针
+- 值为空的结点在符号表中没有对应的键，它们的存在是为了简化单词查找树中的查找操作。
+
+[欢迎尝试实现](https://leetcode.cn/problems/implement-trie-prefix-tree/)
+
+## KMP算法
+
+KMP是[字符串匹配](https://leetcode.cn/problems/implement-strstr/)算法。其思路是：最大限度地利用此前匹配所提供的信息，尽可能大跨度地右移模式串。
+
+匹配过程如下：
+
+1. 查之前已经**匹配成功的部分**中里是否存在`「前缀」==「后缀」`的部分。如果存在，则跳转到「前缀」的下一个位置*继续* 往下匹配。
+2. 如果此时字符不匹配，从起始位置继续开始。
+
+于是我们引出`next`数组，以记录原串的性质：最长公共前后缀的长度。(约定：最长前缀不包含最后一个字符)。于是，就可以把新一轮匹配放在`next[i]`开始了。
+
+进一步优化之，利用“匹配失败”带来的信息，在中断的位置，
+
+```c++
+vector<int> buildNext(string P) {
+    int len = P.size();
+    vector<int> next(len);
+    int t = next[0] = -1;
+    int j = 0;
+    while (j < len - 1) {
+        if (t < 0 || P[j] == P[t]) {
+            t++;
+            j++;
+            next[j] = (P[j] != P[t] ? t : next[t]);  //充分优化
+        } else                                       //失配
+            t = next[t];
+    }
+    return next;
+}
+
+int strStr(string haystack, string needle) {
+    vector<int> next = buildNext(needle);
+    int slen = haystack.size(), plen = needle.size();
+    for (int i : next) {
+        cout << i << " ";
+    }
+    int i = 0, j = 0;
+    while (i < slen && j < plen) {
+        if (j < 0 || haystack[i] == needle[j]) {
+            i++;
+            j++;
+        } else {
+            j = next[j];
+        }
+    }
+    if (j == plen)
+        return i - j;
+    return -1;
+}
+```
+
+## AC自动机

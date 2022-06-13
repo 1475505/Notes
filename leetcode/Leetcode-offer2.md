@@ -15,7 +15,7 @@
 1. 在尽可能靠右的低位进行交换，需要从后向前查找
 2. 将一个 尽可能小的「大数」 与前面的「小数」交换，将「大数」换到前面。「大数」后面的所有数需置为升序，升序排列就是最小的排列。
 
-参：https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-suan-fa-xiang-jie-si-lu-tui-dao-/
+[图示](https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-suan-fa-xiang-jie-si-lu-tui-dao-/)
 
 ```java
         public String[] permutation(String s) {

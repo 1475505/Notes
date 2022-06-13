@@ -61,21 +61,21 @@ The two most prevalent types of broadband residential access are digital subscri
 
 For each transmitter-receiver pair,the bit is sent by propagating electromagnetic waves or optical pulses across a *physical medium*（物理媒介）. Physical media fall into two categories: *guided media*（导引型媒介） and unguided media.  
 
-##The Network Core
+## The Network Core
 
-###  Packet Switching
+###  Packet Switching(分组交换)
 
-packet-switching: hosts break application-layer messages into *packets*( break long messages **into smaller chunks**). Between source and destination, each packet travels through communication links and packet switches (two predominant types: routers and link-layer switches).
+packet-switching: hosts break application-layer messages into *packets*(small, *with header and footer*). Between source and destination, each packet travels through communication links and packet switches (two predominant types: routers and link-layer switches). **在同一条传输线路上允许同时传输多个分组，也就是说分组交换不需要占用传输线路。**
 
 - **Store-and-Forward Transmission**(存储转发传输)
 
-Most packet switches use *store-and-forward transmission* at the inputs to the links.***Entire* packet** must arrive at router before it can be transmitted on next link.
+Most packet switches use *store-and-forward transmission* at the inputs to the links.*Entire* packet must arrive at router before it can be transmitted on next link.
 
-**Forwarding** is the local action of moving arriving packets from router’s input link to appropriate router output link, while **routing** is the global action of determining the source-destination paths taken by packets.
+**Forwarding** is the *local action* of moving arriving packets from router’s input link to appropriate router output link, while **routing** is the global action of determining the source-destination *paths* taken by packets.
 
-###  Circuit Switching
+###  Circuit Switching（电路交换）
 
-In packet-switched networks, resources are not reserved; a session’s messages use the resources on demand and, as a consequence, may have to wait (that is, queue) for access to a communication link. Congestion loss and variable end-end delays are possible with this technique.
+In packet-switched networks, resources are not reserved; a session’s messages use the resources on demand and, as a consequence, may have to wait (that is, queue) for access to a communication link. Congestion loss and variable end-end delays are possible with this technique. 电路交换需要建立一条专用的物理链路，对线路的利用率很低。
 
  Which of the characteristics below are associated with the technique of *circuit switching*?
 
@@ -89,6 +89,10 @@ In packet-switched networks, resources are not reserved; a session’s messages 
 ![](http://img.070077.xyz/202203081013704.png)
 
 *d*nodal = *d*proc + *d*queue + *d*trans + *d*prop
+- 分组在路由器的输入队列和输出队列中排队等待的时间，取决于网络当前的通信量。
+- 主机或路由器收到分组时进行处理需要时间
+- 主机或路由器传输数据帧所需要的时间。
+- 电磁波在信道中传播所需要花费的时间。
 
 ### Packet Loss
 
@@ -121,7 +125,7 @@ In OSI Model:
 - *presentation:* allow applications to interpret meaning of data, e.g., encryption, compression, machine-specific conventions
 - *session:* synchronization, checkpointing, recovery of data exchange
 
-[[TDch2-4 Application2NetworkDataPlane]]
+[[TDch2-3 Application&TransportLayer]]
 
 ---
 参考：
