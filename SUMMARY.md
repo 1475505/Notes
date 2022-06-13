@@ -11,7 +11,7 @@
   * [Spring揭秘](JAVA/Spring揭秘.md)
 * [数据库/大数据/分布式](Database/db.md)
   - [NoSQL](Database/noSQL.md)
-* [刷题笔记](leetcode/调试圣经.md)
+* [算法笔记](leetcode/调试圣经.md)
   * [C++STL的使用](C++STL的使用.md)
   * [从C进步到C++——特性](从C进步到C++——特性.md)
   * [数据结构补充知识](leetcode/DS-Sup.md)
@@ -22,7 +22,7 @@
   * [Leetcode-JZ-spec](leetcode/Leetcode-offer3.md)
 - [计算机网络](ComputerNetworking/TDch1%20-%20CNET%20&%20INTERNET.md)
   - [应用层-传输层](ComputerNetworking/TDch2-3%20Application&TransportLayer.md)
-  - [网络层](ComputerNetworkingTDch4-5%20NetworkLayer.md)
+  - [网络层](ComputerNetworking/TDch4-5%20NetworkLayer.md)
   - [网络编程](ComputerNetworking/网络编程.md)
 - [软件工程]
   - [设计模式] 

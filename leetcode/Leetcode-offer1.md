@@ -17,7 +17,7 @@
 
 ## JZ4：有序二维数组查找@二分思想
 
-> 嘶，这个思想和[汉明码]([477. 汉明距离总和 - 力扣（LeetCode）](https://leetcode.cn/problems/total-hamming-distance/)神似[■](https://www.bilibili.com/video/BV1WK411N7kz)
+> 嘶，这个思想和[汉明码](https://leetcode.cn/problems/total-hamming-distance/)神似[■](https://www.bilibili.com/video/BV1WK411N7kz)
 
 ==参：JZ11：二段有序数组最小值的二分查找法==
 
