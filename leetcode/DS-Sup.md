@@ -154,7 +154,7 @@ Welcome😀[Dynamic Programming Patterns](https://leetcode.com/discuss/general-d
 
 ## 字典树
 
-参考：《算法4》· 单词查找树
+参考：《算法4》· 单词查找树，dsacpp习题9-26
 
 | 示例 | 实现 |
 |------|-------|
@@ -162,7 +162,7 @@ Welcome😀[Dynamic Programming Patterns](https://leetcode.com/discuss/general-d
 |
 该数据结构具有以下特性：
 - 这里结点对应的编号是字符串键对应的结束状态。
-- 每个结点都含有字符集长度个指针
+- 每个结点都含有字符集长度个指针数组
 - 值为空的结点在符号表中没有对应的键，它们的存在是为了简化单词查找树中的查找操作。
 
 [欢迎尝试实现](https://leetcode.cn/problems/implement-trie-prefix-tree/)
@@ -219,3 +219,19 @@ int strStr(string haystack, string needle) {
 ```
 
 ## AC自动机
+
+# 树
+
+## Morris遍历
+
+大体流程：
+
+- 记当前节点的指针为 cur。
+- 如果 cur 所指向的节点没有左孩子，那么 cur 指针向右移动。
+- 如果 cur 所指向的节点有左孩子， mostright 指针指向该 cur 左子树的最右节点。
+   - 如果 mostright 所指向的节点的 right 指针为空，那么让mostright 的 right 指针指向 cur，然后cur 指针向左移动；
+   - 如果 mostright 所指向的节点的 right 指向 cur，那么让 right 重新指向空，然后 cur 向右移动。
+
+![](http://img.070077.xyz/202206140518626.png)
+
+根据访问节点的顺序，判断指针行为，找到三次遍历时对应的处理时机。

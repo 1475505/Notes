@@ -89,6 +89,7 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 [84. 柱状图中最大的矩形](https://leetcode.cn/problems/largest-rectangle-in-histogram/)：接雨水的兄弟版本
 [48. 旋转图像](https://leetcode.cn/problems/rotate-image/)：阴间细节题
 
+
 # 链表专题
 
 ## 反转链表
@@ -229,6 +230,7 @@ for (step = 1; step < length; step *= 2) {
 
 > 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)便是乘法型的题。下面的518题也是。
 
+[115. 不同的子序列](https://leetcode.cn/problems/distinct-subsequences/)
 
 ##  背包/数组篇
 
@@ -258,6 +260,7 @@ int lengthOfLIS(vector<int>& nums) {
 
 [226. 翻转二叉树 - 力扣（LeetCode）](https://leetcode.cn/problems/invert-binary-tree/):只能说这是梦开始的地方。这道题可以用前序、中序、后序和层次遍历解决，每种遍历都可以用递归和非递归实现。练手完毕后，欢迎进入树专题。
 
+
 ## 递归
 
 [437. 路径总和 III - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-iii/)
@@ -272,6 +275,8 @@ int lengthOfLIS(vector<int>& nums) {
 
 练习：[669. 修剪二叉搜索树 - 力扣（LeetCode）](https://leetcode.cn/problems/trim-a-binary-search-tree/)
 BST的基本查找、 结点增加与删除，以及AVL树的查找、结点增加与删除，也是递归便于解决的基本操作，可以参考[二叉搜索树简介 - OI Wiki ](https://oi-wiki.org/ds/bst/)学习。
+
+[114. 二叉树前序展开](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/)这题就是递归的玄学，可以了解下Morris遍历。（提示：前序遍历的逆：右左中）
 
 ## 综合
 

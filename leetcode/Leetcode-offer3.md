@@ -6,9 +6,16 @@
 
 [剑指 Offer II 007. 数组中和为 0 的三个数 - 力扣（LeetCode）](https://leetcode.cn/problems/1fGaJU/)
 
+三指针。通过固定一个指针，变成双指针的两数之和问题。注意时时去重。
+
+拓展：[16. 最接近的三数之和 - 力扣（LeetCode）](https://leetcode.cn/problems/3sum-closest/)
+
+
 ### 和大于等于s的最短正数子数组
 
 [剑指 Offer II 008. 和大于等于 target 的最短子数组 - 力扣（LeetCode）](https://leetcode.cn/problems/2VG8Kg/)
+
+
 
 ### 和为k的子数组
 

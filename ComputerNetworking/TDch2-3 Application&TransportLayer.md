@@ -28,11 +28,12 @@ Persistent（HTTP1.1）:  introduced multiple, pipelined GETs over single TCP co
 | ------ | ------------------------------------------------------------ |
 | GET    | user input sent from client to server in entity body of POST request message |
 | POST   | include user data in URL field of HTTP GET request message (following a ‘?’)，语义是请求服务器处理指定资源 |
-| HEAD   | requests headers (only) that would be returned *if specified* URL were requested with an HTTP GET method. |
+| HEAD   | requests headers (only，不返回报文主体) that would be returned *if specified* URL were requested with an HTTP GET method. |
 | PUT    | uploads new file (object) to server；completely replaces file that exists at specified URL with content in entity body of POST HTTP request message |
 | DELETE | allows a user, or an application, to delete an object on a Web server. |
 
 ### 状态码
+
 ![](http://img.070077.xyz/202206101439618.png)
 
 ### Cookies
@@ -78,7 +79,7 @@ HTTP/2: increased flexibility at *server* in sending objects to client:
 
 邮件协议包含发送协议和读取协议，发送协议常用 SMTP，读取协议常用 POP3 和 IMAP。
 
-SMTP comparison with HTTP:
+SMTP vs HTTP:
 
 - HTTP: client pull  |  SMTP: client **push**
 - both have ASCII command/response interaction, status codes
@@ -156,6 +157,31 @@ HTTP无法验证通信方的身份，可能遭遇伪装。SSL 还提供了*证�
 
 HTTP 协议无法证明通信的报文完整性，常用的是 MD5 和 SHA-1 等散列值校验是否篡改。
 
+## Overview
+
+A transport-layer protocol provides for logical communication between **application processes** running on different *hosts*, an application’s perspective. (Different  network layer: logical communication between *hosts*)
+
+Two principal Internet transport protocols:
+
+- **TCP:** Transmission Control Protocol 
+  - **reliable, in-order** delivery
+  - *congestion control:* throttle sender when network overloaded
+  - *flow control:* sender won't overwhelm receiver 
+  - ***connection**-**oriented**:* setup required between client and server processes
+  - does not provide: timing, minimum throughput guarantee, security
+
+- **UDP:** User Datagram Protocol (*unreliable* between sending and receiving process)
+  - unreliable, unordered delivery
+  - no-frills extension of “best-effort” IP
+  - does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
+
+> TCP 是面向字节流的协议，UDP 是面向报文的协议.
+> 前者：**消息根据发送窗口、拥塞窗口以及当前发送缓冲区的大小等，可能会被分成多个的 TCP 报文**，需要定义边界进行划分。
+> 后者：**每个 UDP 报文就是一个用户消息的边界**。不会对消息进行拆分。
+- services not available: 
+  - delay guarantees
+  - bandwidth guarantees
+
 ### 加密技术
 
 ![安全通信机制](http://img.070077.xyz/202203180153787.png)
@@ -190,31 +216,6 @@ HTTP/1.1 使用的认证方式如下：
 
 
 # Transport Layer
-
-## Overview
-
-A transport-layer protocol provides for logical communication between **application processes** running on different *hosts*, an application’s perspective. (Different  network layer: logical communication between *hosts*)
-
-Two principal Internet transport protocols:
-
-- **TCP:** Transmission Control Protocol 
-  - **reliable, in-order** delivery
-  - *congestion control:* throttle sender when network overloaded
-  - *flow control:* sender won't overwhelm receiver 
-  - ***connection**-**oriented**:* setup required between client and server processes
-  - does not provide: timing, minimum throughput guarantee, security
-
-- **UDP:** User Datagram Protocol (*unreliable* between sending and receiving process)
-  - unreliable, unordered delivery
-  - no-frills extension of “best-effort” IP
-  - does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
-
-> TCP 是面向字节流的协议，UDP 是面向报文的协议.
-> 前者：**消息根据发送窗口、拥塞窗口以及当前发送缓冲区的大小等，可能会被分成多个的 TCP 报文**，需要定义边界进行划分。
-> 后者：**每个 UDP 报文就是一个用户消息的边界**。不会对消息进行拆分。
-- services not available: 
-  - delay guarantees
-  - bandwidth guarantees
 
 ## Multiplexing and Demultiplexing
 
@@ -337,6 +338,11 @@ The ACK number that Receiver puts in its segment is the sequence number of the *
 
 TCP only acknowledges bytes up to the **first** missing byte in the stream, TCP is said to provide *cumulative acknowledgments*.
 
+(术语表)
+-   `MTU`：一个网络包的最大长度，以太网中一般为 `1500` 字节；
+-   `MSS`：除去 IP 和 TCP 头部之后，一个网络包所能容纳的 TCP 数据的最大长度；
+-   `RTO`： 重传计时器
+
 ### RTT
 
 The connection’s *round-trip time* (RTT)  is the time from when a segment is sent until it is acknowledged.
@@ -371,11 +377,20 @@ e,g. scenario
 
 ### Flow Control
 
+#### buffer and window
+
 TCP provides flow control by having the *sender* maintain a variable called the **receive window**. TCP receiver “advertises” free buffer space in *rwnd* field in TCP **header** ，guarantees receive buffer will not overflow.
 
 ![RcvBuffer size set via socket options (typical default is 4096 bytes)](http://img.070077.xyz/202203160804150.png)
 
 假设接收缓冲区已满(rwnd = 0)。若向接收方发送rwnd = 0报文丢失，而TCP只有在有数据要发送或者有应答要发送时才会向主机发送一个段。因此，发送方永远不会知道接收缓冲区中已经清空了一些缓冲区（被阻塞）。为解决这个问题，要求发送方在的接收窗口为零时继续发送窗口探测报文进行确认。
+
+#### 窗口综合征
+
+接收方忙碌使得发送方的发送窗口过小时，则会导致小包降低网络传输效率的问题。为解决这一问题，可让接收方不通告小窗口给发送方、让发送方避免发送小包。
+
+- 解决前者（低能窗口综合症）的Clark算法解决方案：接收方发送窗口更新段的条件：「窗口大小」大于 min( MSS，缓存空间 / 2 _缓冲区一半为空_）。否则，通告窗口为 0 .
+- 解决后者（糊涂窗口综合征）的Nagle算法解决方案：发送第一块数据并缓冲剩余的数据；不再发送数据除非满足下面条件之一：发送出去的数据段被确认，缓冲数据填满半个窗口或达到MSS。
 
 ###  TCP Connection Management
 
@@ -524,3 +539,5 @@ Quick UDP Internet Connections Protocol's major features:
 --- 
 参考：
 [《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)
+《图解HTTP》
+小林coding

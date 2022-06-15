@@ -1,18 +1,27 @@
-个人笔记实时备份仓库，如有侵权请联系我。
+个人笔记备份仓库。
 
-会尽量避开【受保护的lab实验报告】、【受保护PPT】及相关内容。
+会尽量避开【受保护的项目实验报告】、【受保护PPT】及相关内容，如有侵权请联系我。
 
-本仓库内的笔记会
-- 定期整合放送至个人博客( http://070077.xyz ）中。
-- 这个博客可以通过微信小程序【梦舞星球】进行访问。
-- 集成gitbook。可以通过以下网址进行阅览
-   - liul2566.gitbook.io
-   - notes.070077.xyz
+本仓库内的笔记集成GitBook。可以通过以下网址进行阅览。
+- http://liul2566.gitbook.io
+- http://notes.070077.xyz
+
+同时欢迎访问个人博客： http://070077.xyz 
+
+This is a backup repository for my personal notes.
+
+I will try to avoid protected report, protected PPT and related contents.  Please contact me if there is any infringement.
+
+The notes have been deployed via GitBook. You can see them in the following URL:
+- http://liul2566.gitbook.io
+- http://notes.070077.xyz
+
+Also welcome to enter: http://070077.xyz
+
+--- 
+# TODO LIST
+
+- 转用云服务器定时任务部署，以减少 HTTPS 流量费用，困难在于网络连通性
 
 
-
-This is my real-time backup repository for personal notes, please contact me if there is any infringement.
-
-I will try to avoid [protected lab report], [protected PPT] and related contents.
-
-The notes in this repository will be regularly released to my personal blog ( http://070077.xyz ).
+> SUMMARY：充分利用了GitBook的实时更新特性，笔记很可能不是静态的，会不断迭代更新、变化。因此，你很可能发现这些文章出现逻辑调整，从适合初学者变成适合复习的情况。

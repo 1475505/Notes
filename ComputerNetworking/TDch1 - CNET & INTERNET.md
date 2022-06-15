@@ -61,6 +61,10 @@ The two most prevalent types of broadband residential access are digital subscri
 
 For each transmitter-receiver pair,the bit is sent by propagating electromagnetic waves or optical pulses across a *physical medium*（物理媒介）. Physical media fall into two categories: *guided media*（导引型媒介） and unguided media.  
 
+- 双绞线（TP）：最常用的传输介质, 两根相互绝缘的铜线绞合，既可用于传输模拟信号也可用于传输数字信号。
+- 同轴电缆：更好的屏蔽特性和更大的带宽（3类 UTP: 16MHz；5类 UTP: 100MHz）。50欧姆电缆：常用于数字传输；75欧姆电缆：一般用于模拟传输和有线电视传输
+- 光纤：有三种模式...
+
 ## The Network Core
 
 ###  Packet Switching(分组交换)
@@ -108,10 +112,10 @@ In packet-switched networks, resources are not reserved; a session’s messages 
 
 | layer       | function     | e.g. |
 | ----------- | ---- | ---- |
-| Application | exchanges *messages*(报文) to implement some application service | HTTP, IMAP, SMTP, DNS |
-| Transport   | protocol creates *segment* and transfers M from one *process* to another | TCP, UDP |
-| network     | transfers creates *datagram* and  transport-layer segment [Ht \ M] from one host to another |routing protocols,IP|
-| link        | creates *frame* and transfers datagram [Hn\[Ht\M] from host to neighboring host, using network-layer services | Ethernet, 802.11 (WiFi), PPP |
+| Application | exchanges **messages**(报文) to implement some application service | HTTP, IMAP, SMTP, DNS |
+| Transport   | protocol creates **segment** and transfers M from one *process* to another | TCP, UDP |
+| network     | transfers creates **datagram** and  transport-layer segment [Ht \ M] from one host to another |routing protocols,IP|
+| link        | creates **frame** and transfers datagram [Hn\[Ht\M] from host to neighboring host, using network-layer services | Ethernet, 802.11 (WiFi), PPP |
 | physical    | bits “on the wire” |      |
 
 ![高层使用低层服务，低层封装高层数据](http://img.070077.xyz/202203081030866.png)
@@ -124,6 +128,14 @@ In OSI Model:
 
 - *presentation:* allow applications to interpret meaning of data, e.g., encryption, compression, machine-specific conventions
 - *session:* synchronization, checkpointing, recovery of data exchange
+
+# 访问一个网页的全流程
+
+- DHCP： Client now has IP address, knows name & addr of DNS server, IP address of its first-hop router
+- ARP：To send frame to first-hop router, need MAC address of router interface. 
+- DNS：IP datagram may forwarded, routed (tables created by RIP, OSPF, IS-IS and/or BGP routing protocols) to DNS server
+- HTTP：mention that client first opens TCP socket to web server
+- web server responds with HTTP reply (containing web page). DONE!!
 
 [[TDch2-3 Application&TransportLayer]]
 

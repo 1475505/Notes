@@ -114,16 +114,13 @@ The Internet's address assignment strategy is known as *Classless Interdomain Ro
 
 DHCP server can also formulates a **encapsulated** DHCP ACK containing client's IP address, IP address of first-hop router for client, name & IP address of DNS server。
 
-DHCP 配置的内容不仅是 IP 地址，还包括子网掩码、网关 IP 地址。
+以下是流程简介：
 
-- How a SOHO manage IP addresses? 
+- DHCP DISCOVER ：使用 UDP 广播通信，DHCP 客户端将该 IP 数据报传递给链路层，链路层然后将帧**广播**到所有的网络设备。或者说，DHCP 客户端会向 DHCP 中继代理发送 DHCP 请求包，而 DHCP 中继代理在收到这个广播包以后，再以**单播**的形式发给 DHCP 服务器。因此，DHCP 服务器即使不在同一个链路上也可以实现统一分配和管理IP地址。
+- DHCP OFFER： 仍然使用 IP 广播地址 255.255.255.255，配置的内容*不仅* 是 IP 地址，还包括子网掩码、网关、租期、DNS。
+- DHCP REQUEST：客户端收到一个或多个服务器的 DHCP 提供报文后，选择一个回应，回显配置的参数。如果租约的 DHCP IP 地址即将过期，客户端也会向该服务器再次发送 DHCP REQUEST。
+- DHCP ACK：服务端返回。一旦客户端收到 DHCP ACK 后，交互便完成了。如果是 NACK 报文，客户端就要停止使用租约的 IP 地址。
 
-  **NAT**(Network Address Translation)
-
-  - private addresses refers to a network whose addresses **only** have meaning devices within that network
-  - all devices in local network share **just one** IPv4 address as far as outside world is concerned
-
-![](http://img.070077.xyz/202203200550241.png)
 
 ### IPv6(128b)
 ![](http://img.070077.xyz/202206101432184.png)
@@ -139,6 +136,23 @@ DHCP 配置的内容不仅是 IP 地址，还包括子网掩码、网关 IP 地�
 ### IP 分片与重组
 
 每种数据链路的最大传输单元 `MTU` 都是不相同的，如以太网的 MTU 是 1500 字节。当 IP 数据包大小大于 MTU 时， IP 数据包就会被分片。经过分片之后的 IP 数据包在被重组的时候，**由目标主机进行**。（分片与重组是耗时的过程，在IPv6中禁止在网络层进行，所以 TCP 引入了 `MSS` ，也就是在 TCP 层进行分片）
+
+ ## NAT
+ 
+ Network Address Translation. Widely used in SOHO to manage IP addresses. 
+
+- private addresses refers to a network whose addresses **only** have meaning devices within that network
+- all devices in local network share **just one** IPv4 address as far as outside world is concerned.
+- now, map with port together. 现在当然不是一对一的，结合使用端口号的 NAT 也叫做网络地址与端口转换 NAPT，以传输层的端口号区分设备。
+
+![](http://img.070077.xyz/202203200550241.png)
+
+> NAT 穿透技术：
+> 
+> 该技术可以让外部也能主动与 NAT 内部服务器建立连接。简而言之，核心是：
+> - 发现自己的公网IP和Port。客户端主动从 NAT 设备获取公有 IP 地址，然后自己建立端口映射条目，然后用这个条目来对外通信，就不走NAT层了。（STUN协议）
+> - 将自己的IP和Port共享给对方。可以通过设计中继的方式， 进行交换。
+>
 
 ## Generalized Forwarding
 
@@ -220,7 +234,12 @@ ICMP （Internet Control Message Protocol），称作互联网控制报文协议
 
 ## Network Management
 ![](http://img.070077.xyz/202206101829702.png)
+
 - SNMP
-n application-layer protocol used to convey network-management control and
-information messages between a managing server and an agent executing on behalf
-of that managing server.
+An application-layer protocol used to convey network-management control and information messages between a managing server and an agent executing on behalf of that managing server.
+
+--- 
+参考材料：
+[[译] NAT 穿透是如何工作的：技术原理及企业级实践（Tailscale, 2020） (arthurchiao.art)](https://arthurchiao.art/blog/how-nat-traversal-works-zh/)
+[《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)
+[小林coding (xiaolincoding.com)](https://www.xiaolincoding.com/)
