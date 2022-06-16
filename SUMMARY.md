@@ -23,7 +23,7 @@
 - [计算机网络](ComputerNetworking/TDch1%20-%20CNET%20&%20INTERNET.md)
   - [应用层-传输层](ComputerNetworking/TDch2-3%20Application&TransportLayer.md)
   - [网络层](ComputerNetworking/TDch4-5%20NetworkLayer.md)
-  - [数据链路层-物理层](TDch6%20DataLink%20&Physic.md)
+  - [数据链路层-物理层](ComputerNetworking/TDch6%20DataLink%20&Physic.md)
   - [移动网络与网络安全](ComputerNetworking/TDch7-8%20phone&security.md)
   - [网络编程](ComputerNetworking/网络编程.md)
 - [软件工程]
