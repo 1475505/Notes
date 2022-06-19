@@ -26,6 +26,11 @@ End systems access the Internet through *Internet Service Providers* (ISP，因�
 End systems attached to the Internet provide a *socket interface*（套接字接口） that specifies how a program running on one end system asks the Internet infrastructure to **deliver data to a specific destination program running on another end system**.
 
 > QoS - Quality of Service：latency, bandwidth, bit-error-rate.
+> 
+- SDU服务数据单元：为完成用户所要求的功能而应传送的数据。
+- PCI协议控制信息：控制协议操作的信息。
+- PDU协议数据单元：该层同层之间传送的数据单位。（如网络层是包）
+
 
 ### 协议
 
@@ -61,7 +66,7 @@ The two most prevalent types of broadband residential access are digital subscri
 
 For each transmitter-receiver pair,the bit is sent by propagating electromagnetic waves or optical pulses across a *physical medium*（物理媒介）. Physical media fall into two categories: *guided media*（导引型媒介） and unguided media.  
 
-- 双绞线（TP）：最常用的传输介质, 两根相互绝缘的铜线绞合，既可用于传输模拟信号也可用于传输数字信号。
+- 双绞线（TP）：最常用的传输介质, 两根相互绝缘的铜线绞合，既可用于传输模拟信号也可用于传输数字信号。目前常用五类线。速度可达Mb/s
 - 同轴电缆：更好的屏蔽特性和更大的带宽（3类 UTP: 16MHz；5类 UTP: 100MHz）。50欧姆电缆：常用于数字传输；75欧姆电缆：一般用于模拟传输和有线电视传输
 - 光纤：有三种模式...
 
@@ -69,13 +74,18 @@ For each transmitter-receiver pair,the bit is sent by propagating electromagneti
 
 ###  Packet Switching(分组交换)
 
-packet-switching: hosts break application-layer messages into *packets*(small, *with header and footer*). Between source and destination, each packet travels through communication links and packet switches (two predominant types: routers and link-layer switches). **在同一条传输线路上允许同时传输多个分组，也就是说分组交换不需要占用传输线路。**
+**在同一条传输线路上允许同时传输多个分组，也就是说分组交换不需要占用传输线路。**
 
-- **Store-and-Forward Transmission**(存储转发传输)
+- 数据报方式：hosts break application-layer messages into *packets* (small, *with header and footer*). Between source and destination, each packet travels through communication links and packet switches (two predominant types: routers and link-layer switches).  提供无连接服务。
+- 虚电路方式：维护虚电路表，提供网络层服务。要求设备高可靠。
 
-Most packet switches use *store-and-forward transmission* at the inputs to the links.*Entire* packet must arrive at router before it can be transmitted on next link.
+### Store-and-Forward Transmission(存储转发传输)
+
+也称作报文交换。*Entire* packet must arrive at router before it can be transmitted on next link.
 
 **Forwarding** is the *local action* of moving arriving packets from router’s input link to appropriate router output link, while **routing** is the global action of determining the source-destination *paths* taken by packets.
+
+中继转发时可以动态分配线路，利用率高，实时性差（特别是大包可能会填满缓冲区），只适用于数字信号。
 
 ###  Circuit Switching（电路交换）
 
@@ -114,7 +124,7 @@ In packet-switched networks, resources are not reserved; a session’s messages 
 | ----------- | ---- | ---- |
 | Application | exchanges **messages**(报文) to implement some application service | HTTP, IMAP, SMTP, DNS |
 | Transport   | protocol creates **segment** and transfers M from one *process* to another | TCP, UDP |
-| network     | transfers creates **datagram** and  transport-layer segment [Ht \ M] from one host to another |routing protocols,IP|
+| network     | transfers **datagram** and  transport-layer segment [Ht \ M] from one host to another |routing protocols,IP|
 | link        | creates **frame** and transfers datagram [Hn\[Ht\M] from host to neighboring host, using network-layer services | Ethernet, 802.11 (WiFi), PPP |
 | physical    | bits “on the wire” |      |
 
@@ -141,4 +151,5 @@ In OSI Model:
 
 ---
 参考：
+
 [《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)

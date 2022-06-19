@@ -30,6 +30,8 @@ Cyclic Redundancy Check (循环冗余检验），即传输二元组<D, R>.
 - 接收方对生成多项式进行模2除法，余数不为0即认为有错，拒绝。
 ![G（X） = X4 + X3 + 1](http://img.070077.xyz/202206141242571.png)
 
+纠错和检错能力与汉明距离有关。若码表的汉明距离为 d+1，则可检查出 d 比特的错误，汉明距离为 2d+1,则可纠正 d 比特的错误。
+
 ---
 两种链路（信道）：
 - point-to-point：PPP for dial-up access.地址不是必需的
@@ -99,7 +101,8 @@ example: 6-station LAN, 1,3,4 have packets to send, slots 2,5,6 idle
 
 > 复习:
 > 波分复用：![](http://img.070077.xyz/202206150150543.png)
-> 码分复用（CDM）：码分多址，每个基站可以在整个频谱上随时传输。
+
+ 码分复用（CDM）：码分多址，每个基站可以在整个频谱上随时传输。不同站拥有不同的“码片序列”，如果一个站需要发送1，就发送`码片序列*1`，如果需要发送0，就发送`码片序列*(-1)`，如果不发送，就视为发送了`码片序列*0`。信道上的数据为所有站发送的码片信号的叠加。接收方需要把信道上的数据乘自己的码片序列来恢复信号。
 
 上述均为静态信道分配。可见，FDM 平均时延远大于单信道，TDM性能差，不适合突发性。
 
@@ -137,7 +140,8 @@ CSMA/CD: with collision detection:
 - collisions detected within short time
 - colliding transmissions aborted, reducing channel wastage
 - collision detection easy in wired, difficult with wireless
-(如果检测到冲突，立即停止传输 (退避) 并开始发送一个强化信号(jam信号)，而不是将整个帧都传输完。Jam信号传输结束后，随机等待一段时间，再重新开始监听信道。)
+
+CSMA/CA: 冲突避免，用于无线网。(如果检测到冲突，立即停止传输 (退避) 并开始发送一个强化信号(jam信号)，而不是将整个帧都传输完。Jam信号传输结束后，随机等待一段时间，再重新开始监听信道。)
 
 这个等待的时间采用 **截断二进制指数退避算法** 来确定。从离散的整数集合 $$ 0, 1, .., 2^{k}-1, k = min(尝试的次数, 10) $$中随机取出一个数，记作 r，然后取 r 倍的争用期作为重传等待时间。再次传输重试，最大延迟时间加倍，重传时间 = r * 基本重传时间。如果达到预设的最大尝试次数(通常为16次)，则终止。
 
@@ -148,6 +152,7 @@ CSMA/CD: with collision detection:
 属于无冲突协议。
 - polling： master node “invites” other nodes to transmit in turn
 - token passing: control token passed from one node to next sequentially.
+
 
 #### 无线局域网协议
 
@@ -176,7 +181,7 @@ MACA 实现：带冲突避免的多路访问。即用RTS/CTS预约信道。与CS
 MAC (Media Access Control Address or LAN or physical or Ethernet) address: 
      - function: used “locally” to get frame from one interface to another physically-connected interface (same subnet, in IP-addressing sense).  
 	     - 48-bit MAC address (for most LANs) burned in NIC ROM, also sometimes software settable. each interface on LAN has unique MAC address。（由 IEEE 统管分发）
-
+![](http://img.070077.xyz/202206150305610.png)
 一台主机拥有多少个网络适配器就有多少个 MAC 地址。例如笔记本电脑普遍存在无线网络适配器和有线网络适配器，因此就有两个 MAC 地址。
 
 ### 地址解析协议 ARP
@@ -230,7 +235,7 @@ R determines outgoing interface, passes datagram with IP source A, destination B
 
 学习网桥工作在混杂模式，可以获得其所连接的各LAN上的每个帧，通过站表进行帧的路由和转发。如果查到的输出端口与输入端口一致，则不转发；如果输出端口与输入端口不一致，则转发到相应端口；如果查不到，则洪泛转发到除输入端口之外的所有端口。
 ![](![](http://img.070077.xyz/202206151049174.png)
-<img src="http://img.070077.xyz/202206151049174.png"/>
+
 
 生成树网桥用一棵可以到达每个网桥的生成树覆盖实际的拓扑结构。根据802.1d协议构造生成树：每个网桥周期地从它的所有端口广播一个配置消息给邻居，选择具有最低标识符的网桥作为生成树的根，消息交换到最终所有网桥将都同意一个根。记住找到的到根的最短路径，关闭不属于最短路径的一部分的端口，自动检测拓扑变化并更新生成树。
 
@@ -242,6 +247,8 @@ R determines outgoing interface, passes datagram with IP source A, destination B
 ![](http://img.070077.xyz/202206151042949.png)
 
 - port-based VLAN: switch ports grouped (by switch management software) so that single physical switch. support traffic isolation
+
+![](http://img.070077.xyz/202206171010311.png)
 
 ## 链路虚拟化
 
@@ -263,53 +270,90 @@ MPLS 提供了沿着多条路由转发分组的能力，进行流量引导。这
 - 信道：传送信息的媒体（介质）
 - 带宽：指接收能量能够保留至少一半的频率范围(单位：Hz)
 - **波特率(Baud): 每秒中传输的码元（即信号单元）个数** =1/T（T是一个信号单元的周期）
-- 比特率(bps) = 波特率 * $log_2V$ ，V是信号的有效状态数(电平级数)。表示每秒中传输的比特（数据位）数。
+- 比特率(bps) = 波特率 * $log_2V$ ，V是信号的有效状态数(电平级数，参考*调制* )。表示每秒中传输的比特（数据位）数。
 - 吞吐量：网络容量的度量，表示单位时间内网络可以传送的数据位数（bps）
 
-- 奈奎斯特公式：**无噪声信道**最大数据速率 = 2 * B * $log_2V$ （B - 带宽）
-- 香农公式：**有噪信道**最大数据率 = $B \times log_2(1 + \frac{S}{N})$
-- 信噪比SNR：$S/N_{db} = 10log_{10}\frac{S}{N}$ ，单位：分贝（dB）
-![](http://img.070077.xyz/202206151238884.png)
+- 奈奎斯特公式（内忧）：**信道无噪下**理想最大数据速率 = 2 * B * $log_2V$ （B - 带宽，V同上）
+- 香农公式（外患）：**有噪信道**最大数据率 = $B \times log_2(1 + \frac{S}{N})$
+- 信噪比SNR：$S/N_{db} = 10log_{10}\frac{S}{N}$ ，注意单位：分贝 **（dB）**
+![](http://img.070077.xyz/202206170918046.png)
+![](http://img.070077.xyz/202206170919774.png)
+（实际数据流不可能大于二者任一）
 
 ![](http://img.070077.xyz/202206151253501.png)
 
-## 无线传输分类
-
-- 无线电的传播
-![](http://img.070077.xyz/202206151253852.png)
-
-- 微波传输(100M~10GHz)：多径衰落是微波通信的一个很严重的问题。
-- 红外传输
-- 通信卫星(大型微波中继器)：包含多个天线和多个转发器，转发器监听频谱中的某一部分。GEO具有较大的往返延迟时间。 ![](http://img.070077.xyz/202206151245168.png)
 ## 数字调制和编码
 
-- QPSK：正交相移键控
-- QAM：正交幅度调制
+- Q-PSK：正交*相移键控*，即4PSK。
+- Q-AM：正交*幅度调制*。
 
 星座图：相位是夹角，振幅是到原点的距离。
+
+| QPSK                                                    | 8QAM                                              |
+| ------------------------------------------------------- | ------------------------------------------------- |
+| ![270](http://img.070077.xyz/202206170933773.png#small) | ![120](http://img.070077.xyz/202206170933838.png) |
+|                                                         |                                                   |
+
+| ASK(幅移键控) | ![#small](http://img.070077.xyz/202206170945291.png) |
+| --- | ---------------------------------------------- |
+| FSK(频移键控)    | ![#small](http://img.070077.xyz/202206170945020.png)
+
+
+编码模式：
 
 - 不归零 (NRZ-L)
 - 逆转不归零(NRZI)
 - **Manchester 曼彻斯特编码**：0：在位时间中从高到低跳转；1：低到高。IEEE 802.3局域网使用
 ![](http://img.070077.xyz/202206151248097.png)
 
+> 模拟信号的数字化技术：
+>（1）基本过程：抽样（奈奎斯特抽样定理）、量化、编码（一般是压缩编码）
+  （2）相关设备：编解码器 CodeC
+  （3）应用举例：PCM 信号--语音信号（4kHz 模拟信号）转为 64kbps 的数字信号
+
+## 无线传输分类
+
+- 无线电的传播
+  -   0-2MHz 直接沿地球表面传播
+  -   2-30MHz 通过大气电离层反射传播
+  -   30-MHz 直线视距传播 不受电离层影响
+
+![ #small ](http://img.070077.xyz/202206151253852.png)
+
+- 微波传输(100M~10GHz)：多径衰落是微波通信的一个很严重的问题。
+- 红外传输
+- 通信卫星(大型微波中继器)：包含多个天线和多个转发器，转发器监听频谱中的某一部分。GEO具有较大的往返延迟时间。 
+![](http://img.070077.xyz/202206151245168.png)
 ## PSTN电话系统
+
+公用交换电话网 PSTN 系统使用TDM。本地回路由调制解调器、ADSL 和光纤等组成。
 
 DSL: 数字用户线。
 
-- ADSL: 离散多音调制：将1.1 MHz划分为256个4312.5 Hz的信道，可用250条信道(FDM)：上行流控制 (1) + 下行流控制 (1) + 用户数据 (248)。 采样速率是4000波特。
+- ADSL: 离散多音调制：将1.1 MHz划分为256个4312.5 Hz的信道，可用250条信道(FDM)：上行流控制 (1) + 下行流控制 (1) + 用户数据 (248)。 采样速率是*4000* 波特。
 - DMT:离散多音调制
 
 三个设备：
 -  数字发送器---线路编码技术，数字基带信号，抗干扰、带宽效率
--  调制解调器---调制解调技术，信号频率变换，通带信号，长距离传输、有效利用带宽
--  编码解码器---采样、量化、编码技术，将模拟信号数字化，将模拟信源的输出变为数字数据
+-  调制解调器Modem---调制解调技术，信号频率变换，通带信号，长距离传输、有效利用带宽。注：数字化语音信号PCM脉冲编码调制。
+-  编码解码器---采样、量化、编码技术，将模拟信号数字化，将模拟信源的输出变为数字数据。
 
+![](http://img.070077.xyz/202206170855628.png)
 
+(Digitized Analog Signals--Source Coding):
+
+- Sampling（采样）:根据奈奎斯特定理，采样频率必须至少是模拟信号最高频率的2倍.
+- Quantizing（量化）: 把信号强度分成线性或对数级编码。
+- Encoding: Codec编码解码器
 
 ---
 参考：
 北邮《计算机网络》PPT
+
 [CS-Notes (cyc2018.xyz)](http://www.cyc2018.xyz/)
+
 [《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)
+
 [Macsen's Blog](https://www.macsen.xyz/2021/03/19/%e7%ac%ac%e4%ba%8c%e7%ab%a0-%e6%95%b0%e6%8d%ae%e9%80%9a%e4%bf%a1%e5%9f%ba%e7%a1%80/)
+
+https://github.com/cen6667/408/

@@ -4,10 +4,8 @@
 
 - （数据平面：转发）Forwarding：the router-local action of transferring a packet from an input link **interface** to the appropriate output link interface.
 - （控制平面：路由）Routing: the network-wide process that determines the end-to-end **paths** that packets take from source to destination routers:
-
-- examines header fields in all IP datagrams passing through it.
-
-- moves datagrams from input ports to output ports to transfer datagrams along end-end path
+  - examines header fields in all IP datagrams passing through it.
+  - moves datagrams from input ports to output ports to transfer datagrams along end-end path
 
 ![control plane: Remote controller](http://img.070077.xyz/202203180831095.png)
 
@@ -22,7 +20,7 @@ The network service model defines the **characteristics** of end-to-end delivery
 - Guaranteed minimal bandwidth. 
 - Security. 
 
-> ***No*** guarantees on：
+> *No* guarantees on：
 >
 > i.successful datagram delivery to destination
 >
@@ -31,6 +29,8 @@ The network service model defines the **characteristics** of end-to-end delivery
 > iii.bandwidth available to end-end flow
 >
 > 其实服务模型有很多种，其机制和复杂度的权衡，难以辨明优劣。尽力而为即可。
+
+即分成两种网络服务方式--数据报（无连接）和虚电路（面向连接）方式。
 
 ## What's Inside a Router?
 
@@ -132,7 +132,9 @@ DHCP server can also formulates a **encapsulated** DHCP ACK containing client's 
 
 - How will the public Internet based on IPv4 be transitioned to IPv6? 
 
- 隧道技术 **tunneling**。![physical view](http://img.070077.xyz/202203200557905.png)
+ 隧道技术 **tunneling**。
+ ![physical view](http://img.070077.xyz/202203200557905.png)
+ 
 ### IP 分片与重组
 
 每种数据链路的最大传输单元 `MTU` 都是不相同的，如以太网的 MTU 是 1500 字节。当 IP 数据包大小大于 MTU 时， IP 数据包就会被分片。经过分片之后的 IP 数据包在被重组的时候，**由目标主机进行**。（分片与重组是耗时的过程，在IPv6中禁止在网络层进行，所以 TCP 引入了 `MSS` ，也就是在 TCP 层进行分片）
@@ -200,8 +202,7 @@ we've also encountered other network equipment (“boxes”) within the network 
 
 - classic link-state routing (LSR)
 - each router **floods** OSPF link-state advertisements (directly over IP rather than using TCP/UDP) to all other routers in entire AS multiple link costs metrics possible: bandwidth, delay each router has full topology, uses Dijkstra’s algorithm to compute forwarding table.
-- 只有当链路状态发生变化时，路由器才会洪泛向AS区内所有其他路由器通告自己的邻接情
-况。相比于 RIP，OSPF 的更新过程收敛的很快。
+- 只有当链路状态发生变化时，路由器才会洪泛向AS区内所有其他路由器通告自己的邻接情况。相比于 RIP，OSPF 的更新过程收敛的很快。
 
 4. 边界网关协议BGP：Border Gateway Protocol
 - May not the best route.
@@ -215,8 +216,7 @@ we've also encountered other network equipment (“boxes”) within the network 
 算法：热土豆算法
 ![](http://img.070077.xyz/202206101748231.png)
 
-选路四部曲：
-router may learn about more than one route to destination AS, selects route based on:
+【选路四部曲】router may learn about more than one route to destination AS, selects route based on:
 
 1. local preference value attribute: policy decision
 2. shortest AS-PATH 
@@ -224,11 +224,13 @@ router may learn about more than one route to destination AS, selects route base
 4. additional criteria
 
  ## SDN 控制平面
+ 
  ![](http://img.070077.xyz/202206101750890.png)
 
 ## ICMP
 
 ICMP （Internet Control Message Protocol），称作互联网控制报文协议。ICMP 报文是封装在 IP 包里面，它工作在网络层，是 IP 协议的助手。可查询当前网络的控制信息状态。
+
 ![](http://img.070077.xyz/202206101754337.png)
 
 
@@ -236,10 +238,13 @@ ICMP （Internet Control Message Protocol），称作互联网控制报文协议
 ![](http://img.070077.xyz/202206101829702.png)
 
 - SNMP
+
 An application-layer protocol used to convey network-management control and information messages between a managing server and an agent executing on behalf of that managing server.
 
 --- 
 参考材料：
+
 [[译] NAT 穿透是如何工作的：技术原理及企业级实践（Tailscale, 2020） (arthurchiao.art)](https://arthurchiao.art/blog/how-nat-traversal-works-zh/)
 [《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)
+
 [小林coding (xiaolincoding.com)](https://www.xiaolincoding.com/)

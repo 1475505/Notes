@@ -90,7 +90,7 @@ try {
 ![](http://img.070077.xyz/202204271759665.png)
 
 ConditionObject 是 AQS 的内部类，其实现包括：等待队列 、等待和通知。
-- 等到队列
+- 等待队列
 
 ![](http://img.070077.xyz/202204271812076.png)
 - 等待
@@ -178,8 +178,7 @@ for (int hops = 0; ; hops++) {
 ![](http://img.070077.xyz/202204290209510.png)
 
 特色DelayQueue 非常有用，。比如：
--  缓存系统的设计：可以用 DelayQueue 保存缓存元素的有效期，使用一个线程循环查
-询 DelayQueue, 一旦能从 DelayQueue 中获取元素时，表示缓存有效期到了 。
+- 缓存系统的设计：可以用 DelayQueue 保存缓存元素的有效期，使用一个线程循环查询 DelayQueue, 一旦能从 DelayQueue 中获取元素时，表示缓存有效期到了 。
 - 定时任务调度 ：使用 DelayQueue 保存当天将会执行的任务和执行时间，一旦从
 DelayQueue 中 获取到任务就开始执行。如 `TimerQueue`
 
@@ -243,13 +242,11 @@ protected Integer compute () {
 >  原子更新基本类型类
 
 - AtomicBoolean/Atomiclnteger/AtomicLong 人如其名，方法类似，以`AtomicLong`为例：
-
-- int addAndGet ( int delta ) ：以 原子方式将输入的数值与实例中的值相加 ，并返回结果。
-- boolean compareAndSet (int expect, int update) ：如果输入的数值等于预期值，则以原
-子方式将该值设置为输入的值 。
--  int getAndlncrement(）：以原子方式将当前值加1, 返回自增**前**的值 。
-- void lazySet ( int newValue )：最终会设置成 newValue, 使用 lazySet 设置值后，可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
-- int getAndSet (int newValue ) ：以原子方式设置为 newValue 的值，并返回旧值 。
+  - int addAndGet ( int delta ) ：以 原子方式将输入的数值与实例中的值相加 ，并返回结果。
+  - boolean compareAndSet (int expect, int update) ：如果输入的数值等于预期值，则以原子方式将该值设置为输入的值。
+  -  int getAndlncrement(）：以原子方式将当前值加1, 返回自增**前**的值 。
+  - void lazySet ( int newValue )：最终会设置成 newValue, 使用 lazySet 设置值后，可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
+  - int getAndSet (int newValue ) ：以原子方式设置为 newValue 值，并返回旧值 。
 
 > 还有原子更新数组、引用类型、字段类的方法，略。
 
@@ -276,8 +273,7 @@ CyclicBarrier 默认的构造方法是 CyclicBarrier (int parties)，其参数�
 
 Semaphore （信号量）是用来控制同时访问特定资源的线程数最，它通过协调各个线程，以保证合理的使用公共资源，可用于流量控制。
 构造方法 `Semaphore (int permits)` 接受一个整型的数字，表示可用的许可证数，也就是最大并发数。
-首先线程使用 Semaphore 的 acquire 方法获取一个许可证，使用完之后调用 release 方法归还
-许可证。 还可以用 tryAcquire() 方法尝试获取许可证 。
+首先线程使用 Semaphore 的 acquire 方法获取一个许可证，使用完之后调用 release 方法归还许可证。 还可以用 tryAcquire() 方法尝试获取许可证 。
 
 ## 线程间交换数据的 Exchanger
 

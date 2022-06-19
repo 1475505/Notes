@@ -230,7 +230,7 @@ for (step = 1; step < length; step *= 2) {
 
 > 类似：[650. 只有两个键的键盘](https://leetcode-cn.com/problems/2-keys-keyboard/)便是乘法型的题。下面的518题也是。
 
-[115. 不同的子序列](https://leetcode.cn/problems/distinct-subsequences/)
+[115. 不同的子序列](https://leetcode.cn/problems/distinct-subsequences/)：需要明确地找到子问题
 
 ##  背包/数组篇
 

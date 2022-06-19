@@ -258,6 +258,11 @@ At the receiver, all four 16-bit words are added, including the checksum. If no 
 
 ## RDT(可靠数据传输)
 
+> 本部分内容对应北邮PPT链路层的六个协议。
+>![](http://img.070077.xyz/202206191720448.png)![](http://img.070077.xyz/202206191726661.png)
+
+
+
 ![Sender cannot see Receiver directly](http://img.070077.xyz/202203152141739.png)
 
 ### RDT2: channel with Bit Errors
@@ -398,8 +403,9 @@ TCP provides flow control by having the *sender* maintain a variable called the 
 
 > why not 2？无法防止历史连接的建立。
 >
-> |![can’t “see” other side](http://img.070077.xyz/202203160809783.png) | ![delay->reordering?](http://img.070077.xyz/202203160808652.png) |
+> | ![can’t “see” other side](http://img.070077.xyz/202203160809783.png) | ![delay->reordering?](http://img.070077.xyz/202203160808652.png) |
 > | ------------------------------------------------------------ | ------------------------------------------------------------ |
+> | | |
 
 1. The client-side TCP first sends a special TCP segment - **SYN segment** to the server-side TCP.(SYNbit = 1)
 2. the server extracts the TCP SYN segment from the datagram, allocates the TCP buffers and variables to the connection, and sends a connection-granted segment - **SYNACK segment** to the client TCP.
@@ -538,6 +544,9 @@ Quick UDP Internet Connections Protocol's major features:
 
 --- 
 参考：
+
 [《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)
+
 《图解HTTP》
+
 小林coding
