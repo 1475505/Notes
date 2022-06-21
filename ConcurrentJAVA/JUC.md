@@ -130,12 +130,13 @@ ConcurrentHashMap容器使用锁分段技术，内含多把锁，每一把锁用
 尝试 2 次通过不锁住 Segment 的方式来统计各个 Segment大小，如果统计的过程中，容器的 count 发生了变化（写元素都会将变量 modCount 进行加1），则再采用加锁的方式来统计所有Segment 的大小 。
 
 ## ConcurrentLinkedQueue
+
 ![](http://img.070077.xyz/202204272335337.png)
 
 
 - 通过CAS算法入队
 
-使用 hops 变量来控制并减少 tail 节点的更新频率，并不是每次节点入队后都将 tail 节点 更新成尾节点，而是当 tail 节点和尾节点的距离大于等于 HOPS 的值 (默认等于1) 时才更新 tail 节点.
+使用 hops 变量来控制并减少 tail 节点的更新频率，并不是每次节点入队后都将 tail 节点更新成尾节点，而是当 tail 节点和尾节点的距离大于等于 HOPS 的值 (默认等于1) 时才更新 tail 节点.
 ```java
 Node<E> t=tail;
 //p用来表示队列的尾节点，默认情况下等于tail节点。
@@ -149,38 +150,36 @@ for (int hops = 0; ; hops++) {
 		if (hops > HOPS && t != tail )
 			continue retry;
 		p=next;
-		}
-		//如果p是尾节点，则设置p节点的next节点为入队节点。
-		else if (p.casNext(null,n)){
-		/*如果tail节点有大于等于1个next节点，则将入队节点设置成tai1节点，
-		更新失败了也没关系，因为失败了表示有其他线程成功更新了tai1节点*/
-			if(hops>=HOPS)
-				casTail(t,n);//更新tai1节点，允许失败
-				return true;
-			}
-		//p有next节点，表示p的next节点是尾节点，则重新设置p节点
-		else {
-			p=succ(p);
+	}
+	//如果p是尾节点，则设置p节点的next节点为入队节点。
+	else if (p.casNext(null,n)){
+	/*如果tail节点有大于等于1个next节点，则将入队节点设置成tail节点，
+	更新失败了也没关系，因为失败了表示有其他线程成功更新了tail节点*/
+		if(hops>=HOPS){
+			casTail(t,n);//更新tail节点，允许失败
+		return true;
+	}
+	//p有next节点，表示p的next节点是尾节点，则重新设置p节点
+	else 
+		p=succ(p);
 }//...
-			```
+```
 
 - 出队也是类似的
 
 首先获取头节点的元素，然后判断头节点元素是否为空，如果为空，表示另外一个线程已经进行了一次出队操作将该节点的元素取走，如果不为空，则使用 CAS 的方式将头节点的引用设置成 null，如果 CAS 成功，直接返回头节点的元素；如果不成功，表示另外一个线程已经进行了一次出队操作更新了 head 节点，导致元素发生了变化， 需要重新获取头节点 。
 
-
 ## 阻塞队列
 
 阻塞队列(BlockingQueue)是一个支持两个附加操作的队列：
-1)  支持阻塞的插入方法：意思是当队列满时，队列会阻塞插入元素的线程，直到队列不满 。
+1) 支持阻塞的插入方法：意思是当队列满时，队列会阻塞插入元素的线程，直到队列不满 。
 2) 支持阻塞的移除方法 ：意思是在队列为空时，获取元素的线程会等待队列变为非空 。
 
 ![](http://img.070077.xyz/202204290209510.png)
 
-特色DelayQueue 非常有用，。比如：
+特色DelayQueue 非常有用。比如：
 - 缓存系统的设计：可以用 DelayQueue 保存缓存元素的有效期，使用一个线程循环查询 DelayQueue, 一旦能从 DelayQueue 中获取元素时，表示缓存有效期到了 。
-- 定时任务调度 ：使用 DelayQueue 保存当天将会执行的任务和执行时间，一旦从
-DelayQueue 中 获取到任务就开始执行。如 `TimerQueue`
+- 定时任务调度 ：使用 DelayQueue 保存当天将会执行的任务和执行时间，一旦从 DelayQueue 中 获取 到任务就开始执行。如 `TimerQueue`
 
 LinkedTransferQueue 是一个由链表结构组成的无界阻塞 TransferQueue 队列 。 相对其他阻塞队列多了 tryTransfer 和 transfer 方法 。
 
@@ -199,7 +198,7 @@ ABQ使用了`Condition`，当往队列里插入一个元素时，如果队列不
 工作窃取 (work-stealing) 算法是指某个线程从其他队列"窃取"任务来执行，充分利用线程进行并行计算，减少线程间竞争。但如双端队列里只有一个任务的情况，该算法消耗更多系统资源。
 
 Fork/Join 使用两个类来完成分治和合并 。
-1. ForkJoinTask : 我们要使用 ForkJoin 框架，必须首先创建一个 ForkJoin 任务 。它提供在任务中执行 fork(）和 join(）操作的机制 。 通常情况下，我们不需要直接继承 ForkJoinTask类，只需要继承它的子类（RecursiveAction(用于没有返回结果的任务)/Recursive Task(有返回结果的任务）
+1. ForkJoinTask : 我们要使用 ForkJoin 框架，必须首先创建一个 ForkJoin 任务 。它提供在任务中执行 fork(）和 join(）操作的机制 。 通常情况下，我们不需要直接继承 ForkJoinTask类，只需要继承它的子类RecursiveAction(用于没有返回结果的任务)/Recursive Task(有返回结果的任务）
 2. ForkJoinPool : ForkJoinTask 需要通过 ForkJoinPool 来执行 。
 
 任务分割出的子任务会添加到当前工作线程所维护的双端队列中，进入队列的头部 。当一个工作线程的队列里暂时没有任务时，它会随机从其他工作线程的队列的尾部获取一个任务 。
@@ -228,7 +227,7 @@ protected Integer compute () {
 	}
 	return sum;
 ```
-
+.
 ### 实现原理
 
 - `fork`：异步执行`((ForkJoinWorkerThread) Thread.current Thread ()). pushTask(this)`
@@ -285,10 +284,6 @@ Exchanger 用于进行线程间的数据交换。它提供一个同步点，在�
 - 生产者-消费者模式：生产者就是生产数据的线程，消费者就是消费数据的线程。通过阻塞队列来进行通信。
 - 异步任务池
 ![](http://img.070077.xyz/202204290239954.png)
-
-
-
-
 
 ---
 参考：

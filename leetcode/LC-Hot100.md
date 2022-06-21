@@ -238,18 +238,18 @@ for (step = 1; step < length; step *= 2) {
 
 ```c++
 int lengthOfLIS(vector<int>& nums) {
-        vector<int> dp;
-        dp.push_back(nums[0]);
-        for (int i = 1; i < len; i++){
-            if (nums[i] > dp.back()){
-                dp.push_back(nums[i]);
-            } else {
-                auto idx = lower_bound(dp.begin(), dp.end(), nums[i]);
-                *idx = nums[i];
-            }
-        }
-        return dp.size();
-    }
+	vector<int> dp;
+	dp.push_back(nums[0]);
+	for (int i = 1; i < len; i++){
+		if (nums[i] > dp.back()){
+			dp.push_back(nums[i]);
+		} else {
+			auto idx = lower_bound(dp.begin(), dp.end(), nums[i]);
+			*idx = nums[i];
+		}
+	}
+	return dp.size();
+}
 ```
 
 [二维的](https://codetop.cc/discuss/245)怎么办？
@@ -263,11 +263,12 @@ int lengthOfLIS(vector<int>& nums) {
 
 ## 递归
 
+[113. 路径总和 II - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-ii/)
 [437. 路径总和 III - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-iii/)
 
 思路：通过主函数、辅函数的协同，是解决树类问题的重要方法。
 
-> 拓展：如何打印出所有路径？
+> 拓展：如何打印出[124. 二叉树中的最大路径和 - 力扣（LeetCode）](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)所有路径？
 
 [1110. 删点成林 - 力扣（LeetCode）](https://leetcode.cn/problems/delete-nodes-and-return-forest/)
 

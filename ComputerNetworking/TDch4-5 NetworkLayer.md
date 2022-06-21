@@ -81,6 +81,11 @@ Datagrams can be lost due to congestion, lack of buffers（Buffering when arriva
 - Round Robin and Weighted Fair Queuing (WFQ)
   ![](http://img.070077.xyz/202203192132836.png)
 
+> 流量整形：
+> 业务量突发：主机不规律地发送数据包，可能导致网络中出现拥塞，需要调整数据发送的平均速率.
+> ![](http://img.070077.xyz/202206201655290.png)
+> 令牌桶算法：在输出的数据流中允许一定的突发性，如果令牌桶是满的，并且到来的数据超过令牌桶容量，则：先以突发速率发送，利用公式 `突发时长＝桶容量 / (最大输出速率 - 令牌到达速率)`   计算出以最大速率发送的时间；当令牌桶中的令牌全部用完，而还有数据要发送，则剩下的数据将以令牌产生的速率匀速发送。
+
 ## The Internet Protocol (IP)
 
 > IP是要设备接入网络后，根据上线的子网分配。在设备还没有IP地址时还需要用MAC地址(6 byte)来区分不同的设备。 总之，MAC地址就像自己的ID号，而IP地址就像带着邮政编码的住址。MAC可以在不依赖网络接入下区分设备。
@@ -245,6 +250,7 @@ An application-layer protocol used to convey network-management control and info
 参考材料：
 
 [[译] NAT 穿透是如何工作的：技术原理及企业级实践（Tailscale, 2020） (arthurchiao.art)](https://arthurchiao.art/blog/how-nat-traversal-works-zh/)
+
 [《计算机网络 - 自顶向下方法》第八版](https://gaia.cs.umass.edu/kurose_ross/index.php)
 
 [小林coding (xiaolincoding.com)](https://www.xiaolincoding.com/)

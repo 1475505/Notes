@@ -26,5 +26,7 @@
   - [数据链路层-物理层](ComputerNetworking/TDch6%20DataLink%20&Physic.md)
   - [移动网络与网络安全](ComputerNetworking/TDch7-8%20phone&security.md)
   - [网络编程](ComputerNetworking/网络编程.md)
+- [计算机体系架构]
+  - [计组期末刷题笔记](体系架构/计组期末刷题笔记.md)
 - [软件工程]
   - [设计模式] 

@@ -27,6 +27,8 @@ End systems attached to the Internet provide a *socket interface*（套接字接
 
 > QoS - Quality of Service：latency, bandwidth, bit-error-rate.
 > 
+> 传输机会TXOP：每个站获得相同的传输时间,而不是相同数量的帧，解决速率异常（每个站点得到相同的平均数据率）
+
 - SDU服务数据单元：为完成用户所要求的功能而应传送的数据。
 - PCI协议控制信息：控制协议操作的信息。
 - PDU协议数据单元：该层同层之间传送的数据单位。（如网络层是包）

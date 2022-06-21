@@ -12,6 +12,8 @@
 
 In every host, link layer implemented in network interface card (NIC, 网卡) or on a chip, which attaches into host's system buses
 
+注：以太网的MAC帧是无连接、不可靠服务。
+
 ## Error
 
 ### 奇偶校验位
@@ -19,18 +21,21 @@ In every host, link layer implemented in network interface card (NIC, 网卡) or
 奇校验表示 $all\space data\space bits \oplus checkBit == 1$
 偶校验类似。
 
+纠错和检错能力与汉明距离有关。若码表的汉明距离为 d+1，则可检查出 d 比特的错误，汉明距离为 2d+1,则可纠正 d 比特的错误。
+
 ### 汉明码
 
 不多说了，直接看吧：[How Hamming Code Works](https://harryli0088.github.io/hamming-code/)
 
+![](http://img.070077.xyz/202206200918381.png)
+
+
 ### CRC
 
 Cyclic Redundancy Check (循环冗余检验），即传输二元组<D, R>.
-- 发送方将数据比特串看成多项式的系数，补充r个（生成多项式长度，由传输协议觉得）0后，进行异或除法，商为校验信息 R。
+- 发送方将数据比特串看成多项式的系数，补充r个（生成多项式长度，由传输协议决定）0后，进行异或除法，商为校验信息 R。
 - 接收方对生成多项式进行模2除法，余数不为0即认为有错，拒绝。
 ![G（X） = X4 + X3 + 1](http://img.070077.xyz/202206141242571.png)
-
-纠错和检错能力与汉明距离有关。若码表的汉明距离为 d+1，则可检查出 d 比特的错误，汉明距离为 2d+1,则可纠正 d 比特的错误。
 
 ---
 两种链路（信道）：
@@ -54,10 +59,9 @@ Cyclic Redundancy Check (循环冗余检验），即传输二元组<D, R>.
 
 ### PPP
 
-Point-to-Point Protocol，面向字节，字节填充。支持多种网络层协议、用户身份认证、物理层可以是同步的或异步的；去除了差错纠正、流量控制（靠上层了）。
+Point-to-Point Protocol，面向*字节*，字节填充。支持多种网络层协议、用户身份认证、物理层可以是同步的或异步的；去除了差错纠正、流量控制（靠上层了）。
 
 >  PPPoE (PPP over Ethernet, ADSL)：拨号上网...
-
 
 PPP 的帧格式：
 - 控制字段0x03表示无编号模式，对控制字符前面加上转移字符 0x7D
@@ -143,7 +147,7 @@ CSMA/CD: with collision detection:
 
 CSMA/CA: 冲突避免，用于无线网。(如果检测到冲突，立即停止传输 (退避) 并开始发送一个强化信号(jam信号)，而不是将整个帧都传输完。Jam信号传输结束后，随机等待一段时间，再重新开始监听信道。)
 
-这个等待的时间采用 **截断二进制指数退避算法** 来确定。从离散的整数集合 $$ 0, 1, .., 2^{k}-1, k = min(尝试的次数, 10) $$中随机取出一个数，记作 r，然后取 r 倍的争用期作为重传等待时间。再次传输重试，最大延迟时间加倍，重传时间 = r * 基本重传时间。如果达到预设的最大尝试次数(通常为16次)，则终止。
+这个等待的时间采用 **截断二进制指数退避算法** 来确定。从离散的整数集合 $$ 0, 1, .., 2^{k}-1, k = min(尝试的次数, 10) $$中随机取出一个数，记作 r，然后取 r 倍的争用期作为重传等待时间。再次传输重试，最大延迟时间加倍，重传时间 = r * 基本重传时间。*如果达到预设的最大尝试次数(通常为16次)，则终止。*
 
 协议使得帧发送时延远大于传播时延时，信道效率高。
 
@@ -182,6 +186,7 @@ MAC (Media Access Control Address or LAN or physical or Ethernet) address:
      - function: used “locally” to get frame from one interface to another physically-connected interface (same subnet, in IP-addressing sense).  
 	     - 48-bit MAC address (for most LANs) burned in NIC ROM, also sometimes software settable. each interface on LAN has unique MAC address。（由 IEEE 统管分发）
 ![](http://img.070077.xyz/202206150305610.png)
+
 一台主机拥有多少个网络适配器就有多少个 MAC 地址。例如笔记本电脑普遍存在无线网络适配器和有线网络适配器，因此就有两个 MAC 地址。
 
 ### 地址解析协议 ARP
@@ -218,14 +223,16 @@ R determines outgoing interface, passes datagram with IP source A, destination B
 ![](http://img.070077.xyz/202206150919015.png)
 
 - 交换机(Switch) is a link-layer device, examine incoming frame's **MAC** address, *selectively* forward  frame to one-or-more outgoing links when frame is to be forwarded on segment, uses CSMA/CD to access segment. each link is its own collision domain.(全双工通信) 交换机具有自学习能力，学习的是交换表的内容，交换表中存储着 MAC 地址到接口的映射。即插即用，不需配置。
+
 > 自学习过程:
 > 主机 A 向主机 B 发送数据帧时，交换机把主机 A 的接口的映射写入交换表中。如果交换表没有主机 B 的表项，那么主机 A 就发送广播帧Flooding，主机 B 向 A 回应该帧。
 > MAC转发表也是本地的，只在单个广播域（即一个IP子网内）有效。
 
 - 千兆以太网
-最大线缆长度仅有25米，对CSMA/CD协议进行载波扩展，达到200米：在普通的帧后面增加填充比特，将帧的长度扩展到512 字节； 允许发送方将多个帧级联在一起一次传输出去。
 
-- 流量控制：快速以太网和千兆以太网很容易导致缓冲区溢出。使用暂停帧 (一种控制帧PALSE) 允许或禁止帧的传输，暂停时间是最小帧时的整数倍。
+最大线缆长度仅有25米，对CSMA/CD协议进行载波扩展，达到200米：在普通的帧后面增加*填充比特*，将帧的长度扩展到512 字节； 允许发送方将多个帧级联在一起一次传输出去。
+
+- 流量控制：快速以太网和千兆以太网很容易导致缓冲区溢出。使用**暂停帧** (一种控制帧PALSE) 允许或禁止帧的传输，暂停时间是最小帧时的整数倍。
 
 ![](http://img.070077.xyz/202206150930866.png)
 

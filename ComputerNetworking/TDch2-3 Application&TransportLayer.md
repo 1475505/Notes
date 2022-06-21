@@ -192,7 +192,7 @@ Two principal Internet transport protocols:
 
 HTTP/1.1 使用的认证方式如下：
 
-- BASIC 认证（基本认证，extends HTTP/1
+- BASIC 认证（基本认证，extends HTTP/1）
 
   其采用的 Base64 编码方式，不是加密处理，可直接解码；注销不灵活。
 
@@ -344,7 +344,7 @@ The ACK number that Receiver puts in its segment is the sequence number of the *
 TCP only acknowledges bytes up to the **first** missing byte in the stream, TCP is said to provide *cumulative acknowledgments*.
 
 (术语表)
--   `MTU`：一个网络包的最大长度，以太网中一般为 `1500` 字节；
+-   `MTU`：一个网络包的最大长度，以太网中一般为 `1500` 字节；用于限制数据链路层的payload
 -   `MSS`：除去 IP 和 TCP 头部之后，一个网络包所能容纳的 TCP 数据的最大长度；
 -   `RTO`： 重传计时器
 
