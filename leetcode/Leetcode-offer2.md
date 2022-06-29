@@ -23,7 +23,7 @@
             char[] arr = s.toCharArray();
             Arrays.sort(arr);//优先得到第一个排列
             do {
-                reS.add(new String(arr));
+                res.add(new String(arr));
             } while (next_permutation(arr));
             int size = ret.size();
             String[] ans = new String[size];
