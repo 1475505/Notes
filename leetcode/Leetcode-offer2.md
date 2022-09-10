@@ -18,37 +18,37 @@
 [图示](https://leetcode-cn.com/problems/next-permutation/solution/xia-yi-ge-pai-lie-suan-fa-xiang-jie-si-lu-tui-dao-/)
 
 ```java
-        public String[] permutation(String s) {
-            List<String> res = new ArrayList<String>();
-            char[] arr = s.toCharArray();
-            Arrays.sort(arr);//优先得到第一个排列
-            do {
-                res.add(new String(arr));
-            } while (next_permutation(arr));
-            int size = ret.size();
-            String[] ans = new String[size];
-            for (int i = 0; i < size; i++) {
-                ans[i] = ret.get(i);
-            }
-            return ans;
-        }
-        public boolean next_permutation(char[] nums) {
-            int len = nums.length;
-            for (int i = len - 1; i > 0; i--) {
-                if (nums[i] > nums[i - 1]) {//首先找到首个相邻递增对
-                    Arrays.sort(nums, i, len);//直接升序
-                    for (int j = i; j < len; j++) {//交换[i-1]与第一个大者
-                        if (nums[j] > nums[i - 1]) {
-                            char temp = nums[j];
-                            nums[j] = nums[i - 1];
-                            nums[i - 1] = temp;
-                            return true;
-                        }
-                    }
-                }
-            }
-            //Arrays.sort(nums);//用于321->123
-            return false;
+public String[] permutation(String s) {
+	List<String> res = new ArrayList<String>();
+	char[] arr = s.toCharArray();
+	Arrays.sort(arr);//优先得到第一个排列
+	do {
+		res.add(new String(arr));
+	} while (next_permutation(arr));
+	int size = ret.size();
+	String[] ans = new String[size];
+	for (int i = 0; i < size; i++) {
+		ans[i] = ret.get(i);
+	}
+	return ans;
+}
+public boolean next_permutation(char[] nums) {
+	int len = nums.length;
+	for (int i = len - 1; i > 0; i--) {
+		if (nums[i] > nums[i - 1]) {//首先找到首个相邻递增对
+			Arrays.sort(nums, i, len);//直接升序
+			for (int j = i; j < len; j++) {//交换[i-1]与第一个大者
+				if (nums[j] > nums[i - 1]) {
+					char temp = nums[j];
+					nums[j] = nums[i - 1];
+					nums[i - 1] = temp;
+					return true;
+				}
+			}
+		}
+	}
+	//Arrays.sort(nums);//用于321->123
+	return false;
 ```
 
 而组合，也可以用递归考虑。
