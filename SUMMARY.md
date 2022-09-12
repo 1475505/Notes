@@ -10,7 +10,7 @@
   * [SpringNote](JAVA/SpringNote.md)
   * [Spring揭秘](JAVA/Spring揭秘.md)
 * [数据库/大数据/分布式](Database/db.md)
-  - [MapReduce with 6.824.L1](BigData/MapReduce.md)
+  - [MapReduce with 6.824.L1](MapReduce.md)
   - [NoSQL](Database/noSQL.md)
 * [算法笔记](leetcode/调试圣经.md)
   * [C++STL的使用](C++STL的使用.md)
@@ -30,5 +30,5 @@
 - [计算机体系架构]
   - [计组期末刷题笔记](体系架构/计组期末刷题笔记.md)
 - [软件工程]
-  - [静态软件分析（执行流）](Software Engineering/Static Program Analysis - DTF.md)
+  - [静态软件分析-执行流](SoftwareEngineering/StaticProgramAnalysis-DTF.md)
   - [设计模式] 
