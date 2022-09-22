@@ -58,3 +58,43 @@ $$OUT(B) = gen_B \cup (IN(B)-kill_b)$$
 ![](http://img.070077.xyz//20220912153856.png)
 
 # Data Flow Analysis - FD
+![](http://img.070077.xyz//20220918213142.png)
+
+## 不动点定理
+不动点：$f(V)=V$
+![](http://img.070077.xyz//20220918213935.png)
+> complete lattice: any subset $S$ of $P$ has LUB and GLB
+
+## Relate Iterative Algorithm to Fixed Point Theorem
+- 转移函数是单调的。
+- 根据格的定义，Join/Meet是单调的。
+- 算法迭代，经过的node迭代不会超过height of lattice
+- JOIN作为LUB，因此可以达到Control Flow的最符合预期的不动点。(minimal step)
+## May/Must Analysis, A Lattice View
+![](http://img.070077.xyz//20220922205315.png)
+## Meet-Over-all-Paths（MOP）
+
+| 图    | 解释    |
+| --- | --- |
+|  ![](http://img.070077.xyz//20220922211113.png)  | 每条path对应$F_p$操作的结果进行Meet或者Join。<br/>有些path在软件跑起来时不会走这条路（executable）<br/>很难在大程序中进行枚举（Unbounded）<br/>（$MOP\sqsubseteq OURS$OURS->Iterative Algo.) ![](http://img.070077.xyz//20220922232138.png)
+
+## Constant Propogation
+![](http://img.070077.xyz//20220922234532.png)
+![](http://img.070077.xyz//20220922234736.png)
+
+为了保证单调性，UNDEF作为更bottom的node。（const + undef = undef）因此，不再满足可分配性。
+
+# WorkList Algorithm
+![](http://img.070077.xyz//20220923000819.png)
+
+---
+# A1: 活跃变量分析和迭代求解器
+> 实验前提示，IDEA在A1/tai-e目录下打开项目比较好用。注意JDK不要选错哦~
+### LValue & RValue
+![](http://img.070077.xyz//20220917121158.png)
+
+在 Tai-e 的 IR 中，我们把表达式分为两类：LValue 和 RValue。前者表示赋值语句左侧的表达式，如变量（`x = …` ）、字段访问（`x.f = …`）或数组访问（`x[i] = …`）；后者对应地表示赋值语句右侧的表达式，如数值字面量（`… = 1;`）或二元表达式（`… = a + b;`）。而有些表达式既可用于左值，也可用于右值，就比如变量（用Var类表示)。
+
+> 在C++中的理解：左值（lvalue）是一个表达式，它表示一个可被标识的（变量或对象的）内存位置，并且允许使用&操作符来获取这块内存的地址。如果一个左值同时是引用，就称为“左值引用”。
+
+- Java的变量模型和传统C++不一样。

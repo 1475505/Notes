@@ -11,6 +11,8 @@
   * [Spring揭秘](JAVA/Spring揭秘.md)
 * [数据库/大数据/分布式](Database/db.md)
   - [MapReduce with 6.824.L1](MapReduce.md)
+  - [raft with 6.824.L2](Clouding/raft.md)
+  - [Others in 6.824](Clouding/6.824.md)
   - [NoSQL](Database/noSQL.md)
 * [算法笔记](leetcode/调试圣经.md)
   * [C++STL的使用](C++STL的使用.md)
