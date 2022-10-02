@@ -15,6 +15,6 @@
 - Election restriction
   - the voter denies its vote if its own log is more up-to-date than that of the candidate.
   - log entries only flow in one direction, from leaders to followers, and leaders never overwrite existing entries in their logs.
-- 
+
 # Raft Summary Card
 ![](http://img.070077.xyz//20220920102951.png)
