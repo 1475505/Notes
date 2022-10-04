@@ -18,3 +18,27 @@
 - 
 # Raft Summary Card
 ![](http://img.070077.xyz//20220920102951.png)
+
+# Lab2a
+## 类间关系
+- `Raft` 类对应的是每一个节点的信息，不是静态的。
+-> 设定1：对于HeartBeat timeout（收）发起选举，此时rf.HeartBeatSentTime（发）视为心跳。根据状态的不同，或许可以为一个字段复用。不过为了少给自己添加不必要的混乱，还是继续用两个吧。
+## 坑
+`Go`语言的闭包会使对应的外部变量始终为外部变量（？），请看：
+```go
+for i := 0; i < len(rf.peers); i++ {  
+   if i == rf.me {  
+      continue  
+   }  
+   wg.Add(1)  
+   go func() {  
+      DPrintf("heartbeat %d/%d by leader %d.", i, len(rf.peers), rf.me)  
+      appendEntries := &AppendEntries{}  
+      heartbeatReply := &HeartbeatReply{}  
+      succ := rf.sendHeartbeat(i, appendEntries, heartbeatReply)  
+      if !succ { ... }  
+   }()  
+}
+```
+这里，闭包中的`i`会在执行时使用外部值，如你可能会遇到输出`heartbeat 3/3 by leader 1.`，这是因为外面的`i`已经完成了循环，使得函数内读取到`i = len(rf.peers)`.
+
