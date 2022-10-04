@@ -202,6 +202,9 @@ Java 9 引入了模块化特性。模块`module`就是代码和数据的封装�
 
 Java引入指令`invokedynamic`和`invoke`包，使得一些方法调用可以“跨域”调用。Lambda 表达式就是通过 `invokedynamic` 指令实现的。
 
+![](http://img.070077.xyz//20221002100009.png)
+
+
 # 基于栈的字节码解释执行引擎
 
 ![中间的分支就是解释执行过程](http://img.070077.xyz/typora_img/image-20220228015502255.png)
