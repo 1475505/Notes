@@ -25,7 +25,7 @@
 -> How to model heap memory?
 ![](http://img.070077.xyz//20221003213646.png)
 -> A technique is Allocation-site. eg. without iteration, only the site(bounded)
-- Context Sensitivity: *separate* by different contexts, rather than merge.
+- Context Sensitivity: *separate* by different contexts（call）, rather than merge.
 - Flow Sensitivity: Actually we dont respect the exection order of stmts, but **maintain a map of points-to relations at the whole program**  for better performance.
 - Analysis scope: Whole-program/Demand-driven
 ## Pointer-Affecting Statements
@@ -36,12 +36,26 @@
 ## Rule（逻辑推导式）
 ![](http://img.070077.xyz/20221003223855.png)
 
+## Pointer Flow Graph(PFG)
+其实就是把`=`理解为`<-`，构造成指针流图。由此转换成传递闭包的问题。比如说一个对于`b`的`Assign`语句，对应的`relation map`就可以沿着有向边传播。
+![](http://img.070077.xyz/20221005213345.png)
+对于与`field`，其预设的$o_{x} \in pt()$是需要在程序里`Assign`才获得的。Build pointer flow graph (PFG) and Propagate points-to information on PFG is *Mutually dependent*。
+![](http://img.070077.xyz/20221005220550.png)
+- **Differential propagation** is employed to avoid propagation and processing of redundant points-to information. and no need to propagate them.
+
 
 
 # A4：类层次结构分析与过程间常量传播
 - 需要使用一个函数的工具，不一定需要从一个实例出发调用，而可能Static utility比如：`CallGraphs.getCallKind(callSite)` 就无需`new`。
 - 先捋清楚一些类间关系：
-  - Invoke(callsite)
-  - InvokeExp
-  - Node
- 
+  - Invoke(callsite)： 这相当于`DefStmt`的一个范式。
+    - 对于一个语句 `b = a.m(...)` 来说，`b` 是 `result`，`a.m(...)` 是 `InvokeExp`。
+    -   `f(...) {...; b = a.m(...); ...;}`，在这里 `f(...)` 是 `b = a.m(...)` 的 `container`。
+    -   如果想获得 `a` 的类型，不是到 `InvokeExp` 里面找，而是到 `MethodRef` 里面找。
+> `m` 是一个函数签名，但是 `T` 是方法的集合。那怎么才能通过签名获得方法呢？注意上面说的，不要找到 `container` 去了，答案是通过签名的 `getDeclaringClass()` 获得类信息，再通过类信息获得 `JMethod` 对象。
+
+  - Node：与site的关系是..
+- 请注意代码实现与注释规约的一致性。
+- 为了DEBUG相应的模块，你可以看一下Assignment的使用方式。
+ ---
+ Thx：https://github.com/RicoloveFeng/SPA-Freestyle-Guidance
