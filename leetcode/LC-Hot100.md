@@ -89,7 +89,6 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 [84. 柱状图中最大的矩形](https://leetcode.cn/problems/largest-rectangle-in-histogram/)：接雨水的兄弟版本
 [48. 旋转图像](https://leetcode.cn/problems/rotate-image/)：阴间细节题
 
-
 # 链表专题
 
 ## 反转链表
@@ -107,13 +106,16 @@ while (head) {
 }
 return prev;
 ```
-- 递归写法
+- 递归写法（自底向上比较好理解）
 ```c++
-ListNode* reverseList(ListNode* head, ListNode* prev=nullptr) {
-	if (!head) return prev;
-	ListNode* next = head->next;
-	head->next = prev;
-	return reverseList(next, head);
+ListNode* reverseList(ListNode* head)
+	if (!head || !head->next) {
+		return head;
+	}
+	ListNode* newHead = reverseList(head->next);
+	head->next->next = head;
+	head->next = nullptr; // 断掉原后继
+	return newHead;
 }
 ```
 
@@ -128,38 +130,39 @@ ListNode* reverseList(ListNode* head, ListNode* prev=nullptr) {
 
 1. 快慢指针。`fast`每次走两步，`slow`每次走一步，二者会在环里的某个位置相遇，此时`fast`比`slow`超前若干个环长。即：
    $$f=2s=s+nl$$
-2. 得知 $s = nl$ 。记链表头距离环的入口$a$， 则再走$a$步，即可到达环的入口，**因为$a+nl$ 与 $a$ 同位置。**
+2. 得知 $s = nl$ ，也就是说`slow`走的路程刚好是若干个环。记链表头距离环的入口$a$， 则和`slow`再走$a$步，会在环的入口相遇，**因为$a+nl$ 与 $a$ 同位置。**
 3. 利用环形的特性，可以写出如下的代码：
 
 ```cpp
-		if (head == NULL || head->next == NULL) return NULL;
-        ListNode* slow = head;
-        ListNode* fast = head;
-        do{
-            slow = slow->next;
-            if (fast && fast->next)
-                fast = fast->next->next;
-            else
-                return NULL;
-        } while(slow != fast);
-        assert(slow == fast);
-        slow = head;
-        while (slow != fast){
-            slow = slow->next;
-            fast = fast->next;
-        }
-        return slow;
+if (head == NULL || head->next == NULL)
+    return NULL;
+ListNode* slow = head;
+ListNode* fast = head;
+do {
+    slow = slow->next;
+    if (fast && fast->next)
+        fast = fast->next->next;
+    else
+        return NULL;
+} while (slow != fast);
+assert(slow == fast);
+slow = head;
+while (slow != fast) {
+    slow = slow->next;
+    fast = fast->next;
+}
+return slow;
 ```
 
 > 拓展：本题思想可以解决[287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)。
-> 关键是把看作数组的值看作映射。
+> 关键是把数组的值看作映射。
 
 
 -> 有很多数组类型题可以扩展成环形的情况。
 
 [503. 下一个更大元素](https://leetcode-cn.com/problems/next-greater-element-ii/)
 
-这是一道典型的单调栈题目，栈中存储的是还没找到下一个更大元素的元素下标。其中的环形思想，可以通过【求模】实现。
+这是一道典型的单调栈题目，栈中存储的是*还没找到下一个更大元素*的元素*下标*。其中的环形思想，可以通过【求模】实现。
 
 [213. 打家劫舍 II ](https://leetcode.cn/problems/house-robber-ii/)：本题为DP。常见的处理策略是
 - 分类讨论，拆分成两个线性子问题（本题）
@@ -252,7 +255,7 @@ int lengthOfLIS(vector<int>& nums) {
 }
 ```
 
-[二维的](https://codetop.cc/discuss/245)怎么办？
+[二维的](https://leetcode.cn/problems/longest-increasing-path-in-a-matrix/)怎么办？
 
 [518. 零钱兑换 II](https://leetcode.cn/problems/coin-change-2/)：背包问题模型。
 
@@ -266,7 +269,7 @@ int lengthOfLIS(vector<int>& nums) {
 [113. 路径总和 II - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-ii/)
 [437. 路径总和 III - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-iii/)
 
-思路：通过主函数、辅函数的协同，是解决树类问题的重要方法。
+	思路：通过主函数、辅函数的协同，是解决树类问题的重要方法。
 
 > 拓展：如何打印出[124. 二叉树中的最大路径和 - 力扣（LeetCode）](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)所有路径？
 
@@ -320,7 +323,7 @@ BST的基本查找、 结点增加与删除，以及AVL树的查找、结点增�
 **不建议使用`deque` 和 `vector` 的迭代器，会造成迭代器失效的问题**
 
 练习（提示：哈希）：
-[380. O(1) 时间插入、删除和获取随机元素 ](https://leetcode-cn.com/problems/insert-delete-getrandom-o1/)：充分利用数据结构的特性，比如说本题并不要求下标按序，那元素的排列特性能能否用于简化算法呢？
+[380. O(1) 时间插入、删除和获取随机元素 ](https://leetcode-cn.com/problems/insert-delete-getrandom-o1/)：充分利用数据结构的特性，比如说本题并不要求下标按序，那元素的排列特性能否用于简化算法呢？
 [460. LFU 缓存](https://leetcode.cn/problems/lfu-cache/)：著名LRU的pro版本。
 [432. 全 O(1) 的数据结构](https://leetcode-cn.com/problems/all-oone-data-structure/)：LFU能否给你一点启发呢？
 [859 · 最大栈 - LintCode](https://www.lintcode.com/problem/859/)：可以用类似 LRU 的方法降低时间复杂度
@@ -331,4 +334,10 @@ BST的基本查找、 结点增加与删除，以及AVL树的查找、结点增�
 
 [139. 单词拆分](https://leetcode.cn/problems/word-break/)：选取系列，可以考虑字典树。
 
-有关更多设计数据结构方向的练习，欢迎参考Redis的笔记。【TBD】
+## 矩阵系列
+
+前面的数组系列已经很痛苦了，后面还有图和高维的压迫。除了动态规划外，我们来看看一些矩阵的骚操作：
+- 路径问题转换成图，进行拓扑排序。
+
+---
+有关更多设计数据结构方向的技巧，欢迎参考Redis的笔记。【TBD】

@@ -5,9 +5,7 @@
 Spring流行的一个重要原因是：处理了对象与对象之间耦合性。`Bean`是Spring中对对象实例的称呼，可以视Spring为对象管理层。
 ```java
 public class BeanFactory {
-
     private Map<String, Bean> beanMap = new HashMap<>();
-    
     public Bean getBean(String key){
       return beanMap.get(key) ;
     }
@@ -225,4 +223,4 @@ MyBatis 是一款优秀的持久层框架，支持自定义 SQL、存储过程�
  > #{}和${}的区别是什么？
 
 -  `${}`是 properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如${driver}会被静态替换为`com.mysql.jdbc.Driver`。
--   `#{}`是 sql 的参数占位符，MyBatis 会将 sql 中的`#{}`替换为? 号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的? 号占位符设置参数值，比如 ps.setInt(0, parameterValue)，`#{item.name}` 的取值方式为使用反射从参数对象中获取 item 对象的 name 属性值，相当于 `param.getItem().getName()`
+- `#{}`是 sql 的参数占位符，MyBatis 会将 sql 中的`#{}`替换为? 号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的? 号占位符设置参数值，比如 ps.setInt(0, parameterValue)，`#{item.name}` 的取值方式为使用反射从参数对象中获取 item 对象的 name 属性值，相当于 `param.getItem().getName()`

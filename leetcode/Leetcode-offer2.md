@@ -81,8 +81,10 @@ template <typename T> void quickSelect ( Vector<T> &A, Rank k ){
 	for(Rank lo=0, hi=A.size()-1; lo < hi; ){
 		Rank i = lo, j = hi; T pivot = A[lo];
 		while(i<j){//注意顺序,先j--
-			while ( (i < j)&&(pivot<=A[j]) ) j--;     A[i] = A[j];
-			while ( (i < j)&&(A[i]<=pivot) ) i++;     A[j] = A[i];
+			while ( (i < j)&&(pivot<=A[j]) ) j--;     
+			A[i] = A[j];
+			while ( (i < j)&&(A[i]<=pivot) ) i++;     
+			A[j] = A[i];
 		}//assert:i==j.得到pivot所应该在是下标
 		A[i]=pivot;
         if ( k <= i ) hi = i - 1;//只查左段
@@ -117,7 +119,6 @@ template <typename T> void quickSelect ( Vector<T> &A, Rank k ){
 上述算法从理论上证实，的确可以在线性时间内完成k-选取。然而很遗憾，其线性复杂度中的常系数项过大，以致在通常规模的应用中难以真正体现出效率的优势。
 
 
-
 下面介绍一种更适合处理海量数据、无需修改数组本身的堆局部排序算法，时间复杂度是O(nlogn)。
 
 Java 中提供了现成的 PriorityQueue（默认小根堆），可以直接地处理TopK大问题。重写构造器，
@@ -142,8 +143,6 @@ Java 中提供了现成的 PriorityQueue（默认小根堆），可以直接地�
         return res;
     }
 ```
-
-
 
 # Day2
 
@@ -319,7 +318,7 @@ public class Merge
 
 然后根据逆序对的性质，就是合成时的两个有序数组，**左边比右边大的位置差**，因此，对于逆序对，其全部产生于第三个判断，有：
 
-`if( tmp[j] < tmp[i]) {nums[k] = tmp[j++]; cnt+=mid-i+1;}`
+`if (tmp[j] < tmp[i]) {nums[k] = tmp[j++]; cnt+=mid-i+1;}`
 
 ## JZ52：链表公共节点
 
@@ -410,6 +409,8 @@ class Solution {
 
 ## JZ57：和为s的连续正数序列
 
+[剑指 Offer 57 - II. 和为s的连续正数序列 - 力扣（LeetCode）](https://leetcode.cn/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/?favorite=xb9nqhhg)
+
 滑动窗口即可。当 s == target 和 s > target 时移动边界操作相同，因此可以合并。
 
 ```java
@@ -475,7 +476,7 @@ class Solution {
 
 ## JZ66：构建乘积数组
 
-![from：[Krahets](https://leetcode-cn.com/u/jyd/)](http://img.070077.xyz/202202210023156.png)
+![from：Krahets(https://leetcode-cn.com/u/jyd/)](http://img.070077.xyz/202202210023156.png)
 
 ## JZ68：二叉树的公共祖先
 
