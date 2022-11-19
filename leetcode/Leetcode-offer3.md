@@ -32,6 +32,16 @@
 
 [剑指 Offer II 057. 值和下标之差都在给定的范围内 - 力扣（LeetCode）](https://leetcode.cn/problems/7WqeDu/) 使用滑动窗口 + 有序集合
 
+### 二分系列
+
+- 枚举答案型：从有穷的解集，二分判定。如[剑指 Offer II 073. 狒狒吃香蕉 - 力扣（LeetCode）](https://leetcode.cn/problems/nZZqjQ/?favorite=e8X3pBZi)
+- 魔改指针型：[剑指 Offer II 068. 查找插入位置 - 力扣（LeetCode）](https://leetcode.cn/problems/N6YdxV/?favorite=e8X3pBZi)最终的位置在`i`，理解指针分数组成区间。
+- 性质难寻型：[剑指 Offer II 070. 排序数组中只出现一次的数字 - 力扣（LeetCode）](https://leetcode.cn/problems/skFtm2/?favorite=e8X3pBZi)
+
+### 前缀和篇
+
+[剑指 Offer II 071. 按权重生成随机数 - 力扣（LeetCode）](https://leetcode.cn/problems/cuyjEf/?favorite=e8X3pBZi)：“展平”
+
 # 字符串篇
 
 [剑指 Offer II 020. 回文子字符串的个数 - 力扣（LeetCode）](https://leetcode.cn/problems/a7VOhD/?favorite=e8X3pBZi)：
@@ -122,16 +132,52 @@ public:
 
 ## 堆
 
+手撕最小堆的`insert`，看这里：[剑指 Offer II 059. 数据流的第 K 大数值 - 力扣（LeetCode）](https://leetcode.cn/problems/jBjn9C/?favorite=e8X3pBZi)。这里需要回顾下自定义排序函数的一个模式：
+```c++
+auto cmp = [&](auto a, auto b){
+	return nums1[a.first] + nums2[a.second] >= nums1[b.first] + nums2[b.second];};//小根堆
+        priority_queue<pair<int, int>, vector<pair<int,int>>, decltype(cmp)> pq(cmp);
+```
+
 [剑指 Offer II 061. 和最小的 k 个数对 - 力扣（LeetCode）](https://leetcode.cn/problems/qn8gGX/?favorite=e8X3pBZi) 本题很容易想到利用最小堆，**但是如果太过无脑，会TLE。或者在重复元素的情况下摔跟头**。
 
 引入一种新思想：【多指针归并】
 因为两个数组均为有序的，因此每次取，只会基于**上次**选出的值，在该状态空间中增加两对。
 
+## 线段树
+
+[剑指 Offer II 058. 日程表 - 力扣（LeetCode）](https://leetcode.cn/problems/fi9suh/?favorite=e8X3pBZi)线段树其实不只是可以用于求和，适合很多传递性的关系运算。如本题。
 
 ## 前缀树
 
 # 回溯法
 
+[剑指 Offer II 081. 允许重复选择元素的组合 - 力扣（LeetCode）](https://leetcode.cn/problems/Ygoe9J/?favorite=e8X3pBZi)
+❌每次从所有元素中乱选一个，不好去重
+✔️每次判断每个元素取的最大个数，不用去重
+
+[剑指 Offer II 082. 含有重复元素集合的组合 - 力扣（LeetCode）](https://leetcode.cn/problems/4sjJUc/)这个的去重思想是：
+- 同层递归树不能选取重复的节点。【也就是说，对同一值的选取，必须在上层是否选取时加以判断】
+- 需要一个内循环进行遍历，一次性进行同值的处理。因为递归函数不太好判定上次选择的情况。(`tmp.back()`为空的头部就不太好处理)
+```cpp
+    void dfs(vector<int> nums, vector<int> tmp, int target, int idx){
+        if (target == 0){ans.push_back(tmp);return;}
+        for (int i = idx; i < nums.size(); i++){
+            if (target - nums[i] < 0) break;
+            if (i > idx && nums[i] == nums[i - 1]) continue;
+            tmp.push_back(nums[i]);
+            dfs(nums, tmp, target - nums[i], i + 1);
+            tmp.pop_back();
+        }
+    }
+```
+同样的思想可以应用于[剑指 Offer II 084. 含有重复元素集合的全排列 - 力扣（LeetCode）](https://leetcode.cn/problems/7p8L0Z/?favorite=e8X3pBZi)
+[剑指 Offer II 087. 复原 IP - 力扣（LeetCode）](https://leetcode.cn/problems/0on3uN/?favorite=e8X3pBZi)便是回溯法一个很好的应用，注意及时剪掉错误的递归树。
+
 # 动态规划
+一般来说，也确实在回溯思想中发现重复子问题时，才想到用DP。如：
+[剑指 Offer II 088. 爬楼梯的最少成本 - 力扣（LeetCode）](https://leetcode.cn/problems/GzCJIP/?favorite=e8X3pBZi)便是回溯时考虑到，pick(1,1)后会有大量重复计算。而本题很明显可以定义$dp[i]$为到达楼梯$i$的最小花费。
+
+[剑指 Offer II 091. 粉刷房子 - 力扣（LeetCode）](https://leetcode.cn/problems/JEj789/?favorite=e8X3pBZi)
 
 # 图

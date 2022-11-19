@@ -1,4 +1,4 @@
-# SpringBoot 介绍
+# SpringBoot in 项目
 
 ## Bean
 
@@ -39,6 +39,7 @@ Bean 具有以下几种作用域：
 ## Bean 的注入
 
 当 Spring Boot 启动时，ComponentScan 的启用意味着会根据指定的路径范围，扫描所有定义的 Bean。
+![](http://img.070077.xyz/20221112152226.png)
 
 -   Spring 内部有三级**缓存**，部分解决了循环依赖
 
@@ -46,26 +47,26 @@ Bean 具有以下几种作用域：
 Map<String,Object> singletonObjects 
 //一级缓存，用于保存实例化、注入、初始化完成的bean实例
 Map<String,Object> earlySingletonObjects 
-//二级缓存，用于保存实例化完成但未初始化的bean实例
+//二级缓存，用于保存实例化完成但[未初始化]的bean实例
 Map<String,ObjectFactory<?> singletonFactories 
-//三级缓存，用于保存bean创建工厂，以便于后面扩展有机会创建代理对象
+//三级缓存，用于保存bean[创建工厂]，以便于后面扩展有机会创建代理对象
 ```
 
 ![](http://img.070077.xyz/202204240052924.png)
 
 ## Bean 的生命周期
 
-- 创建：实例化Bean对象，设置Bean属性
-  -  Aware（注入beanID，Beanfactory和AppCtx可以在bean中获取到ioc容器）如果通过Aware接口声明了依赖关系，则会注入基础层面的依赖
+- 创建：实例化Bean对象，设置Bean属性.
+  - Aware（注入beanID，Beanfactory和AppCtx可以在bean中获取到ioc容器）如果通过Aware接口声明了依赖关系，则会注入基础层面的依赖
   - postProcessBeforeInitialization（对实例化的bean添加一些自定义处理逻辑）
   - afterPropertiesSet（属性被设置之后自定义的事情）
   - Bean init方法
-  -  postProcessAfterInitialization初始化后方法
+  - postProcessAfterInitialization初始化后方法
 ![](http://img.070077.xyz/202204240143059.png)
 
 - 销毁
  - 若实现了DisposableBean接口，则会调用destroy()方法
- - 若配置了destry-method属性，则会调用其配置的销毁方法
+ - 若配置了destroy-method属性，则会调用其配置的销毁方法
 
 ## MVC
 ![](http://img.070077.xyz/202204240144078.png)

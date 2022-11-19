@@ -97,6 +97,9 @@ template <typename T> void quickSelect ( Vector<T> &A, Rank k ){
 
 参考上面的快速`partition`选取，取`A[0..k)`即可。
 
+=>拓展：如果需要去掉重复元素？[P1138 第 k 小整数 - 洛谷](https://www.luogu.com.cn/problem/P1138)
+
+
 ## TopK专题
 
 参：dsacpp12.2.6

@@ -43,7 +43,7 @@ JZ41中[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median
 ```c++
 		for j in range(N - 1, -1, -1):
             numsk = -INF
-            while stack and stack.top < nums[j]:
+            while stack and stack.top() < nums[j]:
                 numsk = stack.pop()
             if leftMin[j] < numsk:
                 return True

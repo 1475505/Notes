@@ -1,8 +1,8 @@
 ***C++ STL的使用手册***
 
-@version 1.1 
+@version 1.2
 
-@updated 20220303
+@updated 20221108
 
 ---
 
