@@ -178,6 +178,13 @@ auto cmp = [&](auto a, auto b){
 一般来说，也确实在回溯思想中发现重复子问题时，才想到用DP。如：
 [剑指 Offer II 088. 爬楼梯的最少成本 - 力扣（LeetCode）](https://leetcode.cn/problems/GzCJIP/?favorite=e8X3pBZi)便是回溯时考虑到，pick(1,1)后会有大量重复计算。而本题很明显可以定义$dp[i]$为到达楼梯$i$的最小花费。
 
-[剑指 Offer II 091. 粉刷房子 - 力扣（LeetCode）](https://leetcode.cn/problems/JEj789/?favorite=e8X3pBZi)
+[剑指 Offer II 091. 粉刷房子 - 力扣（LeetCode）](https://leetcode.cn/problems/JEj789/?favorite=e8X3pBZi)：在`dp`数组中添加一个【状态】，表示【最后的颜色】。
+
+[剑指 Offer II 094. 最少回文分割 - 力扣（LeetCode）](https://leetcode.cn/problems/omKAoA/):`dp`的状态转移方程的循环方向，也就意味着【已解决的子问题】向【未解决的问题】提供信息。
+
+[剑指 Offer II 096. 字符串交织 - 力扣（LeetCode）](https://leetcode.cn/problems/IY6buf/)：双指针会丢失解集。
+
+> 跟我念一遍，字符串一般都是DP题
+
 
 # 图

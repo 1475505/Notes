@@ -502,7 +502,7 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 TreeNode* lowestCommonAncestor(TreeNode* root,TreeNode* p,TreeNode* q) {
         stack<TreeNode*> st;
         TreeNode * res;
-        int deep = 0;//记录当前结果祖先结点的深度
+        int deep = 0;//记录**当前结果祖先结点**的深度
         while (root || !st.empty()) {
             while (root) {
                 st.push(root);
