@@ -1,4 +1,4 @@
-前面是面经，现在是Spring文档，可能涉及英文。
+前面是项目内容，现在是Spring框架文档，可能涉及英文。
 
 # Spring IOC原理
 
@@ -25,5 +25,19 @@ Spring AOP采用*动态代理机制和字节码生成技术*实现。与最初�
 - advice:通知，是织入到目标类连接点上的一段代码，就是增强到什么地方？增强什么内容？
 - target:目标对象，通知织入的目标类
 - Proxy:代理对象，即增强后产生的对象
+
+# Springboot的三种启动方式
+
+1. `@EnableAutoConfiguration` 
+    开启自动装配，帮助SpringBoot应用将所有符合条件的@Configuration配置都加载到当前SpringBoot，并创建对应配置类的Bean，并把该Bean实体交给IoC容器进行管理。
+2. `@ComponentScan("com.packagename.controller")`
+    根据定义的扫描路径，将符合规则的类加载到spring容器中，比如在类中加入了以下注解 @Controller、@Service、@Mapper 、@Component、@Configuration 等等；
+3. `@SpringBootApplication` 
+    标注这是一个springboot的应用，被标注的类是一个主程序，SpringApplication.run(App.class, args);传入的类App.class必须是被@SpringBootApplication标注的类。
+
+
+# 框架启动流程
+![](http://img.070077.xyz/20221112132057.png)
+
 
 

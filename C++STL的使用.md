@@ -1,8 +1,8 @@
 ***C++ STL的使用手册***
 
-@version 1.1 
+@version 1.2
 
-@updated 20220303
+@updated 20221108
 
 ---
 
@@ -150,12 +150,13 @@
 
 `set` 在默认情况下的比较函数为 `<`（如果是非内置类型需要 [重载 `<` 运算符](https://oi-wiki.org/lang/op-overload/#compare)）。然而在某些特殊情况下，我们希望能自定义 `set` 内部的比较方式。这时候可以通过传入自定义比较器来解决问题。
 
-具体来说，我们需要定义一个类，并在这个类中重写仿函数 [重载 `()` 运算符](https://oi-wiki.org/lang/op-overload/#function)。
+具体来说，我们需要定义一个类，并在这个类中重写仿函数 [重载 `()` 运算符](https://oi-wiki.org/lang/op-overload/#function)。（如，可以将重载了 `()` 运算符的结构体变量作为自定义比较函数传入优先队列等 STL 容器中。）
 
 ```c++
 struct cmp {  
-	bool operator()(int a, int b) { return a > b; } //小根堆
+	bool operator()(int a, int b) { return a > b; } //如：小根堆
 };  
+// priority_queue<student, vector<student>, cmp> pq;
 set<int, cmp> s;
 
 //2022年了，或许可以使用lambda表达式？
@@ -168,12 +169,13 @@ set<int, cmp> s;
 - 通过向 `map` 中插入一个类型为 `pair<Key, T>` 的值可以达到插入元素的目的，例如 `mp.insert(pair<string,int>("Alan",100));`
 - 可以直接通过下标访问来进行查询或插入操作。例： `mp["Alan"]=100`。利用下标访问 时，如果 `map` 中不存在相应键的元素，会自动在 `map` 中插入一个新元素，并将其值设置为默认值（对于整数，值为零；对于有默认构造函数的类型，会调用默认构造函数进行初始化）
 - `erase(key)` 函数会删除**键**为 `key` 的 **所有** 元素。返回值为删除元素的数量。
+- 对于每个`map`里的元素，可以使用`.first`获取`key`，使用`second`获取`value`。
 
 ## 无序关联式/哈希适配容器
 
 四种基于哈希实现的无序关联式容器：`unordered_set`，`unordered_multiset`，`unordered_map`，`unordered_multimap`。
 
-其操作与关联式容器类似。其`count`平均时间复杂度是O(1)，优势在我
+其操作与关联式容器类似。而平均时间复杂度是O(1)，优势在我。而如果需要进行`key`的二分查找(`lower_bound`)，则建议使用有序关联式容器。
 
 ### unordered_map
 
@@ -215,13 +217,23 @@ set<int, cmp> s;
 
 - 优先级的定义：
 
-  对于数字，一般是值大者优先。即默认为（大根堆）：
+  对于数字，一般是值大者优先。即默认为（*大* 根堆）：
 
   `priority_queue<int, vector<int>, less<int> > pq;`
 
   第二个参数是内部实现方式；第三个参数 **less表示数字大的优先级越大。如果是`greater<int>`，则为数字小者优先级大。** 优先级大者，位于`top`。
 
-  可以通过类似于关联式容器的方式定义优先级，如最大堆。参见`set`章节。
+  可以通过类似于关联式容器的方式定义cmp。如最大堆。参见`set`章节。
+
+**此容器对于重复元素入堆的情况，为比较随意的，所以，如果有重复元素，最好经过处理再采取对应的算法，或者调整入堆策略。**
+
+在这里给一个模板：
+```c++
+auto cmp = [&](pair<int, int> a, pair<int, int> b){
+            return nums1[a.first] + nums2[a.second] >= nums1[b.first] + nums2[b.second]; //小根堆
+        };
+        priority_queue<pair<int, int>, vector<pair<int,int>>, decltype(cmp)> pq(cmp);
+```
 
 ## pair的常见用法
 
@@ -237,7 +249,7 @@ set<int, cmp> s;
 
 - 可以通过加减运算符实现字符串拼接和删减、比较运算符进行字典序比较。
 
-- `substr(pos,len)`方法截取子串。时间复杂度是O（len）。
+- `substr(pos,len)`方法截取子串。时间复杂度是O（len）。**注意第二个参数是长度！**
 
 - `find(x,pos)`指定了开始寻找的位置为下标`pos`
 

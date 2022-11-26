@@ -25,8 +25,3 @@ The notes have been deployed via GitBook. You can also read them in the followin
 - http://notes.070077.xyz
 
 Also welcome to enter: http://070077.xyz
-
---- 
-# TODO LIST
-
-- 转用云服务器定时任务部署，以减少 HTTPS 流量费用，困难在于网络连通性。

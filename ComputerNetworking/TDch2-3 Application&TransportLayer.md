@@ -328,7 +328,7 @@ Why checked the left ACK?the sender may not have received an ACK for that packet
 ### Why TCP?
 
 -  TCP是面向连接的，提供可靠交付，有流量控制，拥塞控制，提供全双工通信，面向字节流（把应用层传下来的报文看成字节流，把字节流组织成大小不等的数据块），每一条 TCP 连接只能是点对点的（一对一）。
-    
+
 ![TCP segments are passed down to the network layer](http://img.070077.xyz/202203160725337.png)
 
 ### Segment
@@ -384,7 +384,7 @@ e,g. scenario
 
 #### buffer and window
 
-TCP provides flow control by having the *sender* maintain a variable called the **receive window**. TCP receiver “advertises” free buffer space in *rwnd* field in TCP **header** ，guarantees receive buffer will not overflow.
+TCP provides flow control by having the *sender* maintain a variable called the **receive window**. TCP receiver “advertises” free buffer space in `rwnd` field in TCP **header** ，guarantees receive buffer will not overflow.
 
 ![RcvBuffer size set via socket options (typical default is 4096 bytes)](http://img.070077.xyz/202203160804150.png)
 
@@ -403,7 +403,7 @@ TCP provides flow control by having the *sender* maintain a variable called the 
 
 > why not 2？无法防止历史连接的建立。
 >
-> | ![can’t “see” other side](http://img.070077.xyz/202203160809783.png) | ![delay->reordering?](http://img.070077.xyz/202203160808652.png) |
+> ![I can’t “see” other side](http://img.070077.xyz/202203160809783.png) | ![delay->reordering?](http://img.070077.xyz/202203160808652.png) |
 > | ------------------------------------------------------------ | ------------------------------------------------------------ |
 > | | |
 
@@ -505,7 +505,7 @@ AIMD：Additive Increase and Multiplicative Decrease
 - 基于延迟的拥塞控制：*Keep the pipe just full, but no fuller*
 
 $RTT_{min}$  : minimum observed RTT (uncongested path)
-uncongested throughput with congestion window cwnd is *cwnd*/$RTT_{min}$ 
+uncongested throughput with congestion window cwnd is *cwnd* /$RTT_{min}$ 
 
 ###  Fairness
 
