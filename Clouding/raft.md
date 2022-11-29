@@ -18,6 +18,18 @@
 # Raft Summary Card
 ![](http://img.070077.xyz//20220920102951.png)
 
+> ALIAS IN ENV：
+```go
+// Examples
+// Unit run once
+go test -run '...' >log ; cat log | .plog -c 3 ; tail -5 ./log
+// run dstests with a sequence. -c count; -r race -p parallels
+echo ".. .. " | .tlab
+
+.tlab2a 10
+```
+(Mention: 使用pretty print log, 会导致被`[]`包含的部分无法打印)
+
 # Lab2a
 ## 类间关系
 - `Raft` 类对应的是每一个节点的信息，不是静态的。
@@ -52,3 +64,7 @@ for i := 0; i < len(rf.peers); i++ {
 - 遇到过等锁死循环(i.e. dead loop)。
 - 现在的心跳处理等锁太久，又出现多主节点的情况了。TODO
 - `applyCh`还不知道怎么使用，会一直`block`之。
+- 似乎没有处理Append异常的机制。
+-> 设定3：`Apply`对状态机的写入不仅限于`leader`，毕竟我们的目标就是状态机的一致性嘛。
+(你倒是看看Figure 2啊.jpg 【ALL SERVERS！！】)
+目前的设计是在`requestHeartbeat`时进行处理。但是[Student's Guide to Raft](https://thesquareplanet.com/blog/students-guide-to-raft/) 中似乎是在`Raft`里加了一层结构`App`进行操作的，不过也提到了这一操作不必straight away。我先试试...
