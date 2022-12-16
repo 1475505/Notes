@@ -120,6 +120,15 @@ the local DNS server may be on the same LAN as the host; for a residential ISP, 
 >
 > 进行区域传送时使用TCP；域名解析时一般使用UDP协议，负载低、响应快、包体小（部分DNS也可以使用TCP，DNS同时占用UDP和TCP端口53）
 
+某些 DNS 服务通过集中方式来路由流量:
+
+-   [加权轮询调度](http://g33kinfo.com/info/archives/2657)
+    -   防止流量进入维护中的服务器
+    -   在不同大小集群间负载均衡
+    -   A/B 测试
+-   基于延迟路由
+-   基于地理位置路由
+
 ## P2P
 
 ![P2P architecture can be self-scaling](http://img.070077.xyz/202203110340088.png)

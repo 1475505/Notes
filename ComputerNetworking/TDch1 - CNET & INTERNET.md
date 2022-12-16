@@ -149,6 +149,15 @@ In OSI Model:
 - HTTP：mention that client first opens TCP socket to web server
 - web server responds with HTTP reply (containing web page). DONE!!
 
+## CDN
+
+内容分发网络（CDN）是一个全球性的代理服务器分布式网络，它从靠近用户的位置提供内容。通常，HTML/CSS/JS，图片和视频等静态内容由 CDN 提供，CDN 的 DNS 解析会告知客户端连接哪台服务器。
+
+当你服务器上内容发生变动时，**推送 CDN** 接受新内容。直接推送给 CDN 并重写 URL 地址以指向你的内容的 CDN 地址。你可以配置内容到期时间及何时更新(TTL）。流量最小化，但储存最大化。
+
+**CDN 拉取** 是当第一个用户请求该资源时，从服务器上拉取资源。你将内容留在自己的服务器上并重写 URL 指向 CDN 地址，直到内容被缓存在 CDN 上为止。只有最近请求的内容保存在 CDN 中，流量才能更平衡地分散。
+
+
 [[TDch2-3 Application&TransportLayer]]
 
 ---
