@@ -148,6 +148,8 @@ In OSI Model:
 - DNS：IP datagram may forwarded, routed (tables created by RIP, OSPF, IS-IS and/or BGP routing protocols) to DNS server
 - HTTP：mention that client first opens TCP socket to web server
 - web server responds with HTTP reply (containing web page). DONE!!
+<img src="http://img.070077.xyz/20221217200132.png"/>
+将 Web 服务层与应用层（也被称作平台层）分离，可以独立缩放和配置这两层。添加新的 API 只需要添加应用服务器，而不必添加额外的 web 服务器。
 
 ## CDN
 

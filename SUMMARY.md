@@ -13,7 +13,7 @@
 * [数据库/大数据/分布式](Database/db.md)
   - [MapReduce with 6.824.L1](BigData/MapReduce.md)
   - [raft with 6.824.L2](Clouding/raft.md)
-  - [Zookeeper](Clioding/Zookeeper.md)
+  - [Zookeeper](Clouding/Zookeeper.md)
   - [Others in 6.824](Clouding/6.824.md)
   - [NoSQL](Database/noSQL.md)
   - [Redis](Database/Redis.md)

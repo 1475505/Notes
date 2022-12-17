@@ -255,6 +255,8 @@ UDP use: streaming multimedia apps (loss tolerant, rate sensitive)，DNS，SNMP�
 - No connection state.
 - Small packet header overhead.
 
+UDP 可以通过广播将数据报发送至子网内的所有设备。这对 DHCP 很有用，因为子网内的设备还没有分配 IP 地址，而 IP 对于 TCP 是必须的。
+
 ### Segment
 
 ![报文段结构](http://img.070077.xyz/202203151434035.png)
@@ -336,7 +338,9 @@ Why checked the left ACK?the sender may not have received an ACK for that packet
 
 ### Why TCP?
 
--  TCP是面向连接的，提供可靠交付，有流量控制，拥塞控制，提供全双工通信，面向字节流（把应用层传下来的报文看成字节流，把字节流组织成大小不等的数据块），每一条 TCP 连接只能是点对点的（一对一）。
+-  TCP是面向连接的，提供可靠交付，有流量控制，拥塞控制，提供全双工通信，面向字节流（把应用层传下来的报文看成字节流，把字节流组织成大小不等的数据块），每一条 TCP 连接只能是点对点的（一对一）。用以下措施保证数据包不被损坏：
+  -   每个数据包的序列号和[校验码](https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Checksum_computation)。
+  -   [确认包](https://en.wikipedia.org/wiki/Acknowledgement_(data_networks))和自动重传
 
 ![TCP segments are passed down to the network layer](http://img.070077.xyz/202203160725337.png)
 
