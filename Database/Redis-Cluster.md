@@ -188,9 +188,13 @@ Sentinel 负责持续监控主从节点的健康。Sentinel 无法保证消息�
 
 ## 切片集群模式
 每个节点负责整个集群的一部分数据，之间通过一种特殊的二进制协议交互集群信息。将所有数据划分为 16384 个槽位，通过客户端缓存槽位配置信息及纠正机制（`MOVED slot_id node_ip` ）定位Node。
-![](http://img.070077.xyz/20221225022209.png)
+![](http://img.070077.xyz/20221227224034.png)
 
-槽位号是通过 [CRC16 算法 ](https://en.wikipedia.org/wiki/Cyclic_redundancy_check)计算出一个 16 bit 的值得到。槽位号映射到具体的 Redis 节点上有两种方案：
+
+槽位号是通过 [CRC16 算法 ](https://en.wikipedia.org/wiki/Cyclic_redundancy_check)计算出一个 16 bit 的值，并取最右边的 14 个 bit 生成的。
+> 如果用户的 key 包含 {...} 这个样子的字符串的话, 只有 { 中间的部分 } 会被进行哈希. 这个策略可以满足用户希望强制不同的 key 映射到相同节点的需求(假设没有正在进行 resharding)
+
+槽位号映射到具体的 Redis 节点上有两种方案：
 -   **平均分配：** 在使用 cluster create 命令创建 Redis 集群时，Redis 会自动把所有哈希槽平均分布到集群节点上。比如集群中有 9 个节点，则每个节点上槽的个数为 16384/9 个。
 -   **手动分配：** 可以使用 cluster meet 命令手动建立节点间的连接，组成集群，再使用 cluster addslots 命令，指定每个节点上的哈希槽个数。`redis-cli -h 192.168.1.10 –p 6379 cluster addslots 0,1`
 ![](http://img.070077.xyz/20221225132449.png)
