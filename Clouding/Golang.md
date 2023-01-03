@@ -134,6 +134,8 @@ type eface {
 
 # GPM
 
+[GO scheduler-ProcessOn](https://www.processon.com/mindmap/604ef3947d9c087fe253e1d4)
+
 Go 语言中，协程对应的数据结构是`runtime.g`，工作线程对应的数据结构是`runtime.m`。为避免全局队列调度加锁的性能损失，g分配到本地队列（满了才留在全局队列），由`p`持有，m执行。
 ![](http://img.070077.xyz/20221228145613.png)
 
