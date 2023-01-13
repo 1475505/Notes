@@ -117,7 +117,7 @@ RESTful 接口有四条规则：
 - **可自我描述的错误信息（HTTP 中的 status code）** ─ 使用状态码，不要重新造轮子。
 - **[HATEOAS](http://restcookbook.com/Basics/hateoas/)（HTTP 中的HTML 接口）** ─ 你的 web 服务器应该能够通过浏览器访问。
 
-[SpringNote](JAVA/SpringNote.md#接口设计)中有RESTful成熟度层次，可查阅。
+[SpringBootProject](JAVA/SpringBootProject.md#接口设计)中有RESTful成熟度层次，可查阅。
 
 # 数据访问层
 

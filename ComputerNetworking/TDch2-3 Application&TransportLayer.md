@@ -166,31 +166,6 @@ HTTP无法验证通信方的身份，可能遭遇伪装。SSL 还提供了*证�
 
 HTTP 协议无法证明通信的报文完整性，常用的是 MD5 和 SHA-1 等散列值校验是否篡改。
 
-## Overview
-
-A transport-layer protocol provides for logical communication between **application processes** running on different *hosts*, an application’s perspective. (Different  network layer: logical communication between *hosts*)
-
-Two principal Internet transport protocols:
-
-- **TCP:** Transmission Control Protocol 
-  - **reliable, in-order** delivery
-  - *congestion control:* throttle sender when network overloaded
-  - *flow control:* sender won't overwhelm receiver 
-  - ***connection**-**oriented**:* setup required between client and server processes
-  - does not provide: timing, minimum throughput guarantee, security
-
-- **UDP:** User Datagram Protocol (*unreliable* between sending and receiving process)
-  - unreliable, unordered delivery
-  - no-frills extension of “best-effort” IP
-  - does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
-
-> TCP 是面向字节流的协议，UDP 是面向报文的协议.
-> 前者：**消息根据发送窗口、拥塞窗口以及当前发送缓冲区的大小等，可能会被分成多个的 TCP 报文**，需要定义边界进行划分。
-> 后者：**每个 UDP 报文就是一个用户消息的边界**。不会对消息进行拆分。
-- services not available: 
-  - delay guarantees
-  - bandwidth guarantees
-
 ### 加密技术
 
 ![安全通信机制](http://img.070077.xyz/202203180153787.png)
@@ -223,8 +198,34 @@ HTTP/1.1 使用的认证方式如下：
 
   一般会使用 Cookie 来管理Session（会话）。
 
-
+> 账户安全可分为两部分：
+> - Identification：获取你的信息
+> - Authenrazation：确定你有没有权限做这件事情
 # Transport Layer
+## Overview
+
+A transport-layer protocol provides for logical communication between **application processes** running on different *hosts*, an application’s perspective. (Different  network layer: logical communication between *hosts*)
+
+Two principal Internet transport protocols:
+
+- **TCP:** Transmission Control Protocol 
+  - **reliable, in-order** delivery
+  - *congestion control:* throttle sender when network overloaded
+  - *flow control:* sender won't overwhelm receiver 
+  - *connection-oriented*: setup required between client and server processes
+  - does not provide: timing, minimum throughput guarantee, security
+
+- **UDP:** User Datagram Protocol (*unreliable* between sending and receiving process)
+  - unreliable, unordered delivery
+  - no-frills extension of “best-effort” IP
+  - does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
+
+> TCP 是面向字节流的协议，UDP 是面向报文的协议.
+> 前者：**消息根据发送窗口、拥塞窗口以及当前发送缓冲区的大小等，可能会被分成多个的 TCP 报文**，需要定义边界进行划分。
+> 后者：**每个 UDP 报文就是一个用户消息的边界**。不会对消息进行拆分。
+- services not available: 
+  - delay guarantees
+  - bandwidth guarantees
 
 ## Multiplexing and Demultiplexing
 
