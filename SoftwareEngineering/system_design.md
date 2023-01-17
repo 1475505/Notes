@@ -2,14 +2,19 @@
 ## Load Balancer
 ![](http://img.070077.xyz/20221217122859.png)
 
-nginx 支持以下负载均衡方法：
--   **轮询（round-robin）** - DNS return IP one by one, i.e. S1, S2, S3, S1, S2... nginx默认。
--   **最少连接（least-connected）** - 下一个请求被分配给具有最少数量活动连接的服务器（Dynamic balancing）
--   **ip 哈希（ip-hash）** - 使用哈希函数确定下一个请求应该选择哪一个服务器（基于客户端的 IP 地址）
 
-此外，还有以下机制：
-- Random
-- Based on the load of servers (i.e. with weights)
+负载均衡方法有以下。nginx 支持以下负载均衡方法已加黑。
+1.  随机 random：将 key 随机分配到某一个 slot 上，根据概率论可知，吞吐量越大，随机算法的效果越好；
+2.  加权随机 weighted random：为每一个 slot 分配一个权重，在随机的时候考虑权重的影响；可以通过在所有 slot 的权重总和中随机出一个数字 k，找到 k 所在的 slot 位置来实现；
+3.  **轮询 round robin**： DNS return IP one by one, i.e. S1, S2, S3, S1, S2... nginx默认；
+4.  加权轮询 weighted round robin：为每一个 slot 分配一个权重，在按序分配时为权重更高的 slot 分配更多的 key；
+5.  平滑加权轮询 smooth weighted round robin：一种能够均匀地分散调度序列的加权轮询方法，分为以下几个步骤：
+    - 选出当前权重最高的 slot，将 key 分配给它；
+    - 将选出的 slot 的权重数值减去其初始权重；
+    - 将所有 slot 的权重数值都加上它们的原始权重；
+    - 重复以上步骤
+6.  **最少连接数 least connections**：将 key 分配给当前具有最少连接数量的 slot；
+7. **ip 哈希（ip-hash）** - 使用哈希函数确定下一个请求应该选择哪一个服务器（基于客户端的 IP 地址）
 
 分类：
 - 四层负载均衡：根据监看传输层的信息来决定如何分发请求。（执行[网络地址转换（NAT）](https://www.nginx.com/resources/glossary/layer-4-load-balancing/)）

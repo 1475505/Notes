@@ -1,5 +1,5 @@
 # Linearizability 可线性化
-i.e.强一致性。
+i.e.强一致性（严格定义）。
 
 -  If one operation **finish before** another started, then the one finish first has to *come first* in the history
 -  If some read sees a **particluar** written value, then the read must comes after the write in the order
