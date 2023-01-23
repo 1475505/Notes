@@ -120,6 +120,15 @@ the local DNS server may be on the same LAN as the host; for a residential ISP, 
 >
 > 进行区域传送时使用TCP；域名解析时一般使用UDP协议，负载低、响应快、包体小（部分DNS也可以使用TCP，DNS同时占用UDP和TCP端口53）
 
+某些 DNS 服务通过集中方式来路由流量:
+
+-   [加权轮询调度](http://g33kinfo.com/info/archives/2657)
+    -   防止流量进入维护中的服务器
+    -   在不同大小集群间负载均衡
+    -   A/B 测试
+-   基于延迟路由
+-   基于地理位置路由
+
 ## P2P
 
 ![P2P architecture can be self-scaling](http://img.070077.xyz/202203110340088.png)
@@ -157,31 +166,6 @@ HTTP无法验证通信方的身份，可能遭遇伪装。SSL 还提供了*证�
 
 HTTP 协议无法证明通信的报文完整性，常用的是 MD5 和 SHA-1 等散列值校验是否篡改。
 
-## Overview
-
-A transport-layer protocol provides for logical communication between **application processes** running on different *hosts*, an application’s perspective. (Different  network layer: logical communication between *hosts*)
-
-Two principal Internet transport protocols:
-
-- **TCP:** Transmission Control Protocol 
-  - **reliable, in-order** delivery
-  - *congestion control:* throttle sender when network overloaded
-  - *flow control:* sender won't overwhelm receiver 
-  - ***connection**-**oriented**:* setup required between client and server processes
-  - does not provide: timing, minimum throughput guarantee, security
-
-- **UDP:** User Datagram Protocol (*unreliable* between sending and receiving process)
-  - unreliable, unordered delivery
-  - no-frills extension of “best-effort” IP
-  - does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
-
-> TCP 是面向字节流的协议，UDP 是面向报文的协议.
-> 前者：**消息根据发送窗口、拥塞窗口以及当前发送缓冲区的大小等，可能会被分成多个的 TCP 报文**，需要定义边界进行划分。
-> 后者：**每个 UDP 报文就是一个用户消息的边界**。不会对消息进行拆分。
-- services not available: 
-  - delay guarantees
-  - bandwidth guarantees
-
 ### 加密技术
 
 ![安全通信机制](http://img.070077.xyz/202203180153787.png)
@@ -214,8 +198,34 @@ HTTP/1.1 使用的认证方式如下：
 
   一般会使用 Cookie 来管理Session（会话）。
 
-
+> 账户安全可分为两部分：
+> - Identification：获取你的信息
+> - Authenrazation：确定你有没有权限做这件事情
 # Transport Layer
+## Overview
+
+A transport-layer protocol provides for logical communication between **application processes** running on different *hosts*, an application’s perspective. (Different  network layer: logical communication between *hosts*)
+
+Two principal Internet transport protocols:
+
+- **TCP:** Transmission Control Protocol 
+  - **reliable, in-order** delivery
+  - *congestion control:* throttle sender when network overloaded
+  - *flow control:* sender won't overwhelm receiver 
+  - *connection-oriented*: setup required between client and server processes
+  - does not provide: timing, minimum throughput guarantee, security
+
+- **UDP:** User Datagram Protocol (*unreliable* between sending and receiving process)
+  - unreliable, unordered delivery
+  - no-frills extension of “best-effort” IP
+  - does not provide: reliability, flow control, congestion control, timing, throughput guarantee, security, or connection setup.
+
+> TCP 是面向字节流的协议，UDP 是面向报文的协议.
+> 前者：**消息根据发送窗口、拥塞窗口以及当前发送缓冲区的大小等，可能会被分成多个的 TCP 报文**，需要定义边界进行划分。
+> 后者：**每个 UDP 报文就是一个用户消息的边界**。不会对消息进行拆分。
+- services not available: 
+  - delay guarantees
+  - bandwidth guarantees
 
 ## Multiplexing and Demultiplexing
 
@@ -245,6 +255,8 @@ UDP use: streaming multimedia apps (loss tolerant, rate sensitive)，DNS，SNMP�
 - No connection establishment.
 - No connection state.
 - Small packet header overhead.
+
+UDP 可以通过广播将数据报发送至子网内的所有设备。这对 DHCP 很有用，因为子网内的设备还没有分配 IP 地址，而 IP 对于 TCP 是必须的。
 
 ### Segment
 
@@ -327,7 +339,9 @@ Why checked the left ACK?the sender may not have received an ACK for that packet
 
 ### Why TCP?
 
--  TCP是面向连接的，提供可靠交付，有流量控制，拥塞控制，提供全双工通信，面向字节流（把应用层传下来的报文看成字节流，把字节流组织成大小不等的数据块），每一条 TCP 连接只能是点对点的（一对一）。
+-  TCP是面向连接的，提供可靠交付，有流量控制，拥塞控制，提供全双工通信，面向字节流（把应用层传下来的报文看成字节流，把字节流组织成大小不等的数据块），每一条 TCP 连接只能是点对点的（一对一）。用以下措施保证数据包不被损坏：
+  -   每个数据包的序列号和[校验码](https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Checksum_computation)。
+  -   [确认包](https://en.wikipedia.org/wiki/Acknowledgement_(data_networks))和自动重传
 
 ![TCP segments are passed down to the network layer](http://img.070077.xyz/202203160725337.png)
 

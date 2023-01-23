@@ -70,6 +70,12 @@
 ## 前置知识
 - `LoadField` 和 `StoreField` 同时表示实例和静态字段的 load 和 store。这两个类也提供了 `isStatic()` 方法来检查一个 `LoadField/StoreField` 语句是 load/store 静态字段还是实例字段。
 - ![](http://img.070077.xyz/20221016095034.png)
+## 访问者模式
+
+在 `addReachable()` 中，对于不同种类的语句，你需要使用不同的逻辑来处理。实现这种需求的一个合理方式是[访问者模式](https://refactoringguru.cn/design-patterns/visitor)。Tai-e 的 IR 天然支持访问者模式。具体来说，Tai-e 提供了 `pascal.taie.ir.stmt.StmtVisitor` 类，这是所有 `Stmt` 访问者的通用接口，它为所有种类的语句都声明了访问操作。另外，`Stmt` 的非抽象子类都实现了 `accept(StmtVisitor)` 方法，因此它们可以回调来自具体访问者的访问操作。
+
+在 `Solver` 中，我们为 `Stmt` 访问者提供了代码框架（即内部类 `StmtProcessor`），并在 `initialize()` 中创建了它的实例，并将该实例存在字段 `stmtProcessor` 中。如果你选择通过访问者模式实现 `addReachable()` 的逻辑，那么你应该在类 `stmtProcessor` 中实现相关的 `visit(…)` 方法，并使用它来处理可达方法中的语句。在这次作业中，`visit(…)` 方法的返回值被忽略，因此你在实现 `visit(…)` 方法时只需要返回 `null`。
+
 
  ---
  Thx：https://github.com/RicoloveFeng/SPA-Freestyle-Guidance
