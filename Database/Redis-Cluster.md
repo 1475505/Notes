@@ -41,16 +41,57 @@ XREADGROUP GROUP group1 consumer1 STREAMS mymq >
 > 1. AOF 持久化配置为每秒写盘，但这个写盘过程是异步的，Redis 宕机时会存在数据丢失的可能
 > 2. 主从复制也是异步的，主从切换可能丢数据。
 
-## 通信协议
+## 通信协议RESP
 
 RESP（Redis Serialization Protocol，Redis序列化协议），将传输的结构数据分为 5 种最小单元类型，单元结束时统一加上回车换行符号 `\r\n`：
 1. 单行字符串以`+`符号开头，如`+070077.xyz\r\n`
 2. 多行字符串以`$`符号开头，后跟字符串长度。（NULL 用长度为 -1 的多行字符串表示，即`$-1\r\n`；空串用长度为 0 的多行字符串表示`$0\r\n\r\n`）
-3. 整数值以`:`符号开头，后跟整数的字符串形式。如`:070077\r\n`
+3. 整数值以`:`符号开头，后跟整数的字符串形式。如`:777\r\n` （如incr命令返回）
 4. 错误消息以`-`符号开头。如：`-WRONGTYPE Operation .. \r\n`
-5. 数组以`*`号开头，后跟数组的长度。如：`*3\r\n:l\r\n:2\r\n:3\r\n`
+5. 数组以`*`号开头，后跟数组的长度。如：`*3\r\n:1\r\n+str\r\n$5\r\nmlstr\r\n`
 
 其实客户端向服务器发送的指令只有多行字符串一种格式，服务器向客户端回复的响应要支持多种数据结构。
+
+```c
+void processInputBuffer(redisClient *c) {
+    /* Keep processing while there is something in the input buffer */
+    while(sdslen(c->querybuf)) {
+        /* Immediately abort if the client is in the middle of something. */
+        if (c->flags & REDIS_BLOCKED) return;
+
+        /* REDIS_CLOSE_AFTER_REPLY closes the connection once the reply is
+         * written to the client. Make sure to not let the reply grow after
+         * this flag has been set (i.e. don't process more commands). */
+        if (c->flags & REDIS_CLOSE_AFTER_REPLY) return;
+
+        /* Determine request type when unknown. */
+        if (!c->reqtype) {
+            if (c->querybuf[0] == '*') {  //inline
+                c->reqtype = REDIS_REQ_MULTIBULK;
+            } else {  //bulked
+                c->reqtype = REDIS_REQ_INLINE;
+            }
+        }
+
+        if (c->reqtype == REDIS_REQ_INLINE) {
+            if (processInlineBuffer(c) != REDIS_OK) break;
+        } else if (c->reqtype == REDIS_REQ_MULTIBULK) {
+            if (processMultibulkBuffer(c) != REDIS_OK) break;
+        } else {
+            redisPanic("Unknown request type");
+        }
+
+        /* Multibulk processing could see a <= 0 length. */
+        if (c->argc == 0) {
+            resetClient(c);
+        } else {
+            /* Only reset the client when the command was executed. */
+            if (processCommand(c) == REDIS_OK)
+                resetClient(c);
+        }
+    }
+}
+```
 
 ## PubSub（消息多播）
 
@@ -167,7 +208,18 @@ Redis 的重写 AOF 过程是由后台子进程 `bgrewriteaof` （也是指令
 9. KeySpace：键值对统计数量信息。
 ```
 
-## 哨兵机制
+
+# 集群模式
+
+## 单机模式
+Redis 主节点以单个节点的形式存在，这个主节点可读可写，上面存储数据全集。通常单机模式为“1主 N 备”的结构。
+
+问题：
+- 高并发瓶颈。计算（聚合）操作会严重影响整体吞吐
+- 无法自动故障转移（Failover）。故障转移需要“哨兵”Sentinel 辅助
+- 仅支持纵向扩容
+
+### 哨兵机制
 
 Sentinel 负责持续监控主从节点的健康。Sentinel 无法保证消息完全不丢失，但是也能尽量保证消息少丢失。哨兵节点主要负责三件事情：**监控、选主、通知**。为减少误判的情况，哨兵在部署的时候会部署多个节点部署成**哨兵集群**（最少需要*三* 台机器来部署哨兵集群），**通过多个哨兵节点一起判断，就可以就可以避免单个哨兵因为自身网络状况不好，而误判主节点下线等情况。**
 
@@ -184,21 +236,50 @@ Sentinel 负责持续监控主从节点的健康。Sentinel 无法保证消息�
 > 哨兵集群中，节点之间是通过 Redis 的发布者/订阅者机制来相互发现的——主节点上有一个名为`__sentinel__:hello`的频道。
 > `sentinel monitor <master-name> <ip> <redis-port> <quorum> 
 
-# 集群模式
+## Redis Cluster
 
-## 切片集群模式
-每个节点负责整个集群的一部分数据，之间通过一种特殊的二进制协议交互集群信息。将所有数据划分为 16384 个槽位，通过客户端缓存槽位配置信息及纠正机制（`MOVED slot_id node_ip` ）定位Node。
+### 切片
+Redis 集群实现的基础是*分片*，即将数据集有机的分割为多个片，并将这些分片指派给多个 Redis 实例，每个实例只保存总数据集的一个子集，之间通过一种特殊的二进制协议交互集群信息。将所有数据划分为 16384 个槽位（Hash Slot），通过客户端缓存槽位配置信息及纠正机制（`MOVED slot_id node_ip` ）定位Node。
 ![](http://img.070077.xyz/20221227224034.png)
 
 
-槽位号是通过 [CRC16 算法 ](https://en.wikipedia.org/wiki/Cyclic_redundancy_check)计算出一个 16 bit 的值，并取最右边的 14 个 bit 生成的。
+槽位号：通过 [CRC16 算法 ](https://en.wikipedia.org/wiki/Cyclic_redundancy_check)计算出 16 bit 值，取最右边的 14 个 bit （%16384）。
 > 如果用户的 key 包含 {...} 这个样子的字符串的话, 只有 { 中间的部分 } 会被进行哈希. 这个策略可以满足用户希望强制不同的 key 映射到相同节点的需求(假设没有正在进行 resharding)
 
-槽位号映射到具体的 Redis 节点上有两种方案：
+在实际应用中一般采用“一致性哈希”算法，在增删节点的时候，可以保证尽可能多的缓存数据不失效。
+
+槽位号路由到具体的 Redis 节点上有两种方案：
 -   **平均分配：** 在使用 cluster create 命令创建 Redis 集群时，Redis 会自动把所有哈希槽平均分布到集群节点上。比如集群中有 9 个节点，则每个节点上槽的个数为 16384/9 个。
 -   **手动分配：** 可以使用 cluster meet 命令手动建立节点间的连接，组成集群，再使用 cluster addslots 命令，指定每个节点上的哈希槽个数。`redis-cli -h 192.168.1.10 –p 6379 cluster addslots 0,1`
 ![](http://img.070077.xyz/20221225132449.png)
 
+> 为了克服客户端分片业务逻辑与数据存储逻辑耦合的不足，可以通过 Proxy 将业务逻辑和存储逻辑隔离，**基于代理进行分片**。即，Proxy+Redis-Server。
+
+### 故障处理
+Redis Cluster不需要 Sentinel，通过集群内部主节点选举完成故障处理，是一个“自治”的系统。可划分为三大步骤：故障检测、从节点选举以及故障倒换。
+
+1. 故障检测
+   集群中的各个节点会通过相互发送消息的方式来交换自己掌握的集群中各个节点的状态信息。
+   单点视角：Gossip的pingpong消息。发送 Ping 消息的节点就会将无响应的节点标注为疑似下线状态（Probable Fail，Pfail）。
+   集群视角：**超过半数的持有 Slot（槽）的主节点都将某个主节点 X 报告为疑似下线**，那么，主节点 X 将被标记为下线（Fail），并广播出去。
+2. 选举
+   选举新主节点的算法是基于 Raft 算法的 Leader Election 方法来实现的。
+3. 故障倒换
+   获胜的从节点将发起故障转移（Failover），角色从 Slave 切换为 Master，并接管原来主节点的 Slots。
+
+## Codis
+
+Redis Cluster 有很多优点，但是，当集群规模超过百节点级别后，Gossip 协议的效率将会显著下降，通信成本越来越高。而且，任何一个被指派 Slot 的主节点故障，在其恢复期间，集群都是不可用的。
+
+Codis 出现在 Redis Cluster 之前，使用简单，自动平衡，提供命令行接口，支持 RESTful APIs。如下：
+
+![](http://img.070077.xyz/20230125043110.png)
+
+Codis 主要由四部分组成：
+-   Codis Proxy（`codis-proxy`）：是客户端连接的 Redis 代理服务，它本身实现了 Redis 协议。对于一个业务来说，可以部署多个 Codis Proxy，Codis Proxy 本身是无状态的。
+-   Codis Manager（`codis-config`）：是 Codis 的管理工具，支持添加/删除 Redis/Proxy 节点、发起数据迁移等。本身还自带了一个 HTTP Server，会启动一个 Dashboard。
+-   Codis Redis（`codis-server`）：是 Codis 项目维护的一个 Redis 分支，加入了对 Slot 的支持和原子的数据迁移指令。（耦合）
+-   ZooKeeper：存放数据路由表和 `codis-proxy` 节点的元信息和同步。
 
 ## 迁移
 
