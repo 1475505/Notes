@@ -247,7 +247,7 @@ int lengthOfLIS(vector<int>& nums) {
 		if (nums[i] > dp.back()){
 			dp.push_back(nums[i]);
 		} else {
-			auto idx = lower_bound(dp.begin(), dp.end(), nums[i]);
+		auto idx = lower_bound(dp.begin(), dp.end(), nums[i]);
 			*idx = nums[i];
 		}
 	}
@@ -269,7 +269,7 @@ int lengthOfLIS(vector<int>& nums) {
 [113. 路径总和 II - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-ii/)
 [437. 路径总和 III - 力扣（LeetCode）](https://leetcode.cn/problems/path-sum-iii/)
 
-	思路：通过主函数、辅函数的协同，是解决树类问题的重要方法。
+思路：通过主函数、辅函数的协同，是解决树类问题的重要方法。
 
 > 拓展：如何打印出[124. 二叉树中的最大路径和 - 力扣（LeetCode）](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)所有路径？
 

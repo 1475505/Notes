@@ -146,7 +146,7 @@
 
 - `insert(x)` 将元素 x 插入到 `set` 中。自动排序和去重。
 - `erase(x)` 删除值为 x 的 **所有** 元素，返回删除元素的个数。
-- `erase(first,last)` 删除迭代器在 [first,last)范围内的所有元素。
+- `erase(first,last)` 删除迭代器在`[first,last)`范围内的所有元素。
 
 `set` 在默认情况下的比较函数为 `<`（如果是非内置类型需要 [重载 `<` 运算符](https://oi-wiki.org/lang/op-overload/#compare)）。然而在某些特殊情况下，我们希望能自定义 `set` 内部的比较方式。这时候可以通过传入自定义比较器来解决问题。
 

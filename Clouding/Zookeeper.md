@@ -87,6 +87,8 @@ Not linearizble~ Just guarentee above.(ZooKeeper只保证了写入操作的线�
 
 ZooKeeper 使用 Zab 共识协议处理所有的写请求，达成一致，然后写入 WAL，进而应用到本地内存状态机（data tree）。而对于读请求，是直接读取本地数据库即返回。
 
+## ZooKeeper 应用场景
+
 ### 请求预处理（Request Processor）
 
 当 Server 收到一个请求时，首先进行预处理。所有更新请求都会被转为**幂等（idempotent）的事务（txn）**，具体方法为：
@@ -112,6 +114,18 @@ ZooKeeper 使用 Zab 共识协议处理所有的写请求，达成一致，然�
 **一致性视图**。Zookeeper 全局会维持一个事务自增标识：zxid，它本质上是个逻辑时钟，可以标识 Zookeeper 一个时刻的数据视图。Client 在故障重启后重新连接到一个新的 Server 时，如果该 Server 未执行到客户端所存 zxid，则要么 Server 执行到该 zxid 后再回复 Client，要么 Client 换一个更新的 Server 进行连接。如此，可以保证 Client 不会看到回退的视图。
 
 **会话过期**。会话在 Zookeeper 中本质上标识一个 Client 到 Server 的连接。会话有超时时间，如果 Client 长时间（大于超时间隔）不发**请求**或者**心跳**，Server 便会删除该会话。
+
+## ZooKeeper 协调服务
+
+另一种 ZooKeeper/Chubby 非常适用的场景是选主，对于**任务调度器**或其他类似**有状态服务**来说，该功能也十分有用。
+
+另一个例子是，你有一些分了片的资源（数据库、消息流、文件存储、分布式的 actor 等等），并且需要决策哪些分片要放到哪些节点上去。当新节点加入集群后，一些分片需要从现有节点挪动到这些新节点上去，以进行**负载均衡**。
+
+可以通过谨慎的组合使用 ZooKeeper 中的原子操作、暂态节点和通知机制来实现这类任务。
+
+ZooKeeper，etcd 和 Consul 也会用于**服务发现**（service discovery）。Actually，相比线性一致性，**高可用性和对网络的鲁棒性**才是更重要的事情（DNS就不是线性一致的）。尽管服务发现不需要共识协议，但领导者选举需要。
+
+
 
 ---
 感谢：
