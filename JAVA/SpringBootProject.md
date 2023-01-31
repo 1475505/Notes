@@ -115,6 +115,16 @@ Map<String,ObjectFactory<?> singletonFactories
 
 ## 解决跨域
 
+同源策略指的是：协议+域名+端口三者皆相同，可以视为在同一个域，否则为不同域。同源策略限制了从同一个源加载的文档或脚本与来自另一个源的资源进行交互。是一个用于隔离潜在恶意文件的重要安全机制。
+
+跨域的解决方案
+-   **jsonp**：只支持 GET，不支持 POST 请求，不安全 XSS
+-   **cors**：需要后台配合进行相关的设置。使用额外的 HTTP 头来告诉浏览器让运行在一个 origin (domain) 上的 Web 应用被准许访问来自不同源服务器上的指定的资源。
+-   **postMessage**：配合使用 iframe，需要兼容 IE6、7、8、9
+-   **document.domain**：仅限于同一域名下的子域
+-   **websocket**：需要后台配合修改协议，不兼容，需要使用 [http://socket.io](http://socket.io/)
+-   **proxy**：使用代理去避开跨域请求，需要修改 nginx、apache 等的配置
+
 ```java
 @Configuration
 public class CorsConfig implements WebMvcConfigurer { //加配置类CoreConfig
@@ -136,6 +146,18 @@ public class CorsConfig implements WebMvcConfigurer { //加配置类CoreConfig
 
 }
 ```
+
+浏览器将 CORS 请求分成两类：**简单请求**（simple request）和**非简单请求**（not-so-simple request）。如果是复杂请求，那么在进行真正的请求之前，浏览器会先使用 OPTIONS 方法发送一个**预检请求** (preflight request)，携带下面两个首部字段：
+-   `Access-Control-Request-Method`: 这个字段表明了请求的方法；
+-   `Access-Control-Request-Headers`: 这个字段表明了这个请求的 Headers；
+-   `Origin`: 这个字段表明了请求发出的域。
+服务端收到请求后，会以 `Access-Control-* response headers` 的形式对客户端进行回复：
+-   `Access-Control-Allow-Origin`: 能够被允许发出这个请求的域名，也可以使用`*`来表明允许所有域名；
+-   `Access-Control-Allow-Methods`: 用逗号分隔的被允许的请求方法的列表；
+-   `Access-Control-Allow-Headers`: 用逗号分隔的被允许的请求头部字段的列表；
+-   `Access-Control-Max-Age`: 这个**预检请求能被缓存的最长时间**，在缓存时间内，同一个请求不会再次发出预检请求。
+
+> Nginx 是一种高性能的反向代理服务器，可以用来轻松解决跨域问题。相当于起了一个跳板机。
 
 ## 解决前后端交互Long类型精度丢失
 
