@@ -52,6 +52,8 @@ void update(int l, int r, int c, int s, int t, int p) { // [l, r] 为修改区�
 
 ## 二维前缀和/积分图
 
+> **前缀和的一个应用是概率平均，TODO**
+
 [304. 二维区域和检索 - 矩阵不可变 ](https://leetcode-cn.com/problems/range-sum-query-2d-immutable/)
 
 数学基础：
@@ -156,6 +158,132 @@ public class SegmentTreeDynamic {
 ![](http://img.070077.xyz/202205010358221.png)
 
 如果是面试使用的模板，这里的每个节点并不是每层都有一个`Node`，可以是公用的，带上`vector`字段对应每一层。
+
+### 获取节点的最大层数
+
+模拟以$p$的概率往上加一层，最后和上限值取最小。
+
+```
+int randomLevel() {
+  int lv = 1;
+  // MAXL = 32, S = 0xFFFF, PS = S * P, P = 1 / 4
+  while ((rand() & S) < PS) ++lv;
+  return min(MAXL, lv);
+}
+```
+
+### 查询
+查询跳表中是否存在键值为 `key` 的节点。具体实现时，可以设置两个哨兵节点以减少边界条件的讨论。
+
+```
+V& find(const K& key) {
+  SkipListNode<K, V>* p = head;
+
+  // 找到该层最后一个键值小于 key 的节点，然后走向下一层
+  for (int i = level; i >= 0; --i) {
+    while (p->forward[i]->key < key) {
+      p = p->forward[i];
+    }
+  }
+  // 现在是小于，所以还需要再往后走一步
+  p = p->forward[0];
+
+  // 成功找到节点
+  if (p->key == key) return p->value;
+
+  // 节点不存在，返回 INVALID
+  return tail->value;
+}
+```
+
+### 插入
+
+插入节点 `(key, value)`。插入节点的过程就是先执行一遍查询的过程，中途记录新节点是要插入哪一些节点的后面，最后再执行插入。每一层最后一个键值小于 `key` 的节点，就是需要进行修改的节点。
+
+```
+void insert(const K &key, const V &value) {
+  // 用于记录需要修改的节点
+  SkipListNode<K, V> *update[MAXL + 1];
+
+  SkipListNode<K, V> *p = head;
+  for (int i = level; i >= 0; --i) {
+    while (p->forward[i]->key < key) {
+      p = p->forward[i];
+    }
+    // 第 i 层需要修改的节点为 p
+    update[i] = p;
+  }
+  p = p->forward[0];
+
+  // 若已存在则修改
+  if (p->key == key) {
+    p->value = value;
+    return;
+  }
+
+  // 获取新节点的最大层数
+  int lv = randomLevel();
+  if (lv > level) {
+    lv = ++level;
+    update[lv] = head;
+  }
+
+  // 新建节点
+  SkipListNode<K, V> *newNode = new SkipListNode<K, V>(key, value, lv);
+  // 在第 0~lv 层插入新节点
+  for (int i = lv; i >= 0; --i) {
+    p = update[i];
+    newNode->forward[i] = p->forward[i];
+    p->forward[i] = newNode;
+  }
+
+  ++length;
+}
+```
+
+### 删除
+
+删除键值为 `key` 的节点。删除节点的过程就是先执行一遍查询的过程，中途记录要删的节点是在哪一些节点的后面，最后再执行删除。每一层最后一个键值小于 `key` 的节点，就是需要进行修改的节点。
+
+```
+bool erase(const K &key) {
+  // 用于记录需要修改的节点
+  SkipListNode<K, V> *update[MAXL + 1];
+
+  SkipListNode<K, V> *p = head;
+  for (int i = level; i >= 0; --i) {
+    while (p->forward[i]->key < key) {
+      p = p->forward[i];
+    }
+    // 第 i 层需要修改的节点为 p
+    update[i] = p;
+  }
+  p = p->forward[0];
+
+  // 节点不存在
+  if (p->key != key) return false;
+
+  // 从最底层开始删除
+  for (int i = 0; i <= level; ++i) {
+    // 如果这层没有 p 删除就完成了
+    if (update[i]->forward[i] != p) {
+      break;
+    }
+    // 断开 p 的连接
+    update[i]->forward[i] = p->forward[i];
+  }
+
+  // 回收空间
+  delete p;
+
+  // 删除节点可能导致最大层数减少
+  while (level > 0 && head->forward[level] == tail) --level;
+
+  // 跳表长度
+  --length;
+  return true;
+}
+```
 
 # 动态规划专题
 
@@ -273,6 +401,8 @@ int strStr(string haystack, string needle) {
 ```
 
 ## AC自动机
+
+TODO
 
 # 树
 

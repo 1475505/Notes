@@ -16,6 +16,9 @@
 2. 分配内存，匹配合适的内存规格
 
 ## Map
+
+Go语言的Map是HashMap
+
 #### 哈希表
 ![](http://img.070077.xyz/20221216205314.png)
 （使用渐进式rehash进行扩容）
@@ -141,6 +144,23 @@ Go 语言中，协程对应的数据结构是`runtime.g`，工作线程对应的
 
 > `Goexit`:退出当前执行的goroutine，但是defer函数还会继续调用
 > `Gosched`:让出当前goroutine的执行权限，调度器安排其他等待的任务运行，并在下次某个时候从该位置恢复执行。
+
+Golang内存管理模型的逻辑层次参考了TCMalloc，类比：
+
+![](http://img.070077.xyz/20230129024828.png)
+
+![](http://img.070077.xyz/20230129024645.png)
+
+> buf:内存块单元。是采用链表的集合方式，每个Buf通过 Next进行关联，其中 Data为指向底层开辟出来供用户使用的内存。
+
+TCMalloc则是为每个Thread预分配一块缓存，每个Thread在申请内存时首先会先从这个缓存区ThreadCache申请对应的buf，且所有ThreadCache缓存区（`*2`单位，类似于buddy system）还共享一个叫CentralCache的中心缓存（加锁交互，起到针对ThreadCache的一层二级缓存作用）。所以为了解决中和大对象的内存申请（三级缓存），TCMalloc依然有一个全局共享内存堆PageHeap。
+
+Page是Golang内存管理与操作系统交互衡量内存容量的基本单元，Golang内存管理内部本身用来给对象存储内存的基本单元是Object：
+
+![](http://img.070077.xyz/20230129025421.png)
+
+
+
 
 
 ---

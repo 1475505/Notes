@@ -27,6 +27,25 @@ type Stringer interface {
 ```
 则实现此接口的type即可进行print。实现了error接口的对象（即实现了`Error() string`的对象），使用fmt输出时，会调用Error()方法。
 
+如何确保某个类型实现了某个接口的所有方法呢？一般可以使用`var _Person = (*Student)(nil)`进行检测，如果实现不完整，编译期将会报错。
+
+
+接口不仅能作为函数的参数，还能作为结构体的属性。
+
+## 面向对象
+
+> 为什么需要interface？
+> 如若一个类耦合太多的功能，内聚度就不够。不如按功能分出接口，使得多个业务代码不用耦合在一个类里。这是**开闭原则**的体现。（[O]一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。在修改需求的时候，应该尽量通过扩展来实现变化）
+
+**依赖倒转原则**(D)：class 应该依赖接口和抽象类而不是具体的类和函数。
+
+| 反例 | ![](http://img.070077.xyz/20230129023128.png) |
+| ---- | ---- |
+| 正例 | ![](http://img.070077.xyz/20230129022502.png)
+
+我们在设计一个系统的时候，将模块分为3个层次，抽象层、实现层、业务逻辑层。将抽象层的模块和接口定义出来，这里就需要了`interface`接口的设计。
+
+
 # Channel
 > 不要通过共享来通信，而要通过通信来共享。
 
@@ -72,3 +91,44 @@ func fibonacci_consume(c, quit chan int) {
 	}
 }
 ```
+
+# Goroutine与协程
+大佬的观点：Goroutine是用户态线程，不是协程。
+
+协程：可暂停和恢复执行的procedure（函数）。有这么一些理解：
+1. 本质（核心）是直接调度，也就是**可以控制让出和恢复**。不是用户态线程（运行的载体）。`goroutine`是编程语言内部进行调度的，不支持手动控制执行流（`yield`）。
+2. 协程可以作为IO的载体，以解决IO的不确定性。既然是解决不确定性问题，则可以理解为**异步框架**，优势是好写。
+3. `coroutine`可理解为【协函数】，比如C++20的`co_wait`等待事件。
+
+# 控制流体操
+```go
+func test_recover() {  
+	defer func() {  
+		fmt.Println("defer func")  
+		if err := recover(); err != nil {  
+			fmt.Println("recover success")  
+		}  
+	}()  
+  
+	arr := []int{1, 2, 3}  
+	fmt.Println(arr[4])  
+	fmt.Println("after panic")  
+}  
+  
+func main() {  
+	test_recover()  
+	fmt.Println("after recover")  
+}
+```
+
+输出结果
+```
+defer func  
+recover success  
+after recover
+```
+
+> 当 panic 被触发时，控制权就被交给了 defer 。后面的代码不执行。
+
+# Notes
+对等C中`void*`的数据类型，就是unsafe.Pointer。

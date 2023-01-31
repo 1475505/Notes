@@ -1,15 +1,24 @@
 
-
 Redis对象：
 ```c
-struct Redisobject {
-	int4 type;// 4bits
-	int4 encoding;//4bits
-	int24 lru;//24bits
-	int32 refcount;//引用计数，当为零时，对象被销毁，
-	void *ptr;//8bytes in 64-bit system
+// src/redis.h
+typedef struct redisObject {
+    unsigned type:4;
+    unsigned encoding:4;
+    unsigned lru:24; /* lru time (relative to server.lruclock) */
+    int refcount;  // see lifecycle below。 当为零时，对象被销毁，
+    void *ptr;
 } robj;
 ```
+
+我们通过`refcount`的变化看看其生命周期。首先是来自client的请求（to args）：
+1. set
+   对Key和Value的refcount++
+2. get
+   对Key的refcount++，两条通道
+   - `freeClientArgv`：refcount(key)--
+   - `sendApplytoClient`：refcount(value)++, 待replyList处理时，refcount(value)--
+> 因为redis的场景不会出现循环引用的情况，可以使用引用计数法进行GC
 
 # SDS
 
@@ -223,3 +232,157 @@ struct raxNode {
 | 压缩结构 |  ![](http://img.070077.xyz/20221226003817.png)
 | 非压缩结构         |  ![](http://img.070077.xyz/20221226003831.png)
 
+# AE循环和命令处理
+
+通过IO多路复用`epoll`监听`fd`：
+`ReadQueryFromRequest -> fd -> query -> args -> process cmd -> AddReply -> sendReplyToClient`
+
+```c
+void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
+    redisClient *c = (redisClient*) privdata;
+    int nread, readlen;
+    size_t qblen;
+    REDIS_NOTUSED(el);
+    REDIS_NOTUSED(mask);
+
+    server.current_client = c;
+    readlen = REDIS_IOBUF_LEN;
+    /* If this is a multi bulk request, and we are processing a bulk reply
+     * that is large enough, try to maximize the probability that the query
+     * buffer contains exactly the SDS string representing the object, even
+     * at the risk of requiring more read(2) calls. This way the function
+     * processMultiBulkBuffer() can avoid copying buffers to create the
+     * Redis Object representing the argument. */
+    if (c->reqtype == REDIS_REQ_MULTIBULK && c->multibulklen && c->bulklen != -1
+        && c->bulklen >= REDIS_MBULK_BIG_ARG)
+    {
+        int remaining = (unsigned)(c->bulklen+2)-sdslen(c->querybuf);
+
+        if (remaining < readlen) readlen = remaining;
+    }
+
+    qblen = sdslen(c->querybuf);
+    if (c->querybuf_peak < qblen) c->querybuf_peak = qblen;
+    c->querybuf = sdsMakeRoomFor(c->querybuf, readlen);
+    nread = read(fd, c->querybuf+qblen, readlen);
+    if (nread == -1) {
+        if (errno == EAGAIN) {
+            nread = 0;
+        } else {
+            redisLog(REDIS_VERBOSE, "Reading from client: %s",strerror(errno));
+            freeClient(c);
+            return;
+        }
+    } else if (nread == 0) {
+        redisLog(REDIS_VERBOSE, "Client closed connection");
+        freeClient(c);
+        return;
+    }
+    if (nread) {
+        sdsIncrLen(c->querybuf,nread);
+        c->lastinteraction = server.unixtime;
+    } else {
+        server.current_client = NULL;
+        return;
+    }
+    if (sdslen(c->querybuf) > server.client_max_querybuf_len) { //dummy
+        sds ci = getClientInfoString(c), bytes = sdsempty();
+
+        bytes = sdscatrepr(bytes,c->querybuf,64);
+        redisLog(REDIS_WARNING,"Closing client that reached max query buffer length: %s (qbuf initial bytes: %s)", ci, bytes);
+        sdsfree(ci);
+        sdsfree(bytes);
+        freeClient(c);
+        return;
+    }
+    processInputBuffer(c);
+    server.current_client = NULL;
+}
+```
+
+```c
+void sendReplyToClient(aeEventLoop *el, int fd, void *privdata, int mask) {
+    redisClient *c = privdata;
+    int nwritten = 0, totwritten = 0, objlen;
+    size_t objmem;
+    robj *o;
+    REDIS_NOTUSED(el);
+    REDIS_NOTUSED(mask);
+
+    while(c->bufpos > 0 || listLength(c->reply)) {
+        if (c->bufpos > 0) {
+            if (c->flags & REDIS_MASTER) {
+                /* Don't reply to a master */
+                nwritten = c->bufpos - c->sentlen;
+            } else {
+                nwritten = write(fd,c->buf+c->sentlen,c->bufpos-c->sentlen);
+                if (nwritten <= 0) break;
+            }
+            c->sentlen += nwritten;
+            totwritten += nwritten;
+
+            /* If the buffer was sent, set bufpos to zero to continue with
+             * the remainder of the reply. */
+            if (c->sentlen == c->bufpos) {
+                c->bufpos = 0;
+                c->sentlen = 0;
+            }
+        } else {
+            o = listNodeValue(listFirst(c->reply));
+            objlen = sdslen(o->ptr);
+            objmem = zmalloc_size_sds(o->ptr);
+
+            if (objlen == 0) {
+                listDelNode(c->reply,listFirst(c->reply));
+                continue;
+            }
+
+            if (c->flags & REDIS_MASTER) {
+                /* Don't reply to a master */
+                nwritten = objlen - c->sentlen;
+            } else {
+                nwritten = write(fd, ((char*)o->ptr)+c->sentlen,objlen-c->sentlen);
+                if (nwritten <= 0) break;
+            }
+            c->sentlen += nwritten;
+            totwritten += nwritten;
+
+            /* If we fully sent the object on head go to the next one */
+            if (c->sentlen == objlen) {
+                listDelNode(c->reply,listFirst(c->reply));
+                c->sentlen = 0;
+                c->reply_bytes -= objmem;
+            }
+        }
+        /* Note that we avoid to send more than REDIS_MAX_WRITE_PER_EVENT
+         * bytes, in a single threaded server it's a good idea to serve
+         * other clients as well, even if a very large request comes from
+         * super fast link that is always able to accept data (in real world
+         * scenario think about 'KEYS *' against the loopback interface).
+         *
+         * However if we are over the maxmemory limit we ignore that and
+         * just deliver as much data as it is possible to deliver. */
+        if (totwritten > REDIS_MAX_WRITE_PER_EVENT &&
+            (server.maxmemory == 0 ||
+             zmalloc_used_memory() < server.maxmemory)) break;
+    }
+    if (nwritten == -1) {
+        if (errno == EAGAIN) {
+            nwritten = 0;
+        } else {
+            redisLog(REDIS_VERBOSE,
+                "Error writing to client: %s", strerror(errno));
+            freeClient(c);
+            return;
+        }
+    }
+    if (totwritten > 0) c->lastinteraction = server.unixtime;
+    if (c->bufpos == 0 && listLength(c->reply) == 0) {
+        c->sentlen = 0;
+        aeDeleteFileEvent(server.el,c->fd,AE_WRITABLE);
+
+        /* Close connection after entire reply has been sent. */
+        if (c->flags & REDIS_CLOSE_AFTER_REPLY) freeClient(c);
+    }
+}
+```
