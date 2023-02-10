@@ -179,7 +179,7 @@ HTTP 协议无法证明通信的报文完整性，常用的是 MD5 和 SHA-1 等
 
 ### TLS1.3
 
-变化：先验证版本号是否支持拓展。若支持，客户端和服务器就拿到四个共享信息：**Client Random**和**Server Random**、**Client Params**和**Server Params**，两边就可以各自用 ECDHE（密钥交换算法）算出“**Pre-Master**”，再用 HKDF（伪随机数函数，HMAC-based Extract-and-Expand Key Derivation Function） 生成主密钥“**Master Secret**”。在后期的通信中，TLS1.3 里只保留了 AES、ChaCha20 对称加密算法。
+变化：先验证版本号是否支持拓展。若支持，客户端和服务器就拿到四个共享信息：**Client Random**和**Server Random**、**Client Params**和**Server Params**，两边就可以各自用 ECDHE（密钥交换算法）算出“**Pre-Master**”，再用 HKDF（伪随机数函数，HMAC-based Extract-and-Expand Key Derivation Function） 生成主密钥（**Master Secret**）。在后期的通信中，TLS1.3 里只保留了 AES、ChaCha20 对称加密算法。
 
 ![](http://img.070077.xyz/20230125045530.png)
 
@@ -430,10 +430,10 @@ TCP provides flow control by having the *sender* maintain a variable called the 
 #### 3-way handshake
 
 > why not 2？无法防止历史连接的建立。
->
-> ![I can’t “see” other side](http://img.070077.xyz/202203160809783.png) | ![delay->reordering?](http://img.070077.xyz/202203160808652.png) |
-> | ------------------------------------------------------------ | ------------------------------------------------------------ |
-> | | |
+
+| ![](http://img.070077.xyz/202203160809783.png) | ![](http://img.070077.xyz/202203160808652.png) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| I can’t “see” other side | delay->reordering? |
 
 1. The client-side TCP first sends a special TCP segment - **SYN segment** to the server-side TCP.(SYNbit = 1)
 2. the server extracts the TCP SYN segment from the datagram, allocates the TCP buffers and variables to the connection, and sends a connection-granted segment - **SYNACK segment** to the client TCP.
