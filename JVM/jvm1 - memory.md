@@ -302,6 +302,8 @@ Java 8 彻底将永久代 (PermGen) 移除出了 HotSpot JVM，将其原有的�
 - JConsole
 - Visual VM
 
+[线上故障排查全套路，拿走不谢-51CTO.COM](https://www.51cto.com/article/616765.html)
+
 ---
 参考：
 

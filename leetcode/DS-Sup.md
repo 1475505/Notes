@@ -298,7 +298,7 @@ Welcome😀[Dynamic Programming Patterns](https://leetcode.com/discuss/general-d
 [2. 01背包问题 - AcWing题库](https://www.acwing.com/problem/content/2/)
 [3. 完全背包问题 - AcWing题库](https://www.acwing.com/problem/content/3/)
 
-**遍历的顺序：根据状态转移方程的依赖箭头同向，范围肯定是从子问题开始**
+**遍历的顺序：根据状态转移方程的*依赖箭头*同向，范围肯定是从子问题开始**
 
 >==总结==
 >0 - 1背包对物品的迭代放在外层，里层的体积或价值逆向遍历；

@@ -12,9 +12,6 @@
 
 # 批处理系统
 
-
-
-
 ## MapReduce 查询
 ![image.png](http://img.070077.xyz/20230115154344.png)
 
