@@ -1,9 +1,22 @@
 # Linearizability 可线性化
+
+**顺序一致性**定义：如果一个并发执行过程所包含的所有读写操作能够重排成一个全局线性有序的序列，并且这个序列满足以下两个条件，那么这个并发执行过程就是满足顺序一致性的：
+-   **条件I**：重排后的序列中每一个读操作返回的值，必须等于前面对同一个数据对象的最近一次写操作所写入的值。
+-   **条件II**：原来每个进程中各个操作的执行先后顺序，在这个重排后的序列中必须保持一致。
+
+在顺序一致性中，我们有可能读到旧版本的数据.
+
+**线性一致性**定义，与顺序一致性非常相似，也是试图把所有读写操作重排成一个全局线性有序的序列，但除了满足前面的条件I和条件II之外，还要同时满足一个条件：
+-   **条件III**：不同进程的操作，如果在时间上不重叠，那么它们的执行先后顺序，在这个重排后的序列中必须保持一致。
+
 i.e.强一致性（严格定义）。
 
 -  If one operation **finish before** another started, then the one finish first has to *come first* in the history
 -  If some read sees a **particluar** written value, then the read must comes after the write in the order
 - 如果时间序列成环，则为非线性化的。
+
+![](http://img.070077.xyz/20230219172236.png)
+可参考：[一致性模型](https://int64.me/2020/%e4%b8%80%e8%87%b4%e6%80%a7%e6%a8%a1%e5%9e%8b%e7%ac%94%e8%ae%b0.html)
 
 # Zookeeper
 

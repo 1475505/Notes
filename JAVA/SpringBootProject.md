@@ -1,77 +1,6 @@
+
 # SpringBoot in 项目
 
-## Bean
-
-Spring流行的一个重要原因是：处理了对象与对象之间耦合性。`Bean`是Spring中对对象实例的称呼，可以视Spring为对象管理层。
-```java
-public class BeanFactory {
-    private Map<String, Bean> beanMap = new HashMap<>();
-    public Bean getBean(String key){
-      return beanMap.get(key) ;
-    }
-}
-```
-对于一个项目而言，一些对象是需要 Spring 来管理的，另外一些（例如项目中其它的类和依赖的 Jar 中的类）又不需要。所以我们通过各式各样的**注解**去标识哪些是需要成为 Spring Bean，例如 Component 注解等。
-那怎么实例化为 Bean（也就是一个对象实例）呢？很明显，只能通过反射来做了。
-
-有了创建，有了装配，一个 Bean 才能成为自己想要的样子。我们定义一个类为 Bean，如果再显式定义了构造器，那么这个 Bean 在构建时，会自动根据构造器参数定义寻找对应的 Bean，然后反射创建出这个 Bean。
-
-我们一般使用 `@Autowired` 注解让 Spring 容器帮我们自动装配 bean。
-
->`@Autowired`与Spring强耦合，优先按类型；`@Resource`是JDK提供的，优先按名称
-
-Bean 具有以下几种作用域：
-
-**singleton**：单例模式，在每个Spring IoC容器中，对应Bean将只有一个实例。（尽量）
-
-**prototype**：原型模式，每次通过容器的getBean方法获取prototype定义的Bean时，都将产生一个新的Bean实例
-
-**request**：对于每次HTTP请求，使用request定义的Bean都将产生一个新实例，即每次HTTP请求将会产生不同的Bean实例。
-
-**session**：对于每次HTTP Session，使用session定义的Bean产生一个新实例。
-
-**globalsession**：每个全局的HTTP Session，使用session定义的Bean都将产生一个新实例。
-
-
-> AOP: 拦截器以Bean切面获取方法调用的信息，进行功能拓展。
-
-
-## Bean 的注入
-
-当 Spring Boot 启动时，ComponentScan 的启用意味着会根据指定的路径范围，扫描所有定义的 Bean。
-![](http://img.070077.xyz/20221112152226.png)
-
--   Spring 内部有三级**缓存**，部分解决了循环依赖
-
-```java
-Map<String,Object> singletonObjects 
-//一级缓存，用于保存实例化、注入、初始化完成的bean实例
-Map<String,Object> earlySingletonObjects 
-//二级缓存，用于保存实例化完成但[未初始化]的bean实例
-Map<String,ObjectFactory<?> singletonFactories 
-//三级缓存，用于保存bean[创建工厂]，以便于后面扩展有机会创建代理对象
-```
-
-![](http://img.070077.xyz/202204240052924.png)
-
-## Bean 的生命周期
-
-- 创建：实例化Bean对象，设置Bean属性.
-  - Aware（注入beanID，Beanfactory和AppCtx可以在bean中获取到ioc容器）如果通过Aware接口声明了依赖关系，则会注入基础层面的依赖
-  - postProcessBeforeInitialization（对实例化的bean添加一些自定义处理逻辑）
-  - afterPropertiesSet（属性被设置之后自定义的事情）
-  - Bean init方法
-  - postProcessAfterInitialization初始化后方法
-![](http://img.070077.xyz/202204240143059.png)
-
-- 销毁
- - 若实现了DisposableBean接口，则会调用destroy()方法
- - 若配置了destroy-method属性，则会调用其配置的销毁方法
-
-## MVC
-![](http://img.070077.xyz/202204240144078.png)
-
-# Spring项目介绍
 
 ## 常用注解和目录
 
@@ -197,7 +126,119 @@ where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(create_time);
 -- 这个是查询30天前的数据
 ```
 
----
+## SnowFlake
+
+分布式ID生成一个很小但是很重要的基础应用。UUID保证对在同一时空中的所有机器都是唯一的。UUID的缺点是太长(32位)，并且既有数字又有字母。如果想要生成纯数字的id，则Twitter的SnowFlake是一个非常优秀的id生成方案。
+
+实现也非常简单，SnowFlake就是由**毫秒级的时间41位 + 机器ID 10位 + 毫秒内序列12位**组成。当然也可以根据需要调整机器位数和毫秒内序列位数比例（可以比UUID短，一般9-17位左右），性能也很出色。
+
+```java
+public class SnowFlake {  
+    /**  
+     * 起始时间戳  
+     */  
+    private final long startStamp = 1480166465631L;  
+    /**  
+     * 机器id所占的位数  
+     */  
+    private final long workerIdBits = 10L;  
+    /**  
+     * 序列号所占的位数  
+     */  
+    private final long sequenceBits = 12L;  
+    /**  
+     * 机器id的最大值  
+     */  
+    private final long maxWorkerId = -1L ^ (-1L << workerIdBits);  
+    /**  
+     * 序列号的最大值  
+     */  
+    private final long maxSequence = -1L ^ (-1L << sequenceBits);  
+    /**  
+     * 机器id左移的位数  
+     */  
+    private final long workerIdShift = sequenceBits;  
+    /**  
+     * 时间戳左移的位数  
+     */  
+    private final long timeStampShift = workerIdShift + workerIdBits;  
+  
+    private long workerId;  
+    private long sequence = 0L;  
+    private long lastTimeStamp = -1L;  
+  
+    public SnowFlake(long workerId) {  
+        if (workerId > maxWorkerId || workerId < 0) {  
+            throw new IllegalArgumentException(String.format("worker id can't be greater than %d or less than 0", maxWorkerId));  
+        }  
+        this.workerId = workerId;  
+    }  
+  
+    /**  
+     * 获得下一个ID  
+     * @return  
+     */  
+    public synchronized long nextId() {  
+        long currentTimeStamp = timeGen();  
+  
+        // 如果当前时间小于上一次ID生成的时间戳，说明系统时钟回退过，这个时间应该抛出异常  
+        if (currentTimeStamp < lastTimeStamp) {  
+            throw new RuntimeException(String.format("Clock moved backwards. Refusing to generate id for %d milliseconds", lastTimeStamp - currentTimeStamp));  
+        }  
+  
+        // 如果是同一毫秒生成的，则进行序列自增  
+        if (lastTimeStamp == currentTimeStamp) {  
+            sequence = (sequence + 1) & maxSequence;  
+            // 同一毫秒内序列溢出  
+            if (sequence == 0) {  
+                // 阻塞到下一个毫秒，获得新的时间戳  
+                currentTimeStamp = tilNextMillis(lastTimeStamp);  
+            }  
+        } else {  
+            sequence = 0L;  
+        }  
+  
+        lastTimeStamp = currentTimeStamp;  
+        return (currentTimeStamp - startStamp) << timeStampShift    // 时间戳部分  
+                | (workerId << workerIdShift)                       // 机器id部分  
+                | sequence;                                         // 序列号部分  
+    }  
+  
+    /**  
+     * 阻塞到下一个毫秒，直到获得新的时间戳  
+     * @param lastTimeStamp  
+     * @return  
+     */  
+    private long tilNextMillis(long lastTimeStamp) {  
+        long timeStamp = timeGen();  
+        while (timeStamp < lastTimeStamp) {  
+            timeStamp = timeGen();  
+        }  
+        return timeStamp;  
+    }  
+  
+    /**  
+     * 返回以毫秒为单位的当前时间  
+     * @return  
+     */  
+    private long timeGen() {  
+        return System.currentTimeMillis();  
+    }  
+  
+    public static void main(String[] args) {  
+        SnowFlake snowFlake = new SnowFlake(1);  
+        int n = 100;  
+        Set<String> set = new HashSet<>();  
+        for (int i = 0; i < n; i++) {  
+            long id = snowFlake.nextId();  
+            String s = String.valueOf(id);  
+            set.add(s);  
+            System.out.println(s);  
+        }  
+        System.out.println(set.size());  
+    }  
+}
+```
 
 
 # 中间件：MQ
@@ -282,3 +323,10 @@ MyBatis 是一款优秀的持久层框架，支持自定义 SQL、存储过程�
 
 -  `${}`是 properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如${driver}会被静态替换为`com.mysql.jdbc.Driver`。
 - `#{}`是 sql 的参数占位符，MyBatis 会将 sql 中的`#{}`替换为? 号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的? 号占位符设置参数值，比如 ps.setInt(0, parameterValue)，`#{item.name}` 的取值方式为使用反射从参数对象中获取 item 对象的 name 属性值，相当于 `param.getItem().getName()`
+
+
+---
+抄袭过的代码：
+
+SpringBoot如何优雅的将静态资源配置注入到工具类中：https://my.oschina.net/vright/blog/826184
+

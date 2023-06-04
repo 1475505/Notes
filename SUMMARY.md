@@ -8,7 +8,7 @@
   * [JVM类加载机制](JVM/jvm2%20-%20class.md)
   * [JVM执行引擎](JVM/jvm3%20-%20compile.md)
   * [SpringBoot项目介绍](JAVA/SpringBootProject.md)
-  * [SpringBoot框架介绍](JAVA/SpringInside.md)
+  * [SpringBoot框架介绍](Spring.md)
 - 其他编程语言
   - [Go基础](Golang/Basic.md)
   - [Go的具体实现](Golang/Inside.md)
