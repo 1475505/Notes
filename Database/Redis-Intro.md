@@ -368,38 +368,6 @@ scan 34443 match key99* count 1000
 由于Redis 采用渐进式rehash，相对应地，scan也需要同时扫描新旧槽位，然后将结果融合后返回给客户端。
 
 
-# 分布式锁
-
-## 悲观锁
-由String基本数据类型实现。只允许被一个客户端占有，先来先占，为了防止中间逻辑异常，再加上过期时间，以避免死锁。可以使用`set`指令，或使用`setnx`(set if not exists)指令配合`expire`加锁，用完了，再调用del指令释放；
-```redis
-set lock:codehole true ex 5 nx 
-# SET lock_key unique_value（客户端唯一标识） NX（仅不存在时set） PX 10000（过期时间10s）
-# 在Redis2.8+支持的原子指令，以防断电等造成非原子性。
-del lock:codehole
-```
-
-如果在加锁和释放锁之间的逻辑执行时间过长，以至于超出了锁的超时限制，临界区的逻辑则无法严格串行执行。
-- 方案一：是使用[Lua 脚本](https://redisbook.readthedocs.io/en/latest/feature/scripting.html)保证连续多个指令的原子性执行。
-```redis
-tag = random.nextint();  #随机数
-if redis.set(key, tag, nx=True, ex=5):
-	do_something ()
-	redis.delifequals(key, tag) ＃假想的del_if_equals指令
-```
-```Lua
-#delifequals
-if redis.call("get", KEYS[1]) == ARGV[1] then
-	return redis.call("del", KEYS[1])
-else
-	return 0
-end
-```
-- 方案二：**支持可重入**。对客户端的 set 方法进行包装，使用线程的 Threadlocal 变量存储当前持有锁的计数。精确一点还需要考虑内存锁计数的过期时间，复杂性很高，不建议使用。
-
-> 集群环境，如果主从发生 `failover`，就不安全了。引入`RedLock`。
-> 加锁时，需要向过半节点发送 `set(key, value, nx=True, ex)`指令，只要过半节点 set 成功，就认为加锁成功。释放锁时，需要向所有节点发送 del 指令。这个算法会损失一定的性能。
-
 # 事务
 
 指令：
