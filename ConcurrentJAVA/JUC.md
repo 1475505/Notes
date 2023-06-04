@@ -257,7 +257,7 @@ protected Integer compute () {
 
 `CountDownLatch` 、`CyclicBarrier`和 `Semaphore` 工具类提供了一种并发流程控制的手段，`Exchanger` 工具类则提供了在线程间交换数据的一种手段 。
 
-## 等待多线程完成的 CountDownLatch
+## 等待多个线程完成的 CountDownLatch
 
 `CountDownLatch` 的构造函数接收一个 int 类型的参数作为计数器，如果你想等待 N 个小任务线程完成，这里就传入 N 。当我们调用 CountDownLatch 的 countDown 方法时，N--。用在多个线程时，只需要把这个 CountDownLatch 的引用传递到线程里即可 。
 
