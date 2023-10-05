@@ -100,6 +100,41 @@ Java虚拟机存在两种不同的类加载器。一种是启动类加载器，�
 
 优点：使得`Object`类在任何类加载器环境中均为同一个类。
 
+```java
+public class MyClass extends ParentClass {
+    static int staticVar = print("1. Static Variable Initialized");
+    
+    static {
+        print("2. Static Initialization Block Executed");
+    }
+    
+    int instanceVar = print("3. Instance Variable Initialized");
+    
+    {
+        print("4. Instance Initialization Block Executed");
+    }
+    
+    MyClass() {
+        print("5. Constructor Executed");
+    }
+
+    public static int print(String message) {
+        System.out.println(message);
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        MyClass obj = new MyClass();
+    }
+}
+
+class ParentClass {
+    static {
+        System.out.println("0.Parent Class Static Block");
+    }
+}
+
+```
 ### 破坏双亲委派模型
 
 自定义加载器的话，需要继承 `ClassLoader` 。
@@ -113,7 +148,6 @@ Java 9 引入了模块化特性。模块`module`就是代码和数据的封装�
 模块化与之对应地进行了加载器的更新处理。
 
 ![](http://img.070077.xyz/typora_img/image-20220226224215460.png)
-
 # 字节码执行引擎
 
 ## 运行时栈帧结构

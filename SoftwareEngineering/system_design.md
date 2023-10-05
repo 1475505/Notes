@@ -17,8 +17,8 @@
 7. **ip 哈希（ip-hash）** - 使用哈希函数确定下一个请求应该选择哪一个服务器（基于客户端的 IP 地址）
 
 分类：
-- 四层负载均衡：根据监看传输层的信息来决定如何分发请求。（执行[网络地址转换（NAT）](https://www.nginx.com/resources/glossary/layer-4-load-balancing/)）
-- 七层负载均衡：根据监控应用层来决定怎样分发请求。（灵活）
+- 四层负载均衡：根据传输层的头部（如协议和应用程序端口）管理流量，来决定如何分发请求。（执行[网络地址转换（NAT）](https://www.nginx.com/resources/glossary/layer-4-load-balancing/)）无需查看消息的实际内容。
+- 七层负载均衡：根据监控应用层来决定怎样分发请求，根据更详细的信息（例如 HTTP/HTTPS 标头的特征、消息内容、URL 类型和 cookie 数据）做出路由决策。（灵活）
 
 That is the **sharding**. Servers may partioning（分流）and replicating（备份）
 

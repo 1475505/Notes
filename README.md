@@ -19,10 +19,10 @@
 
 Here is a backup repository for my personal notes.
 
-I will try to hide protected materials to keep them protected. Please contact me if there is any infringement.
+I will try best to keep protected materials private. Please contact me if there is still any infringement.
 
 The notes have been deployed via GitBook online by following URLs:
 - http://liul2566.gitbook.io
 - http://notes.070077.xyz
 
-And welcome to enter: http://070077.xyz
+Besides, welcome to enter: http://070077.xyz

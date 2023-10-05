@@ -37,7 +37,8 @@ public class BeanFactory {
 
 ## 三级缓存
 
--   Spring 内部有三级**缓存**，部分解决了循环依赖（只能处理单例作用域的bean的循环依赖，不能处理原型作用域的bean的循环依赖）
+- Spring 内部有三级**缓存**，部分解决了循环依赖（只能处理单例作用域的bean的循环依赖，不能处理原型作用域的bean的循环依赖）
+- 通过**提前暴露半成品的代理对象**来解决循环依赖，而不是使用缓存。
 
 ```java
 Map<String,Object> singletonObjects 
