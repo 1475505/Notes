@@ -11,7 +11,7 @@
   * [Spring介绍](JAVA/Spring.md)
   * [SpringBoot框架介绍](JAVA/SpringBoot.md)
   * [SpringBoot项目介绍](JAVA/SpringBootProject.md)
-- 其他编程语言
+* 其他编程语言
   - [Go基础](Golang/Basic.md)
   - [Go的具体实现](Golang/Inside.md)
   - [Go服务框架项目](Golang/Project-Gee.md)
