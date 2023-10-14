@@ -326,8 +326,6 @@ lazyfree-lazy-server-del no # 有些指令在处理已存在的键时，会带�
 noslave-lazy-flush no  # 针对 slave (从节点) 进行全量数据同步，slave 在加载 master 的 RDB 文件前，会运行 flushall 来清理自己的数据，它表示此时是否开启 lazy free 机制删除。
 ```
 
-
-
 # 分布式锁
 
 ## 悲观锁

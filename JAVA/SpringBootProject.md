@@ -111,9 +111,10 @@ public class JacksonConfig {
 Json web token是有意义的、加密的、包含业务信息的。特性：无状态。由：`Header` `Payload` `Signature` 三个部分组成，分别描述：元数据（数据算法）、Json字段（如：用户名、登录时间）、数据签名（哈希校验）。
 
 > Spring登录机制的实现
-
 - 引入`jjwt`依赖。
 - 拦截器。
+
+如果需要踢掉不良登录态的用户，可以在用户模型中引入一个版本或时间戳字段。每当用户的凭证被更改（例如密码更改或强制注销）时，此版本号会增加。JWT中也包含这个版本号。在每次请求中，都会检查JWT中的版本号是否与存储的版本号匹配。如果不匹配，说明JWT是一个旧的或被撤销的令牌。
 
 ref: [JWT 超详细分析 | Laravel China 社区 (learnku.com)](https://learnku.com/articles/17883)
 
@@ -129,6 +130,7 @@ where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(create_time);
 ## SnowFlake
 
 分布式ID生成一个很小但是很重要的基础应用。UUID保证对在同一时空中的所有机器都是唯一的。UUID的缺点是太长(32位)，并且既有数字又有字母。如果想要生成纯数字的id，则Twitter的SnowFlake是一个非常优秀的id生成方案。
+
 
 实现也非常简单，SnowFlake就是由**毫秒级的时间41位 + 机器ID 10位 + 毫秒内序列12位**组成。当然也可以根据需要调整机器位数和毫秒内序列位数比例（可以比UUID短，一般9-17位左右），性能也很出色。
 
@@ -279,15 +281,22 @@ RocketMQ：每个主题包含多个队列，通过多个队列来实现多实例
 
 ## MQ的可靠性
 
-利用消息队列的有序性可验证是否有消息丢失。在 Producer 端，我们给每个发出的消息附加一个连续递增的序号，然后在 Consumer 端来检查这个序号的连续性。可以利用框架的拦截器机制，在 Producer 发送消息之前的拦截器中将序号注入到消息中。
+### 不丢失
 
-- 在生产阶段，可设置中间件消息发送的响应，若错误并重发消息。
+利用消息队列的**有序性**可验证是否有消息丢失。在 Producer 端，我们给每个发出的消息附加一个连续递增的序号，然后在 Consumer 端来检查这个序号的连续性。可以利用框架的拦截器机制，在 Producer 发送消息之前的拦截器中将序号注入到消息中。
+
+- 在生产阶段，可设置中间件消息发送的响应`ACK`，若错误并重发消息。
 - 在存储阶段，可以通过配置刷盘和复制相关的参数，让消息写入到多个副本的磁盘上，来确保消息不会因为某个 Broker（存储中间件） 宕机或者磁盘损坏而丢失。
 - 在消费阶段，需要在处理完全部消费业务逻辑之后，再发送消费确认。
 
 > 既然上面提到了“重传”，若消息重复呢？
 
 - 一般解决重复消息的办法是，在消费端，让我们消费消息的操作具备幂等性。其任意多次执行所产生的影响均与一次执行的影响相同。利用数据库的唯一约束（INSERT IF NOT EXIST）、设置前置条件（版本号）、记录并检查操作等实现。
+### 持久化
+
+- Kafka 集群内的每条消息都有多个副本，这可以确保单点故障时消息仍然可用。
+- AWS SQS：默认情况下，消息在被消费前可以在队列中存储多达14天。
+
 
 ## Which MQ？
 
@@ -299,6 +308,7 @@ RocketMQ：每个主题包含多个队列，通过多个队列来实现多实例
 > **选型时要特别注意中间件的性能和扩展性。** 开源优先。
 > **功能级别不具备一票否决权**。
 
+### 产品比较
 
 ![image.png](http://img.070077.xyz/20230219235445.png)
 
@@ -309,15 +319,90 @@ RocketMQ 对一致性的良好保证，可以应用在电商各级业务调用�
 
 RabbitMQ 则可以在数据迁移、系统内部的业务调用中应用，比如一些后台数据的同步、各种客服和 CRM 系统。
 
+### 技术比较
+
+| 特性/消息队列   | Kafka       | RabbitMQ    | ActiveMQ    | AWS SQS    | RocketMQ    |
+|----------------|------------|------------|------------|------------|------------|
+| **持久化**         | 是 (磁盘)   | 是 (可选)  | 是 (KahaDB)| 是 (S3)   | 是 (磁盘)   |
+| **消息确认**       | 生产者确认  | 生产者&消费者确认 | 消费者确认 | 消费者确认 | 生产者&消费者确认 |
+| **副本/备份**      | 副本       | 镜像队列   | Master-Slave| 不适用    | 副本       |
+| **重试策略**       | 是         | 是         | 是         | 是         | 是         |
+| **死信队列**       | 不适用     | 是         | 是         | 是         | 是         |
+| **顺序保证**       | 分区级别   | 不适用     | 不适用     | FIFO队列  | 是         |
+| **高可用配置**     | 是 (集群)  | 集群/联邦 | Master-Slave| 是 (多区域)| 集群       |
+| **优点**           | 高吞吐，可扩展 | 灵活路由  | 多协议支持  | 完全托管  | 高性能，低延迟|
+| **缺点**           | 运维复杂   | 资源占用   | 性能不如Kafka|RabbitMQ 和 Kafka都更灵活| 相对较新  |
+
 # MyBatis
 
 MyBatis 是一款优秀的持久层框架，支持自定义 SQL、存储过程以及高级映射，免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis Generator是官方的代码生成器，可以为所有版本的MyBatis生成持久层代码。首先它会扫描一张数据库表（或者更多）然后生成一套访问表的框架。
+
+使用来说：
+1. 配置文件，通常是 `mybatis-config.xml`，包含数据源、mapper文件路径等
+2. 创建一个 Mapper 接口，用于定义数据库操作方法。并配置 SQL 语句和映射规则`mapper` xml文件。比如
+   ```xml
+   <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.UserMapper">
+    <select id="getUserById" parameterType="int" resultType="com.example.model.User">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+    <insert id="insertUser" parameterType="com.example.model.User">
+        INSERT INTO users (username, email) VALUES (#{username}, #{email})
+    </insert>
+</mapper>
+
+```
+3. **MyBatis 配置初始化：**
+   在应用程序中初始化 MyBatis 配置和会话工厂。
+   ```java
+public class MyBatisConfig {
+    private static SqlSessionFactory sqlSessionFactory;
+
+    static {
+        try {
+            String resource = "mybatis-config.xml";
+            Reader reader = Resources.getResourceAsReader(resource);
+            sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static SqlSessionFactory getSqlSessionFactory() {
+        return sqlSessionFactory;
+    }
+}
+```
+4. 使用例子：
+   ```java
+public class MyApp {
+    public static void main(String[] args) {
+        SqlSession sqlSession = MyBatisConfig.getSqlSessionFactory().openSession();
+        try {
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+
+            User user = userMapper.getUserById(1);
+            System.out.println("Username: " + user.getUsername());
+            System.out.println("Email: " + user.getEmail());
+
+            // 插入用户
+            User newUser = new User();
+            newUser.setUsername("newuser");
+            userMapper.insertUser(newUser);
+            sqlSession.commit();
+        } finally {
+            sqlSession.close();
+        }
+    }
+}
+```
 
 ## Springboot 集成
 
 - 添加依赖
 - 在`MyBatis`接口中，添加`@Mapper` 注解。
-- 在`application.yml`中配置数据源。
+- 在`application.yml`等中引用数据源配置xml文件，或者直接配置。
 
  > #{}和${}的区别是什么？
 
@@ -329,26 +414,19 @@ MyBatis 是一款优秀的持久层框架，支持自定义 SQL、存储过程�
 ## 帧的基本结构
 ![](https://s2.loli.net/2023/09/26/iOZUcCLE1hDITYf.png)
 1. **FIN (1 bit)**:
-    
     - 如果为 1，表示这是当前消息的最后一个帧（WebSocket 消息可能由一个或多个帧组成）。
     - 如果为 0，表示消息尚未结束，后续的帧还在传输。
-2. **RSV1, RSV2, RSV3 (各 1 bit)**:
-    
+2. RSV1, RSV2, RSV3 (各 1 bit): 
     - 这三个字段目前没有明确的用途，为将来的协议扩展预留，当前版本的协议中这些位应该设为 0。
 3. **Opcode (4 bits)**:
-    
     - 定义帧的类型。例如，`0x1` 表示这是一个文本帧，`0x2` 表示这是一个二进制帧。还有一些特殊的操作码，如 `0x8` 表示连接关闭，`0x9` 表示 Ping，`0xA` 表示 Pong。
 4. **MASK (1 bit)**:
-    
     - 用于表示负载数据是否被掩码处理。从客户端发往服务器的帧必须被掩码。
 5. **Payload length (7 bits or 7+16 bits or 7+64 bits)**:
-    
     - 用于表示负载数据的长度。如果长度为 125 以下，则使用 7 位表示；如果长度为 126，则接下来的 16 位表示真正的长度；如果长度为 127，则接下来的 64 位表示真正的长度。
 6. **Masking-key (0 or 4 bytes)**:
-    
     - 只有当 MASK 位被设为 1 时存在。它是一个 32 位的值，用于掩码或解掩码负载数据。
 7. **Payload data (variable length)**:
-    
     - 实际的消息内容。如果 MASK 位被设为 1，那么这个数据会与 Masking-key 做异或操作来进行掩码或解掩码。
 
 相比于 HTTP 的复杂报文结构，WebSocket 的帧结构更简洁，更适用于低延迟和高频率的实时通信。特别是掩码机制和分片消息的支持，使得 WebSocket 在网络安全和大消息传输上都具有一定的灵活性。

@@ -9,11 +9,39 @@
 3. `@SpringBootApplication` 
     标注这是一个springboot的应用，被标注的类是一个主程序，SpringApplication.run(App.class, args);传入的类App.class必须是被@SpringBootApplication标注的类。
 
-
 ## 框架启动流程
+
+四个主要阶段：
+
+1. **初始化**：实例化SpringApplication并确定应用类型。
+2. **环境准备**：加载配置、确定profiles。
+3. **上下文创建与刷新**：加载、初始化Beans，启动内嵌服务器。
+4. **运行到关闭**：执行应用逻辑，直到关闭上下文。
+
 ![](http://img.070077.xyz/20221112132057.png)
 
 
+Spring Boot的启动流程可以大致分为以下几个阶段：
+
+1. **实例化SpringApplication**：
+   - 根据你的应用类型（Web应用、非Web应用）决定哪种ApplicationContext类型应该被使用（例如：AnnotationConfigServletWebServerApplicationContext、AnnotationConfigApplicationContext等）。
+   - 初始化应用的监听器和默认属性。
+
+2. **运行SpringApplication**：
+   - 触发所有的`SpringApplicationRunListener`，例如`EventPublishingRunListener`，这些监听器主要用于发布启动过程中的各种事件。
+   - 准备环境：这里会确定激活哪些profiles，并将环境属性加载到Spring Environment中。
+   - 创建ApplicationContext：根据前面的决策，实例化相应的ApplicationContext。
+   - **准备上下文**：注册BeanPostProcessor、初始化上下文中的单例等，并加载源属性到上下文中。
+   - **刷新上下文**：核心阶段，触发bean的定义、创建和初始化。此阶段会处理@Configuration类，并开始自动配置。
+   - 启动内嵌的Web服务器（如果是Web应用）：例如Tomcat、Jetty或Undertow。
+   - 完成启动：此时，所有的Bean都已经被加载和初始化，应用已经准备好处理请求了。
+
+3. **运行应用**：
+   - 如果你的应用实现了`CommandLineRunner`或`ApplicationRunner`，这些Runner会在此阶段被调用。
+
+4. **关闭Spring Boot应用**：
+   - 如果是Web应用，通常会保持运行状态直到接收到关闭信号。
+   - 非Web应用，一旦主线程完成，上下文会关闭，并触发`@PreDestroy`方法。
 
 ## Bean 的注入
 

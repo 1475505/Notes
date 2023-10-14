@@ -48,16 +48,79 @@ try {...} finally {lock.unlock();}
   同步器提供了 `acquirelnterruptibly(int arg)` 方法，这个方法在等待获取同步状态时，如果当前线程被中断，会立刻返回，并抛出 InterruptedException 。
   ![](http://img.070077.xyz/202204270304804.png)
 
-
-## 重入锁ReentrantLock
+## 重入锁 ReentrantLock
 
 解决这个问题：获取锁之后，如果再次调用 `lock`方法，则该线程将会被自己所阻塞。
 - `synchronized` 关键字隐式支持重入
 - `ReentrantLock` 通过组合自定义同步器来实现锁的获取与释放。在调用`lock`方法时，已获取到锁的线程，能够再次调用 `lock`方法获取锁而不被阻塞
 
->`Synchronized` 是JVM层面的锁，是非公平锁。 `Synchronized` 在线程进入 ContentionList 时，等待的线程会先尝试自旋获取锁，如果获取不到就进入 ContentionList，这明显对于已经进入队列的线程是不公平的，还有一个不公平的事情就是自旋获取锁的线程还可能直接抢占 OnDeck 线程的锁资源，不可以被中断。非公平性锁刚释放锁的线程再次获取同步状态的几率会非常大，可能使线程饥饿，但因极少的线程切换，保证了其更大的吞吐量成为默认。
+>`Synchronized` 是JVM层面的锁，优化后也是非公平锁。
+>`Synchronized` 在线程进入 ContentionList 时，等待的线程会先尝试自旋获取锁，如果获取不到就进入 ContentionList，这明显对于已经进入队列的线程是不公平的。
+>还有一个不公平的事情就是自旋获取锁的线程还可能直接抢占 OnDeck 线程的锁资源，不可以被中断。非公平性锁刚释放锁的线程再次获取同步状态的几率会非常大，可能使线程饥饿，但因极少的线程切换，保证了其更大的吞吐量成为默认。
 
-ReentrantLock 在Monitor中有一个计数器，记录重入次数。并提供了一个构造函数，能够控制锁是否是公平的(锁获取是**时间顺序**的，判断同步队列中当前节点是否有前驱节点)。
+ReentrantLock 在Monitor中有一个计数器，记录重入次数。并提供了一个构造函数参数，控制锁是否是公平的(锁获取是**时间顺序**的，判断同步队列中当前节点是否有前驱节点)。默认是非公平的。
+
+GPT给出了一个简化的实现：
+```java
+// `ReentrantLock` 的实现依赖于 AQS 进行状态管理和线程排队。它使用 `state` 表示锁的持有状态（0 表示未锁定），并使用 CAS (compare-and-swap) 操作进行高效的非阻塞状态转换。
+class ReentrantLock {
+    private final Sync sync;
+
+    public ReentrantLock() {
+        sync = new Sync();
+    }
+
+    // 内部同步器
+    static class Sync extends AbstractQueuedSynchronizer {
+        // 尝试获取锁
+        protected boolean tryAcquire(int acquires) {
+            int current = getState();
+            Thread currentThread = Thread.currentThread();
+            
+            if (current == 0) {
+                // 无线程持有锁
+                if (compareAndSetState(0, acquires)) {
+                    setExclusiveOwnerThread(currentThread);
+                    return true;
+                }
+            } else if (currentThread == getExclusiveOwnerThread()) {
+                // 当前线程已经持有锁，增加重入计数
+                int next = current + acquires;
+                setState(next);
+                return true;
+            }
+            
+            return false;
+        }
+
+        // 尝试释放锁
+        protected boolean tryRelease(int releases) {
+            int current = getState() - releases;
+            boolean free = false;
+
+            if (Thread.currentThread() != getExclusiveOwnerThread()) {
+                throw new IllegalMonitorStateException();
+            }
+
+            if (current == 0) {
+                free = true;
+                setExclusiveOwnerThread(null);
+            }
+
+            setState(current);
+            return free;
+        }
+    }
+
+    public void lock() {
+        sync.acquire(1);
+    }
+
+    public void unlock() {
+        sync.release(1);
+    }
+}
+```
 
 ## 读写锁
 读写锁维护了 *一对*锁，分离读锁和写锁。在读多于写的情况下，读写锁能够提供比上述排它锁更好的并发性和吞吐量。
@@ -115,7 +178,8 @@ ConditionObject 是 AQS 的内部类，其实现包括：等待队列 、等待�
 
 > `HashTable` 容器使用 synchronized 来保证线程安全，但在线程竞争激烈的情况下效率非常低下。 因为所有访问 HashTable的线程都必须竞争同一把锁，易进入阻塞或轮询状态 。 
 
-ConcurrentHashMap容器使用锁分段技术，内含多把锁，每一把锁用于锁容器其中一部分数据。首先将数据分成一段一段地存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问 。
+对于Java1.7，
+ConcurrentHashMap容器使用**锁分段技术**，内含多把锁，每一把锁用于锁容器其中一部分数据。首先将数据分成一段一段地存储，然后给每segment数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问 。
 ![](http://img.070077.xyz/202204272304694.png)
 
 其初始化方法是通过 `initialCapacity` 、`loadFactor`（每个 segment 的负载因子） 和 `concurrencyLevel`等几个参数来初始化 segment 数组（大于或等于 concurrencyLevel 的最小的2幂次作为长度 。）、 段偏移量 segmentShift 、 段掩码 segmentMask 和每个segment 里的HashEntry 数组。
@@ -132,6 +196,12 @@ ConcurrentHashMap容器使用锁分段技术，内含多把锁，每一把锁用
 
 尝试 2 次通过不锁住 Segment 的方式来统计各个 Segment大小，如果统计的过程中，容器的 count 发生了变化（写元素都会将变量 modCount 进行加1），则再采用加锁的方式来统计所有Segment 的大小 。
 
+对于JDK1.8，
+底层数据结构是Node 数组 + 链表 / 红黑树。
+![image.png](https://s2.loli.net/2023/10/13/x2RGTh9VYI5lO6M.png)
+
+- 初始化是通过自旋和 CAS 操作完成的。字段 sizeCtl 的值决定着当前的初始化状态。
+- put时：如果为空，可直接写入数据，利用 CAS 尝试写入，失败则自旋保证成功。如果当前位置的 hashcode == MOVED == -1,则需要进行扩容。如果非空利用 synchronized 锁写入数据。
 ## ConcurrentLinkedQueue
 
 ![](http://img.070077.xyz/202204272335337.png)

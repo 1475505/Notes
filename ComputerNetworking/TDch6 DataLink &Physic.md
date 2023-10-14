@@ -191,7 +191,12 @@ MAC (Media Access Control Address or LAN or physical or Ethernet) address:
 
 ### 地址解析协议 ARP
 
-网络层实现主机之间的通信，而链路层实现具体每段链路之间的通信。因此在网络通信过程中，IP 数据报的源地址和目的地址始终不变，而 MAC 地址随着链路的改变而改变。**ARP 实现由 IP 地址得到 MAC 地址。** 每个主机都有一个 ARP 高速缓存，里面有本局域网上的各主机和路由器的 IP 地址到 MAC 地址的映射表`< IP address; MAC address; TTL>`。主机可通过广播的方式发送 ARP 请求分组，主机 B 收到该请求后会发送 ARP 响应分组给主机 A 告知其 MAC 地址。
+网络层实现主机之间的通信，而链路层实现具体每段链路之间的通信。因此在网络通信过程中，IP 数据报的源地址和目的地址始终不变，而 MAC 地址随着链路的改变而改变。**ARP 实现由 IP 地址得到 MAC 地址。** 
+
+ARP的主要功能包括：
+1. **解析：** 当一个设备需要与另一个设备通信时，它首先会检查目标设备的IP地址是否在同一局域网中。如果是，它会使用ARP来查找目标设备的MAC地址。
+2. **缓存：** 每个主机都有一个 ARP 高速缓存，里面有本局域网上的各主机和路由器的 IP 地址到 MAC 地址的映射表`< IP address; MAC address; cache TTL>`。
+3. **广播：** 主机可通过广播的方式发送 ARP 请求分组，主机 B 收到该请求后会发送 ARP 响应分组给主机 A 告知其 MAC 地址。
 
 > TTL (Time To Live): time after which address mapping will be forgotten (typically 20 min)
 

@@ -363,6 +363,8 @@ System.out.println(a); //{2}
     }
 ```
 
+> 异常覆盖机制：`finally` 块中的异常会覆盖 `catch` 块中的异常。被覆盖的异常信息可以通过 `getCause()` 方法访问。
+
 对于使用了带`AutoCloseable`接口的资源，有`try-with-resources`语句：
 
 ```java

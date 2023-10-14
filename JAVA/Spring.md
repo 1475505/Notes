@@ -37,8 +37,8 @@ public class BeanFactory {
 
 ## 三级缓存
 
-- Spring 内部有三级**缓存**，部分解决了循环依赖（只能处理单例作用域的bean的循环依赖，不能处理原型作用域的bean的循环依赖）
-- 通过**提前暴露半成品的代理对象**来解决循环依赖，而不是使用缓存。
+- Spring 内部有三级**缓存**，部分解决了循环依赖（**只能处理单例作用域的bean的循环依赖**）
+- 不能处理原型/会话等作用域的bean的循环依赖：通过**提前暴露半成品的代理对象**来解决循环依赖，而不是使用缓存。
 
 ```java
 Map<String,Object> singletonObjects 
@@ -51,8 +51,48 @@ Map<String,ObjectFactory<?> singletonFactories
 
 ![](http://img.070077.xyz/202204240052924.png)
 
+举个例子，假设`Aservice`  `BService` 循环依赖，此时：
+- 当AService被初始化时，首先会创建一个AService的实例，但此时并不会填充它的属性（bservice）。
+- 这个未完全初始化的AService实例会被放入二级缓存中，因为这个实例**没有填充属性**。
+- 当BService被初始化并尝试注入AService时，Spring会从二级缓存中获取AService的实例。
+- BService初始化完成后，AService的属性会被填充，然后AService会被移动到一级缓存中。
 
 > 二级缓存是可以帮助处理循环依赖的，但是它不能单独解决这个问题。二级缓存（earlySingletonObjects）存储的是提前暴露出来的、尚未完全初始化的bean。当Spring检测到一个bean正在被创建，而这个bean又被其他bean依赖时，Spring会将这个尚未完全初始化的bean放入二级缓存，并提前暴露出来以供其他bean引用。这样可以解决一部分的循环依赖问题。例如，**如果两个bean互相依赖，并且都还没有开始创建，那么二级缓存就无法解决这个问题。**
+
+我们来看一个涉及三级缓存的例子：
+```java
+@Service
+public class AService implements InitializingBean {
+    @Autowired
+    private BService bService;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        bService.doSomething();
+    }
+}
+
+@Service
+public class BService {
+    @Autowired
+    private AService aService;
+}
+
+```
+
+`AService`实现了`InitializingBean`接口，这意味着在属性设置之后，`afterPropertiesSet`方法会被调用。
+
+1. 当Spring尝试创建`AService`时，它首先会创建一个`AService`的实例，但不会立即注入`BService`。
+2. 这个未完全初始化的`AService`实例会被放入一个工厂对象中，然后这个工厂对象会被放入**singletonFactories**（三级缓存）。因为这个实例没有调用完初始化所需的函数`afterPropertiesSet` 。
+3. 接下来，Spring尝试初始化`BService`。在初始化`BService`时，它需要注入`AService`。
+4. Spring首先检查**singletonObjects**（一级缓存），但此时`AService`还没有完全初始化，所以不在那里。
+5. 接着，Spring会检查**earlySingletonObjects**（二级缓存），但`AService`也不在那里。
+6. 最后，Spring会检查**singletonFactories**（三级缓存）。在这里，它找到了`AService`的工厂对象，并使用这个工厂对象创建了一个`AService`的实例。这个新创建的实例会被放入**earlySingletonObjects**。
+7. 现在，`BService`可以使用这个早期的`AService`实例进行初始化。
+8. 一旦`BService`初始化完成，`AService`的属性会被填充，并且`afterPropertiesSet`方法会被调用。
+9. 最后，`AService`会被移动到**singletonObjects**（一级缓存）。
+
+> 当这些bean有状态时，这些解决方案会带来副作用。
 
 ## 生命周期
 
