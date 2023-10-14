@@ -11,14 +11,6 @@
   * [Spring介绍](JAVA/Spring.md)
   * [SpringBoot框架介绍](JAVA/SpringBoot.md)
   * [SpringBoot项目介绍](JAVA/SpringBootProject.md)
-* 其他编程语言
-  - [Go基础](Golang/Basic.md)
-  - [Go的具体实现](Golang/Inside.md)
-  - [Go服务框架项目](Golang/Project-Gee.md)
-  * [C++STL的使用](cpp/C++STL的使用.md)
-  * [从C进步到C++——特性](cpp/从C进步到C++——特性.md)
-  - [C++ more than STL](cpp/CS106L.md)
-  - [C++细节补充](cpp/Details.md)
 * [分布式系统](Clouding/6.824.md)
   - [MapReduce](BigData/MapReduce.md)
   - [Raft-Consensus](Clouding/Raft.md)
@@ -56,4 +48,11 @@
 - [计算机底层知识](体系架构/CS152-1-ch1.md)
   - [组成原理速成](体系架构/计组期末刷题笔记.md)
   - [操作系统](体系架构/OS.md)
-  - 
+* 其他编程语言
+  - [Go基础](Golang/Basic.md)
+  - [Go的具体实现](Golang/Inside.md)
+  - [Go服务框架项目](Golang/Project-Gee.md)
+  * [C++STL的使用](cpp/C++STL的使用.md)
+  * [从C进步到C++——特性](cpp/从C进步到C++——特性.md)
+  - [C++ more than STL](cpp/CS106L.md)
+  - [C++细节补充](cpp/Details.md)
