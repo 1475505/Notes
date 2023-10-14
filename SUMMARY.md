@@ -18,6 +18,7 @@
   * [C++STL的使用](cpp/C++STL的使用.md)
   * [从C进步到C++——特性](cpp/从C进步到C++——特性.md)
   - [C++ more than STL](cpp/CS106L.md)
+  - [C++细节补充](cpp/Details.md)
 * [分布式系统](Clouding/6.824.md)
   - [MapReduce](BigData/MapReduce.md)
   - [Raft-Consensus](Clouding/Raft.md)

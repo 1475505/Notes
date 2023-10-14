@@ -38,6 +38,9 @@
 
 详见 [Java NIO浅析 - 美团技术团队 (meituan.com)](https://tech.meituan.com/2016/11/04/nio.html)
 
+1. 一个 Channel 对应一个 Buffer。
+2. Selector 对应一个线程，一个线程对应多个 Channel，多个 Channel 根据多路复用规则，和根据不同的事件（程序切换到那个 Channel 是由事件决定的），在各个通道上切换。通过 Buffer 进行数据的读取和写入。
+3. Buffer 就是一个内存块，底层是有一个数组。
 
 ## 中断
 
