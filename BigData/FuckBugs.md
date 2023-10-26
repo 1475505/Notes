@@ -19,4 +19,8 @@ Four options for RPC semantics:
 -   At most once (common)
 -   Exactly once (lab 1c, only possible if you are willing to block forever in the case that the network goes down permanently or the server goes down permanently）
 
+# 实践
 
+分布式系统设计中，有一条很重要的原则就是：为失败而设计，错误一定会发生。 为了防止系统出现级连失败，我们需要对依赖的服务所能够使用的资源做一定限制，保护应用本身。Hystrix的容错架构如下：
+
+![image.png](https://s2.loli.net/2023/10/26/8pcJhTHBdKwjSPG.png)

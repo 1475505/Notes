@@ -4,6 +4,8 @@
 
 ![image.png](https://s2.loli.net/2023/10/02/iGtZ4dqsnyYIDz5.png)
 
+为保持进入线程池后的任务线程也能获取到threadLocal，有一些支持继承关系的threadLocal类：
+![image.png](https://s2.loli.net/2023/10/16/7IE9VJlOMyvRXh5.png)
 
 # 长尾延迟
 
@@ -33,6 +35,10 @@
 - 高扇出的计算任务，允许使用采样/近似/随机等计算手段简化。
 - 
 
+# 常识
+- 使用用户id作为分库分表的路由因子。这样可以保证同一个用户路由至相同的库表，既有利于数据的聚合，也方便用户数据的查询。
+
+
 
 # 线上问题排查
 
@@ -46,6 +52,7 @@
 
 
 ## 异常连接数过多
+
 
 # 主题问题
 
@@ -85,3 +92,6 @@ Count-Min Sketch（CMS）是一种概率数据结构，**使用有限内存近�
 ![image.png](https://s2.loli.net/2023/10/13/NQDvYy29cpVFmIn.png)
 
 
+# 实践考虑
+
+![](https://s2.loli.net/2023/10/21/xuFOPriSfUABj2s.png)

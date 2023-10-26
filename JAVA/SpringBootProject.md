@@ -340,8 +340,8 @@ MyBatis 是一款优秀的持久层框架，支持自定义 SQL、存储过程�
 使用来说：
 1. 配置文件，通常是 `mybatis-config.xml`，包含数据源、mapper文件路径等
 2. 创建一个 Mapper 接口，用于定义数据库操作方法。并配置 SQL 语句和映射规则`mapper` xml文件。比如
-   ```xml
-   <?xml version="1.0" encoding="UTF-8" ?>
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.UserMapper">
     <select id="getUserById" parameterType="int" resultType="com.example.model.User">
@@ -351,11 +351,11 @@ MyBatis 是一款优秀的持久层框架，支持自定义 SQL、存储过程�
         INSERT INTO users (username, email) VALUES (#{username}, #{email})
     </insert>
 </mapper>
-
 ```
+
 3. **MyBatis 配置初始化：**
    在应用程序中初始化 MyBatis 配置和会话工厂。
-   ```java
+```java
 public class MyBatisConfig {
     private static SqlSessionFactory sqlSessionFactory;
 
@@ -375,7 +375,7 @@ public class MyBatisConfig {
 }
 ```
 4. 使用例子：
-   ```java
+```java
 public class MyApp {
     public static void main(String[] args) {
         SqlSession sqlSession = MyBatisConfig.getSqlSessionFactory().openSession();

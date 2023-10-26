@@ -64,6 +64,9 @@
 
 ## 存储引擎
 
+![image.png](https://s2.loli.net/2023/10/23/dvnlRHwIJ81Yr9W.png)
+
+
 ### MyISAM 和 InnoDB
 
 两种类型最主要的差别就是 **Innodb 支持事务处理与外键和行级锁**。

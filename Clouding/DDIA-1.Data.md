@@ -125,6 +125,7 @@ $response\space time = latency + service\space time$
 存储引擎的工作流程如下：
 1. 在内存中维护一个有序结构（称为 **MemTable**，如红黑树），到达一定阈值后，作为SSTable 文件 dump 到外存。
 2. 后台周期性地执行段合并和压缩，丢弃被覆盖或删除的值。
+3. 为每个 SSTable 使用 Bloom Filter 可以在读操作时快速确定一个键是否在某个 SSTable 中，从而减少不必要的磁盘读取。
 
 读请求先在内存表中查找，然后由新到旧搜索磁盘段文件。
 

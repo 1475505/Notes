@@ -171,7 +171,28 @@ RESTful 接口有四条规则：
 2. 订阅数据库`binlog`
    ![](http://img.070077.xyz/20221225130629.png)
 
+# 实践
 
+[电商设计手册-开源项目](https://github.com/skr-shop/manuals)
+[有赞保险业务的分析与架构设计-有赞技术团队-2021](https://tech.youzan.com/analysis and design of insurance system/)
+- 优惠券系统设计：
+[实战！如何从零搭建10万级QPS大流量、高并发优惠券系统-字节跳动技术团 队-2022](https://mp.weixin.com/s/iZ9BX6cCCp TB-SC3knuew)
+[vivo全球商城：优惠券系统架构设计与实践-vivo互联网技术-2021](https://www.cnblogs.com/vivotech/p/15117264.html)
+- 交易系统设计：
+[交易系统设计（概念篇）-掘金-2019](https://juejin.cn/post/6844903794099273742)
+[交易系统设计（实干篇）-掘金-2019](https://juejin.cn/post/6844903800340217864)
+- 红包系统设计：
+[2022春节抖音视频红包系统设计与实现-字节跳动技术团队-2022](https://mp.weixin.qq.com/s/IMfVI7rdcTun3DK1wbqQQw)
+[微信红包的技术原理是怎样的？-字节跳动工程师-知乎](https://www.zhihu.com/question/22623475/answer/2541075908).
+- 抽奖系统设计
+[如何设计百万人抽奖系统-一条coding-2021](https://mp.weixin.qq.com/s/40qYCnEV3xTmXYGT2w71tg).
+[如何设计一个百万级用户的抽奖系统？-狸猫技术窝-2019](https://juejin.cn/post/6844903847031226382
+- 硬核课堂
+[⁤﻿‌‌⁤‬⁤‌⁡​​⁣​﻿⁡​‍​‬‌‍⁢⁣‍⁡⁡‬‌⁡⁤⁣⁢⁣﻿⁡‍​﻿​⁣⁡⁤‌‌﻿﻿‌⁢⁣Timeline Feed系统设计 - 飞书云文档 (feishu.cn)](https://hardcore.feishu.cn/wiki/wikcn7FQDsq2tn2MOaZSDryv8Lf)
+[‌⁢​‍‍⁣⁢⁡⁣‍‬​⁡​⁤‌​​‌‌⁢​‬⁤⁡​⁡‬​⁢⁡﻿⁡⁤‍‬‌﻿​​⁤﻿⁣‌⁢⁢‍⁤从0到1再到N，探索亿级流量的IM架构演绎 - 飞书云文档 (feishu.cn)](https://nxwz51a5wp.feishu.cn/docs/doccnTYWSZg4v9bYTQH8hXkGJPc)
+[‌﻿⁤​⁢​⁢⁡⁡﻿﻿​‍⁣​​‬​​‍‬​⁡‬‍​​‍‍⁣​﻿⁡‌⁣⁤​‍‌‌⁢​‍‌﻿⁡​‍⁢⁤实现一个短域名系统 - 飞书云文档 (feishu.cn)](https://hardcore.feishu.cn/docs/doccnAfY0f35ZgnrFg7jSTQmOOf)
+[‌​﻿‌‌‍‌‍‌‌​‬‍​⁢﻿⁣​​​​⁤‬⁤⁣⁣⁤⁢‌⁤⁡⁢‬‌‍‍⁣⁤⁤‍‬⁡‍‬⁡‬⁡‌⁤‌如何设计一个分布式限流系统？ - 飞书云文档 (feishu.cn)](https://hardcore.feishu.cn/docs/doccnvQAX7MWAZA4PRlxXoBPPyf)
+[‌⁤‍﻿‍⁤﻿⁤​‍​​﻿​‌‍​‬⁡​‌﻿‍​⁤‌⁤⁤﻿‬⁤‍﻿⁡﻿⁢⁣‌​​​‌﻿‌‬​⁤‌⁤⁣高性能c++日志库 - 飞书云文档 (feishu.cn)](https://hardcore.feishu.cn/docs/doccnswQvLbjQU121wOg13TlJt9)
 
 ---
 # Appendix
