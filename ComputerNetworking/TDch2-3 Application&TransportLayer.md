@@ -89,6 +89,8 @@ SMTP vs HTTP:
 - SMTP requires message (header & body) to be in 7-bit ASCII
 - SMTP server uses CRLF to determine end of message
 
+> 两种扇出模型：**写扇出（也称为推模型）和读扇出（也称为拉模型）**。
+
 SMTP 只能发送 ASCII 码，而互联网邮件扩充 MIME 可以发送二进制文件。POP3 的特点是只要用户从服务器上读取了邮件，就把该邮件删除。但最新版本的 POP3 可以不删除邮件。IMAP 协议中客户端和服务器上的邮件保持同步，如果不手动删除邮件，那么服务器上的邮件也不会被删除。
 
 ## DNS

@@ -41,7 +41,7 @@
 
 ![](http://img.070077.xyz/202204240135212.png)
 
-
+> AJAX 请求：对于 Web 应用程序，浏览器通常会发送 AJAX 请求来获取自动完成结果。 AJAX 的主要好处是发送/接收请求/响应不会刷新整个网页。
 ## 解决跨域
 
 同源策略指的是：协议+域名+端口三者皆相同，可以视为在同一个域，否则为不同域。同源策略限制了从同一个源加载的文档或脚本与来自另一个源的资源进行交互。是一个用于隔离潜在恶意文件的重要安全机制。
@@ -131,8 +131,13 @@ where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(create_time);
 
 分布式ID生成一个很小但是很重要的基础应用。UUID保证对在同一时空中的所有机器都是唯一的。UUID的缺点是太长(32位)，并且既有数字又有字母。如果想要生成纯数字的id，则Twitter的SnowFlake是一个非常优秀的id生成方案。
 
+> “在每秒产生10亿个UUIDs，大约100年后，创造一个重复的概率会达到50%”——wikipedia
+
 
 实现也非常简单，SnowFlake就是由**毫秒级的时间41位 + 机器ID 10位 + 毫秒内序列12位**组成。当然也可以根据需要调整机器位数和毫秒内序列位数比例（可以比UUID短，一般9-17位左右），性能也很出色。
+
+![image.png](https://s2.loli.net/2023/10/27/Y8vXnhHpqDgAWKU.png)
+
 
 ```java
 public class SnowFlake {  
@@ -409,6 +414,15 @@ public class MyApp {
 -  `${}`是 properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如${driver}会被静态替换为`com.mysql.jdbc.Driver`。
 - `#{}`是 sql 的参数占位符，MyBatis 会将 sql 中的`#{}`替换为? 号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的? 号占位符设置参数值，比如 ps.setInt(0, parameterValue)，`#{item.name}` 的取值方式为使用反射从参数对象中获取 item 对象的 name 属性值，相当于 `param.getItem().getName()`
 
+# 限流
+
+| 算法   | 图示                                                             | 优点                     | 特点                                                                                       |
+| ------ | ---------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------ |
+| 令牌桶 | ![image.png](https://s2.loli.net/2023/10/27/uCMH6c7sYgS8Ak9.png) | 算法容易实现、节省内存   | 允许短时间内的流量突发                                                                     |
+| 漏桶   | ![image.png](https://s2.loli.net/2023/10/27/liQVNnwAaxkGeDb.png) | 内存效率高、稳定流出速率 | 突发的流量使队列中充满了旧的请求，如果这些请求没有得到及时处理，最近的请求将受到速率限制。 |
+|   滑动窗口     |     ![image.png](https://s2.loli.net/2023/10/27/HvuRLaUWJS5EKCw.png)         | 平滑了流量的峰值、内存高效                                            |          近似实现                | 
+
+如果一个请求被限制了速率，返回 429 too many requests 错误和 X-Ratelimit-Retry-After（秒） 标头。
 # websocket
 
 ## 帧的基本结构
